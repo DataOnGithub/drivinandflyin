@@ -36,17 +36,20 @@ function geoError(){
 function updateLocation(){
 	// move the you are here marker to new location
 	marker.setLatLng([position.coords.latitude, position.coords.longitude]);
-
-	map.on('heading', function(e) {
-		alert(e.latlng);
-	});
+	document.getElementById("header").textContent += "Heading: " + position.coords.heading;
+	document.getElementById("header").textContent += "Speed: " + position.coords.speed;
+	document.getElementById("header").textContent += "Time: " + position.coords.timestamp;
 }
 
 function initialize(){
+	// we find out about where we are first
         if (navigator.geolocation){
                 navigator.geolocation.getCurrentPosition(function(position){
 			lat = position.coords.latitude;
 			lon = position.coords.longitude;
+			heading = position.coords.heading;
+			speed = position.coords.speed;
+			timestamp = position.coords.timestamp
 			tomtom.setImagePath("/images/map");
 			map = new tomtom.Map({ 
 				domNode: "map", 
@@ -59,32 +62,39 @@ function initialize(){
 				maximumAge: 6000,
 				displayTraffic: true
 			});
+			
 			var options = {
 				iconUrl: "http://www.airmanopus.net/BoilerMake/images/marker.png", 
-				iconSize: [51, 60],
-				iconAnchor: [21, 49]
+				iconSize: [41, 50],
+				iconAnchor: [11, 39]
 			};
 			var marker = new tomtom.Marker([lat,lon], options);
 			map.addLayer(marker);
 		});
+
 	}
 }
+
+
+
+
 
 </script>
 <style>
 html, body, #map {
-	width: 100%;
-	height: 100%;
-	padding: 0;
-	margin: 0;
+	width: 70%;
+	height: 70%;
+	padding: 0px;
+	margin: 1px;
 }
 </style>
 <body onLoad="initialize()">
-<div id="header"><pre>some kinda title here</pre></div>
+<div id="header"></div>
 <div id="map"></div>
-<div id="heading"></div>
-<div id="speed"></div>
-<div id="timestamp"></div>
-<div id="footer">some kinda footer here</div>
+<div id="bottomSection" onClick="bottomClick()">
+
+
+</div>
+
 </body>
 </html>
