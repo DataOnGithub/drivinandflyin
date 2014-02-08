@@ -5,15 +5,14 @@
 <meta http-equiv="Content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" />
 <meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css" />
-<script src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"></script>
+<link rel="stylesheet" type="text/css" css="css/map.css" />
 <link rel="stylesheet" type="text/css" href="css/tomtom.map.min.css" />
-<!-- <script type="text/javascript" src="js/leaflet.js"></script> -->
+<script type="text/javascript" src="js/leaflet.js"></script>
 <script type="text/javascript" src="js/tomtom.map.js"></script>
 
 <script type="text/javascript">
+
 function haversineDistance(lat1,lon1,lat2,lon2){
-        const R = 3958.6; // mi
         var d = Math.acos(Math.sin(lat1)*Math.sin(lat2) +
                           Math.cos(lat1)*Math.cos(lat2) *
                           Math.cos(lon2-lon1)) * R;
@@ -35,50 +34,50 @@ function geoError(){
 }
 
 function updateLocation(){
-
-	const MAP_ZOOM = 12;	// starting zoom level of the map
-	tomtom.apiKey = "q3dh8pqnwmbdrvwctrgvm6nu";
-	
-	var lat;		// latitude and longitude for devices current position
-	var lon; 
-
-        if (navigator.geolocation){
-                navigator.geolocation.getCurrentPosition(function(position){
-
-			// get current position coords
-                        lat = position.coords.latitude;
-                        lon = position.coords.longitude;
-
-                        console.log(lat,lon);
-			
-		tomtom.setImagePath("/images/map");
-			// set up a TomTom map centered on current coordinates
-			var map = new tomtom.Map({
-			domNode: "map",
-			cookie: false,
-        		center: [lat, lon],
-        		zoom: MAP_ZOOM
-			});
-
-                        // include traffic information on the map
-			var trafficService = new tomtom.services.TrafficService();
-			var bounds = map.getBounds();
-			var trafficBounds = { top: bounds.getNorthEast().lat, right: bounds.getNorthEast().lng, bottom: bounds.getSouthWest().lat, left: bounds.getSouthWest().lng };
-			trafficService.getTrafficModel(trafficBounds, map.getZoom(), function(response){
-				// do something with the traffic incidents returned here
-			});
-
-		});
-	} 
+map.on('click', function(e) {
+	alert(e.latlng); // e is an event object (MouseEvent in this case)
+});
+map.on('heading', function(e) {
+	alert(e.latlng);
+});
 }
 
+function initialize(){
+        if (navigator.geolocation){
+                navigator.geolocation.getCurrentPosition(function(position){
+			lat = position.coords.latitude;
+			lon = position.coords.longitude;
+			tomtom.setImagePath("/images/map");
+			map = new tomtom.Map({ 
+				domNode: "map", 
+				apiKey: "q3dh8pqnwmbdrvwctrgvm6nu",
+				center: [lat, lon],
+				zoom: 13,
+				zoomControl: true,
+				enableHighAccuracy: true,
+				watch: true,
+				maximumAge: 6000,
+				displayTraffic: true
+			});
+		});
+	}
+}
 
-// auto update when position of device changes
-watchedPosition = navigator.geolocation.watchPosition(updateLocation, geoError, { enableHighAccuracy: true, maximumAge: 6000, timeout: 4500 });
 </script>
-
-<body onLoad="updateLocation()">
+<style>
+html, body, #map {
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+}
+</style>
+<body onLoad="initialize()">
+<div id="header"><pre>some kinda title here</pre></div>
 <div id="map"></div>
-
+<div id="heading"></div>
+<div id="speed"></div>
+<div id="timestamp"></div>
+<div id="footer">some kinda footer here</div>
 </body>
 </html>
