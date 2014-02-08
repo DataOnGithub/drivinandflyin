@@ -6,13 +6,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" />
 <meta name="apple-mobile-web-app-capable" content="yes">
 <script type="text/javascript">
-	var lat;
+	var lat;		// current location
 	var lon;
 
-	var oldLat;
+	var oldLat;		// most recent location
 	var oldLon;
 
-	var newLat;
+	var newLat;		// new location moving forward
 	var newLon;
 
 	var newTime;
@@ -91,14 +91,13 @@ function weather(latitude,longitude)
 
 function haveACoke(latitude, longitude)
 {
-		
 	CokeURL="http://api.cokecce.com/v1/location/search/?latitude=" + latitude + "&longitude=" + longitude + "&rangeKilometers=2&maxLocations=1&format=json&apiKey=bpw7n273sy7rvsyppuks6rma"
 	locateCoke = XMLHttpRequest();
-	locateCoke.open('GET',locateCokeURL,false);
+	locateCoke.open('GET',CokeURL,false);
 	locateCoke.send();
+	console.log(locateCoke.responseText);
 	if (locateCoke.status = 200){
-		returnString[0] = cokeLocations.customers[0].address;
-		returnString[1] = codeLocations.customers[0].distance;
+		returnString = cokeLocations.customers[0].address + "," + codeLocations.customers[0].distance;
 	}
 		
 }
@@ -110,45 +109,54 @@ function updateLocation()
 		navigator.geolocation.getCurrentPosition(function(position) {
 
 			// keep our last position
-			oldLat = lat;
-			oldLon = lon;
+			oldLat = position.coords.latitude;
+			oldLon = position.coords.longitude;
 
 			console.log(oldLat,oldLon);
 
 			// get the time
+			//var newDate = new Date();
+			//var datetime = newDate.timeNow();
 
 			// get the new position
+			// may be small difference if not moving very fast
 			lat = position.coords.latitude;
 			lon = position.coords.longitude;
 
 			console.log(lat,lon);
 
-			// moment of truth
-			coordinates.innerHTML = lat + "," + lon;	
-			haveACoke.innerHTML = haveACoke(lat,lon);
+			coordinatesText = document.getElementById("coordinates");
+			coordinatesText.textContent = "lat : "+ lat + " lon: " + lon;
 
+			haveACokeResponse = haveACoke(lat,lon);
+			haveACokeText = document.getElementById("haveACoke");
+			haveACokeText.textContent = "Coke is at " + haveACokeResponse
 
+			// how far have we moved and how much time did it take
 			moveDistance = haversineDistance(lat,lon,newLat,newLon);		
 			moveTime = (newTime - initialTime);
 		
+			// as Newton pointed out d times t
 			speed = (moveDistance * moveTime);
-			speed.innerHTML = speed;
+			speedText = document.GetElementById('speed')
+			speedText.textContent = speed + " mph";
 		});
 	}
 }
 
-watchedPosition = navigator.geolocation.watchPosition(updateLocation, geoError, { enableHighAccuracy: true, maximumAge: 10000, timeout: 6000 });
+// update when position of device changes
+watchedPosition = navigator.geolocation.watchPosition(updateLocation, geoError, { enableHighAccuracy: true, maximumAge: 6000, timeout: 3000 });
 
 </script>
 </head>
 
 <body onLoad="updateLocation()">
 	<!-- content goes here-->
-	<div id="header"><pre>FORWARD OBSERVER</pre></div>
+	<div id="header"><pre>whatever the name of this app will be</pre></div>
 	<div id="coordinates"></div>
 	<div id="haveACoke"></div>
 	<div id="speed"></div>
 	<div id="tomTomTraffic"></div>
-	<div id="worldWeather"></div>
+	<div id="weather"></div>
 </body>
 </html>
