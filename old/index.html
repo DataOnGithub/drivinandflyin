@@ -81,7 +81,7 @@ function weather(latitude,longitude)
 {    
 	weatherURL = "http://api.worldweatheronline.com/free/v1/weather.ashx?q=" + latitude + "%2C" + longitude + "&format=json&num_of_days=1&includelocation=yes&show_comments=no&key=kc2u593rw3h5bp2pga7fs7ut";
 	weather = XMLHttpRequest();
-	weather.open('GWT',weatherURL,false);
+	weather.open('GET',weatherURL,false);
 	weather.send();
 	if (weather.statusText = "200 OK") {
 		weather.innerHTML = weather.responseText;
@@ -95,9 +95,9 @@ function haveACoke(latitude, longitude)
 	locateCoke = XMLHttpRequest();
 	locateCoke.open('GET',CokeURL,false);
 	locateCoke.send();
-	console.log(locateCoke.responseText);
-	if (locateCoke.status = 200){
-		returnString = cokeLocations.customers[0].address + "," + codeLocations.customers[0].distance;
+	if (locateCoke.status = 200) {
+		console.log(CokeURL);
+		haveACoke = locateCoke.responseText;
 	}
 		
 }
@@ -112,8 +112,6 @@ function updateLocation()
 			oldLat = position.coords.latitude;
 			oldLon = position.coords.longitude;
 
-			console.log(oldLat,oldLon);
-
 			// get the time
 			//var newDate = new Date();
 			//var datetime = newDate.timeNow();
@@ -123,14 +121,6 @@ function updateLocation()
 			lat = position.coords.latitude;
 			lon = position.coords.longitude;
 
-			console.log(lat,lon);
-
-			coordinatesText = document.getElementById("coordinates");
-			coordinatesText.textContent = "lat : "+ lat + " lon: " + lon;
-
-			haveACokeResponse = haveACoke(lat,lon);
-			haveACokeText = document.getElementById("haveACoke");
-			haveACokeText.textContent = "Coke is at " + haveACokeResponse
 
 			// how far have we moved and how much time did it take
 			moveDistance = haversineDistance(lat,lon,newLat,newLon);		
@@ -138,9 +128,9 @@ function updateLocation()
 		
 			// as Newton pointed out d times t
 			speed = (moveDistance * moveTime);
-			speedText = document.GetElementById('speed')
-			speedText.textContent = speed + " mph";
+			console.log(speed);
 		});
+	
 	}
 }
 
