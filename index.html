@@ -5,23 +5,22 @@
 <meta http-equiv="Content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" />
 <meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css" />
+<script src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"></script>
 <link rel="stylesheet" type="text/css" href="css/tomtom.map.min.css" />
-<script type="text/javascript" src="js/leaflet.js"></script>
+<!-- <script type="text/javascript" src="js/leaflet.js"></script> -->
 <script type="text/javascript" src="js/tomtom.map.js"></script>
 
 <script type="text/javascript">
-
-function haversineDistance(lat1,lon1,lat2,lon2)
-{
-        var R = 3958.6; // mi
+function haversineDistance(lat1,lon1,lat2,lon2){
+        const R = 3958.6; // mi
         var d = Math.acos(Math.sin(lat1)*Math.sin(lat2) +
                           Math.cos(lat1)*Math.cos(lat2) *
                           Math.cos(lon2-lon1)) * R;
         return d;
 }
 
-function calculateBearing(lat1,lat2,dlon)
-{
+function calculateBearing(lat1,lat2,dlon){
         var y = Math.sin(dLon) * Math.cos(lat2);
         var x = Math.cos(lat1)*Math.sin(lat2) -
                 Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
@@ -30,64 +29,56 @@ function calculateBearing(lat1,lat2,dlon)
         return bearing;
 }
 
-function geoError()
-{
-	document.write("Da FUQ? Unable to perform geolocation!")
+
+function geoError(){
+	document.write("Shit. Geolocation fucked up.");
 }
 
-function updateLocation()
-{
-	var timeOfDay = new Date();
-	var initialTime = timeOfDay.getTime();
-	tomtom.apiKey = "q3dh8pqnwmbdrvwctrgvm6nu";
-	tomtom.setImagePath("/images/map");
+function updateLocation(){
 
-	var lat; // latitude in degrees
-	var lon; // longitude in degrees
+	const MAP_ZOOM = 12;	// starting zoom level of the map
+	tomtom.apiKey = "q3dh8pqnwmbdrvwctrgvm6nu";
 	
-        if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
+	var lat;		// latitude and longitude for devices current position
+	var lon; 
+
+        if (navigator.geolocation){
+                navigator.geolocation.getCurrentPosition(function(position){
 
 			// get current position coords
                         lat = position.coords.latitude;
                         lon = position.coords.longitude;
 
                         console.log(lat,lon);
-
+			
+		tomtom.setImagePath("/images/map");
 			// set up a TomTom map centered on current coordinates
 			var map = new tomtom.Map({
 			domNode: "map",
 			cookie: false,
         		center: [lat, lon],
-        		zoom: 12,
-			apiKey: "cc3fs7netxp8zuhgfjq2umte"
-			});
-
-			map.events.register("mapload", this, function() {
-			alert("MAP Loaded");
+        		zoom: MAP_ZOOM
 			});
 
                         // include traffic information on the map
 			var trafficService = new tomtom.services.TrafficService();
 			var bounds = map.getBounds();
 			var trafficBounds = { top: bounds.getNorthEast().lat, right: bounds.getNorthEast().lng, bottom: bounds.getSouthWest().lat, left: bounds.getSouthWest().lng };
-			trafficService.getTrafficModel(trafficBounds, map.getZoom(), function(response) {
+			trafficService.getTrafficModel(trafficBounds, map.getZoom(), function(response){
 				// do something with the traffic incidents returned here
 			});
 
-			// include a list of traffic incidents
-			var trafficList = new tomtom.controls.TrafficIncidentListControl({
-				map: map,
-				domNode: "traffic"
-			});
 		});
-	}
+	} 
 }
-// auto update when position of device changes
-watchedPosition = navigator.geolocation.watchPosition(updateLocation, geoError, { enableHighAccuracy: true, maximumAge: 6000, timeout: 3000 });
 
+
+// auto update when position of device changes
+watchedPosition = navigator.geolocation.watchPosition(updateLocation, geoError, { enableHighAccuracy: true, maximumAge: 6000, timeout: 4500 });
 </script>
+
 <body onLoad="updateLocation()">
 <div id="map"></div>
+
 </body>
 </html>
