@@ -34,12 +34,12 @@ function geoError(){
 }
 
 function updateLocation(){
-map.on('click', function(e) {
-	alert(e.latlng); // e is an event object (MouseEvent in this case)
-});
-map.on('heading', function(e) {
-	alert(e.latlng);
-});
+	// move the you are here marker to new location
+	marker.setLatLng([position.coords.latitude, position.coords.longitude]);
+
+	map.on('heading', function(e) {
+		alert(e.latlng);
+	});
 }
 
 function initialize(){
@@ -59,6 +59,13 @@ function initialize(){
 				maximumAge: 6000,
 				displayTraffic: true
 			});
+			var options = {
+				iconUrl: "http://www.airmanopus.net/BoilerMake/images/marker.png", 
+				iconSize: [51, 60],
+				iconAnchor: [21, 49]
+			};
+			var marker = new tomtom.Marker([lat,lon], options);
+			map.addLayer(marker);
 		});
 	}
 }
