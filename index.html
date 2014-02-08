@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ForwardObserver</title>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="stylesheet" type="text/css" href="css/tomtom.map.min.css" />
+<script type="text/javascript" src="js/leaflet.js"></script>
+<script type="text/javascript" src="js/tomtom.map.js"></script>
+
+
+<script type="text/javascript">
+function haversineDistance(lat1,lon1,lat2,lon2)
+{
+        var R = 3958.6; // mi
+        var d = Math.acos(Math.sin(lat1)*Math.sin(lat2) +
+                          Math.cos(lat1)*Math.cos(lat2) *
+                          Math.cos(lon2-lon1)) * R;
+        return d;
+}
+
+function calculateBearing(lat1,lat2,dlon)
+{
+        var y = Math.sin(dLon) * Math.cos(lat2);
+        var x = Math.cos(lat1)*Math.sin(lat2) -
+                Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
+        var bearing = Math.atan2(y, x).toDeg();
+        // bearing needs to be 0 to 359 degrees
+        return bearing;
+}
+
+
+		
+function updateLocation()
+{
+	var timeOfDay = new Date();
+		var initialTime = timeOfDay.getTime();
+	tomtom.apiKey = "cc3fs7netxp8zuhgfjq2umte";
+	tomtom.setImagePath("/images/map");
+
+	var lat; latitude in degrees
+	var lon; longitude in degrees
+	
+        if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+
+			// get current position coords
+                        lat = position.coords.latitude;
+                        lon = position.coords.longitude;
+
+                        console.log(lat,lon);
+
+			// set up a TomTom map centered on current coordinates
+			var map = new tomtom.Map({
+			domNode: "map",
+			cookie: false,
+        		center: [lat, lon],
+        		zoom: 12,
+			apiKey: "cc3fs7netxp8zuhgfjq2umte"
+			});
+
+			map.events.register("mapload", this, function() {
+			alert("MAP Loaded");
+			});
+
+                        // include traffic information on the map
+			var trafficService = new tomtom.services.TrafficService();
+			var bounds = map.getBounds();
+			var trafficBounds = { top: bounds.getNorthEast().lat, right: bounds.getNorthEast().lng, bottom: bounds.getSouthWest().lat, left: bounds.getSouthWest().lng };
+			trafficService.getTrafficModel(trafficBounds, map.getZoom(), function(response) {
+				// do something with the traffic incidents returned here
+			});
+
+			// include a list of traffic incidents
+			var trafficList = new tomtom.controls.TrafficIncidentListControl({
+				map: map,
+				domNode: "traffic"
+			});
+		}
+	}
+}
+// auto update when position of device changes
+watchedPosition = navigator.geolocation.watchPosition(updateLocation, geoError, { enableHighAccuracy: true, maximumAge: 6000, timeout: 3000 });
+
+</script>
+<body onLoad="updateLocation()">
+<div id="map"></div>
+</body>
+</html>
