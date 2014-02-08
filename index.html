@@ -70,6 +70,13 @@ function initialize(){
 			};
 			var marker = new tomtom.Marker([lat,lon], options);
 			map.addLayer(marker);
+
+			// done drawing on the map for now
+			// next we take our location and ask twitter what is going on around us
+
+
+
+			//
 		});
 
 	}
@@ -82,8 +89,8 @@ function initialize(){
 </script>
 <style>
 html, body, #map {
-	width: 70%;
-	height: 70%;
+	width: 100%;
+	height: 80%;
 	padding: 0px;
 	margin: 1px;
 }
@@ -91,7 +98,10 @@ html, body, #map {
 <body onLoad="initialize()">
 <div id="header"></div>
 <div id="map"></div>
-<div id="bottomSection" onClick="bottomClick()">
+<div id="bottomSection" onLoad="twitterData();></div>
+
+
+</div>
 
 
 </div>
