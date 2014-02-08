@@ -9,8 +9,8 @@
 <script type="text/javascript" src="js/leaflet.js"></script>
 <script type="text/javascript" src="js/tomtom.map.js"></script>
 
-
 <script type="text/javascript">
+
 function haversineDistance(lat1,lon1,lat2,lon2)
 {
         var R = 3958.6; // mi
@@ -30,17 +30,20 @@ function calculateBearing(lat1,lat2,dlon)
         return bearing;
 }
 
+function geoError()
+{
+	document.write("Da FUQ? Unable to perform geolocation!")
+}
 
-		
 function updateLocation()
 {
 	var timeOfDay = new Date();
-		var initialTime = timeOfDay.getTime();
-	tomtom.apiKey = "cc3fs7netxp8zuhgfjq2umte";
+	var initialTime = timeOfDay.getTime();
+	tomtom.apiKey = "q3dh8pqnwmbdrvwctrgvm6nu";
 	tomtom.setImagePath("/images/map");
 
-	var lat; latitude in degrees
-	var lon; longitude in degrees
+	var lat; // latitude in degrees
+	var lon; // longitude in degrees
 	
         if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
@@ -77,7 +80,7 @@ function updateLocation()
 				map: map,
 				domNode: "traffic"
 			});
-		}
+		});
 	}
 }
 // auto update when position of device changes
