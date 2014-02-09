@@ -14,7 +14,7 @@
 
 
 function geoError(){
-	document.write("Shit. Geolocation fucked up.");
+	document.write("Shiiiit. Geolocation is fucked up.");
 }
 
 function updateLocation(){
@@ -28,9 +28,6 @@ function initialize(){
                 navigator.geolocation.getCurrentPosition(function(position){
 			lat = position.coords.latitude;
 			lon = position.coords.longitude;
-			heading = position.coords.heading;
-			speed = position.coords.speed;
-			timestamp = position.coords.timestamp
 			tomtom.setImagePath("/images/map");
 			map = new tomtom.Map({ 
 				domNode: "map", 
@@ -52,29 +49,9 @@ function initialize(){
 			};
 			var marker = new tomtom.Marker([lat,lon], options);
 			map.addLayer(marker);
-
 		});
-
 	}
 }
-
-
-
-
-function weather(latitude,longitude)
-{
-	weatherURL = "http://api.worldweatheronline.com/free/v1/weather.ashx?q=" + latitude + "%2C" + longitude + "&format=json&num_of_days=1&includelocation=yes&show_comments=no&key=kc2u593rw3h5bp2pga7fs7ut";
-	weather = XMLHttpRequest();
-	weather.open('GET',weatherURL,false);
-	weather.send();
-
-	console.log(weather.responseText);
-	document.getElementById("weather").textContent = weather.responseText;
-	}
-}
-
-
-
 </script>
 <style>
 head,body,#map {
