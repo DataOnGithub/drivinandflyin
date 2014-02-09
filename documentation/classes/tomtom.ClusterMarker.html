@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>tomtom.ClusterMarker - TomTom JavaScript SDK</title>
+    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.5.1&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
+    <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
+    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.5.1&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="http:&#x2F;&#x2F;www.tomtom.com&#x2F;global&#x2F;images&#x2F;tomtom-logo_tcm166-3340.png" title="TomTom JavaScript SDK"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 1.0.6-RELEASE</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="..&#x2F;classes/tomtom.Animation.html">tomtom.Animation</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.Cluster.html">tomtom.Cluster</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.ClusterMarker.html">tomtom.ClusterMarker</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.ClusterPopup.html">tomtom.ClusterPopup</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.controls.AutoComplete.html">tomtom.controls.AutoComplete</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.controls.ContextMenu.html">tomtom.controls.ContextMenu</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.controls.OverviewMap.html">tomtom.controls.OverviewMap</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.controls.PanZoomBar.html">tomtom.controls.PanZoomBar</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.controls.RouteControl.html">tomtom.controls.RouteControl</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.CustomIcon.html">tomtom.CustomIcon</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.CustomMarker.html">tomtom.CustomMarker</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.dom.DomUtil.html">tomtom.dom.DomUtil</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.dom.DomUtilResult.html">tomtom.dom.DomUtilResult</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.layers.MapLayer.html">tomtom.layers.MapLayer</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.layers.MarkerLayer.html">tomtom.layers.MarkerLayer</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.layers.TrafficIncidentLayer.html">tomtom.layers.TrafficIncidentLayer</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.layers.TrafficLayer.html">tomtom.layers.TrafficLayer</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.Main.html">tomtom.Main</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.Map.html">tomtom.Map</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.Marker.html">tomtom.Marker</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.MarkerManager.html">tomtom.MarkerManager</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.Popup.html">tomtom.Popup</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.services.GeocodingService.html">tomtom.services.GeocodingService</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.services.InitializeService.html">tomtom.services.InitializeService</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.services.LegacyGeocodingService.html">tomtom.services.LegacyGeocodingService</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.services.RoutingService.html">tomtom.services.RoutingService</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.services.TrafficService.html">tomtom.services.TrafficService</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.services.ViewportService.html">tomtom.services.ViewportService</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.TrafficClusterPopup.html">tomtom.TrafficClusterPopup</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.TrafficIncidentPopup.html">tomtom.TrafficIncidentPopup</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.TrafficMarker.html">tomtom.TrafficMarker</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1>tomtom.ClusterMarker Class</h1>
+<div class="box meta">
+    
+
+    
+        <div class="extends">
+            Extends <a href="../classes/tomtom.Marker.html" class="crosslink">tomtom.Marker</a>
+        </div>
+    
+
+    
+        <div class="foundat">
+            Defined in: <a href="..&#x2F;files&#x2F;src_main_webapp_js_tomtom_ClusterMarker.js.html#l8"><code>src&#x2F;main&#x2F;webapp&#x2F;js&#x2F;tomtom&#x2F;ClusterMarker.js:8</code></a>
+        </div>
+    
+
+    
+
+    
+</div>
+
+
+
+<div class="box intro">
+    <p>A marker which is used to group multiple markers into a cluster.
+This is primarily used by the MarkerManager class.</p>
+</div>
+
+
+    <div class="constructor">
+        <h2>Constructor</h2>
+        <div id="method_tomtom.ClusterMarker" class="method item">
+    <h3 class="name"><code>tomtom.ClusterMarker</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>cluster</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_main_webapp_js_tomtom_ClusterMarker.js.html#l8"><code>src&#x2F;main&#x2F;webapp&#x2F;js&#x2F;tomtom&#x2F;ClusterMarker.js:8</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">cluster</code>
+                        <span class="type"><a href="../classes/tomtom.Cluster.html" class="crosslink">tomtom.Cluster</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The cluster for which the marker is being created.</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+    </div>
+
+
+<div id="classdocs" class="tabview">
+    <ul class="api-class-tabs">
+        <li class="api-class-tab index"><a href="#index">Index</a></li>
+
+        
+            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
+        
+        
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+        
+        
+        
+    </ul>
+
+    <div>
+        <div id="index" class="api-class-tabpanel index">
+            <h2 class="off-left">Item Index</h2>
+
+            
+                <div class="index-section methods">
+                    <h3>Methods</h3>
+
+                    <ul class="index-list methods extends">
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_animate">animate</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_destroy">destroy</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_destroyPopup">destroyPopup</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_getData">getData</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_hidePopup">hidePopup</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_moveToLonLat">moveToLonLat</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_setData">setData</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_setPopup">setPopup</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_showPopup">showPopup</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_update">update</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            
+
+            
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties extends">
+                        
+                            <li class="index-item property">
+                                <a href="#property_cluster">cluster</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_popup">popup</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            
+
+            
+
+            
+        </div>
+
+        
+            <div id="methods" class="api-class-tabpanel">
+                <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_animate" class="method item inherited">
+    <h3 class="name"><code>animate</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>effect</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>options</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;tomtom.Marker.html#method_animate">tomtom.Marker</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_main_webapp_js_tomtom_Marker.js.html#l227"><code>src&#x2F;main&#x2F;webapp&#x2F;js&#x2F;tomtom&#x2F;Marker.js:227</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Animates the marker. See Animation for more information.</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">effect</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The effect to be used.</p>
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">options</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The options to be supplied to the animation class.</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_destroy" class="method item inherited">
+    <h3 class="name"><code>destroy</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;tomtom.Marker.html#method_destroy">tomtom.Marker</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_main_webapp_js_tomtom_Marker.js.html#l126"><code>src&#x2F;main&#x2F;webapp&#x2F;js&#x2F;tomtom&#x2F;Marker.js:126</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Cleans up all resources held by the marker, including its DOM Node.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_destroyPopup" class="method item inherited">
+    <h3 class="name"><code>destroyPopup</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;tomtom.Marker.html#method_destroyPopup">tomtom.Marker</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_main_webapp_js_tomtom_Marker.js.html#l138"><code>src&#x2F;main&#x2F;webapp&#x2F;js&#x2F;tomtom&#x2F;Marker.js:138</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Removes the marker's popup completely.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_getData" class="method item inherited">
+    <h3 class="name"><code>getData</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;tomtom.Marker.html#method_getData">tomtom.Marker</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_main_webapp_js_tomtom_Marker.js.html#l111"><code>src&#x2F;main&#x2F;webapp&#x2F;js&#x2F;tomtom&#x2F;Marker.js:111</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Gets the data object associated with the marker.</p>
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                    {Object] The data object associated with the marker.
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_hidePopup" class="method item inherited">
+    <h3 class="name"><code>hidePopup</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;tomtom.Marker.html#method_hidePopup">tomtom.Marker</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_main_webapp_js_tomtom_Marker.js.html#l215"><code>src&#x2F;main&#x2F;webapp&#x2F;js&#x2F;tomtom&#x2F;Marker.js:215</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Hides the popup associated with this marker.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_moveToLonLat" class="method item inherited">
+    <h3 class="name"><code>moveToLonLat</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>lon</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>lat</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code class="optional">[transform=true]</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;tomtom.Marker.html#method_moveToLonLat">tomtom.Marker</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_main_webapp_js_tomtom_Marker.js.html#l67"><code>src&#x2F;main&#x2F;webapp&#x2F;js&#x2F;tomtom&#x2F;Marker.js:67</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Moves the marker to the specified lon / lat.</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">lon</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The longitude to move the marker to.</p>
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">lat</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The latitude to move the marker to.</p>
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name optional">[transform=true]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Whether or not to transform the lon / lat to the Map's underlying projection (EPSG:900913).</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_setData" class="method item inherited">
+    <h3 class="name"><code>setData</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>data</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;tomtom.Marker.html#method_setData">tomtom.Marker</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_main_webapp_js_tomtom_Marker.js.html#l102"><code>src&#x2F;main&#x2F;webapp&#x2F;js&#x2F;tomtom&#x2F;Marker.js:102</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Associates data with the marker.</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">data</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The data to associate with the marker.</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_setPopup" class="method item inherited">
+    <h3 class="name"><code>setPopup</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>popupClass</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>options</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code class="optional">[event=click]</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;tomtom.Marker.html#method_setPopup">tomtom.Marker</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_main_webapp_js_tomtom_Marker.js.html#l152"><code>src&#x2F;main&#x2F;webapp&#x2F;js&#x2F;tomtom&#x2F;Marker.js:152</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Associates a popup with the marker.  This will allow a popup to be shown when the specified event occurs.</p>
+
+<p>For example:</p>
+
+<pre class="code"><code class="prettyprint">var marker = new tomtom.Marker(-71.53686, 43.20846);
+marker.setPopup(tomtom.Popup, { contentHTML: "My Popup!" }, "click");
+</code></pre>
+
+<p>This will create a standard popup that is displayed when the user clicks on the marker.</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">popupClass</code>
+                        <span class="type">Constructor</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The popup constructor to use to create the popup.  Please note that the popup class
+    must inherit from .</p>
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">options</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The options argument to be supplied to the popup's constructor.</p>
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name optional">[event=click]</code>
+                        <span class="type">String</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The event which will cause the popup to be displayed.</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_showPopup" class="method item inherited">
+    <h3 class="name"><code>showPopup</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;tomtom.Marker.html#method_showPopup">tomtom.Marker</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_main_webapp_js_tomtom_Marker.js.html#l199"><code>src&#x2F;main&#x2F;webapp&#x2F;js&#x2F;tomtom&#x2F;Marker.js:199</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Displays the popup associated with this marker.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_update" class="method item">
+    <h3 class="name"><code>update</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_main_webapp_js_tomtom_ClusterMarker.js.html#l31"><code>src&#x2F;main&#x2F;webapp&#x2F;js&#x2F;tomtom&#x2F;ClusterMarker.js:31</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Updates the displayed count on the cluster based on the number of markers in the cluster.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+            </div>
+        
+
+        
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                
+                    <div id="property_cluster" class="property item">
+    <h3 class="name"><code>cluster</code></h3>
+    <span class="type">Unknown</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_main_webapp_js_tomtom_ClusterMarker.js.html#l17"><code>src&#x2F;main&#x2F;webapp&#x2F;js&#x2F;tomtom&#x2F;ClusterMarker.js:17</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The cluster for which the marker was created.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_popup" class="property item inherited">
+    <h3 class="name"><code>popup</code></h3>
+    <span class="type">Popup</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;tomtom.Marker.html#property_popup">tomtom.Marker</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_main_webapp_js_tomtom_Marker.js.html#l38"><code>src&#x2F;main&#x2F;webapp&#x2F;js&#x2F;tomtom&#x2F;Marker.js:38</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The popup which is associated with this marker.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+            </div>
+        
+
+        
+
+        
+    </div>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="..&#x2F;assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="..&#x2F;assets/js/yui-prettify.js"></script>
+<script src="..&#x2F;assets/../api.js"></script>
+<script src="..&#x2F;assets/js/api-filter.js"></script>
+<script src="..&#x2F;assets/js/api-list.js"></script>
+<script src="..&#x2F;assets/js/api-search.js"></script>
+<script src="..&#x2F;assets/js/apidocs.js"></script>
+</body>
+</html>
