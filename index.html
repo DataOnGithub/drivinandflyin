@@ -12,18 +12,15 @@
 
 <script type="text/javascript">
 
-
 function geoError(){
 	document.write("Shiiiit. Geolocation is fucked up.");
 }
 
 function updateLocation(){
-	// move the you are here marker to new location
 	marker.setLatLng([position.coords.latitude, position.coords.longitude]);
 }
 
 function initialize(){
-	// we find out about where we are first
         if (navigator.geolocation){
                 navigator.geolocation.getCurrentPosition(function(position){
 			lat = position.coords.latitude;
@@ -38,17 +35,19 @@ function initialize(){
 				enableHighAccuracy: true,
 				watch: true,
 				maximumAge: 6000,
+				displayTraffic: true
 			});
 			
-			map.setDisplayTraffic(true);
-
 			var options = {
 				iconUrl: "http://www.airmanopus.net/BoilerMake/images/marker.png", 
 				iconSize: [41, 50],
 				iconAnchor: [11, 39]
 			};
-			var marker = new tomtom.Marker([lat,lon], options);
-			map.addLayer(marker);
+			
+			var trafficList = new tomtom.controls.TrafficIncidentListControl({
+			map: map,
+			domNode: "traffic"
+			});
 		});
 	}
 }
