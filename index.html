@@ -16,7 +16,7 @@ tomtom.setImagePath("/images/map");
 tomtom.apiKey = "9fs8y4zjkxtwt26xckpsrs79";
 
 function geoError(){
-        document.write("Shiiiit. Geolocation is fucked up.");
+        document.write("Shiiiit. You're lost. Geolocation is fucked up. Hope you brought some food.");
 }
 
 
@@ -26,7 +26,7 @@ function initialize(){
 			lat = position.coords.latitude;
 			lon = position.coords.longitude;
 
-
+			// map with traffic notifys
 			var map = new tomtom.Map({
 				domNode: "map",
 				apiKey: "q3dh8pqnwmbdrvwctrgvm6nu",
@@ -37,7 +37,16 @@ function initialize(){
 				watch: true,
 				maximumAge: 6000,
 				displayTraffic: true
-		 	});	
+		 	});
+
+			var weatherConditionsURL = "http://api.worldweatheronline.com/free/v1/weather.ashx?q=40.429188%2C-86.922822&format=xml&num_of_days=1&date=today&fx=yes&includelocation=yes&key=kc2u593rw3h5bp2pga7fs7ut";
+        		var weatherConditions = XMLHttpRequest();
+			weatherConditions.open('GET',weatherConditionsURL,false);
+        		weatherConditions.send();	
+			
+			JSON.stringify(weatherConditionsData);
+			console.log(weatherConditionsData);
+		
 		});
 	}
 }
