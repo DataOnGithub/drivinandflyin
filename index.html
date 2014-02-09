@@ -1,67 +1,64 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
 <head>
-<title>ForwardObserver</title>
-<meta http-equiv="Content-type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="stylesheet" type="text/css" css="css/map.css" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+<title>Not Google Glass</title>
 <link rel="stylesheet" type="text/css" href="css/tomtom.map.min.css" />
+<!--[if lte IE 8]><link rel="stylesheet" href="css/tomtom.map.ie.min.css" /><![endif]-->
 <script type="text/javascript" src="js/leaflet.js"></script>
 <script type="text/javascript" src="js/tomtom.map.js"></script>
-
 <script type="text/javascript">
+tomtom.setImagePath("/images/map");
+tomtom.apiKey = "9fs8y4zjkxtwt26xckpsrs79";
 
 function geoError(){
-	document.write("Shiiiit. Geolocation is fucked up.");
+        document.write("Shiiiit. Geolocation is fucked up.");
 }
 
-function updateLocation(){
-	marker.setLatLng([position.coords.latitude, position.coords.longitude]);
-}
 
 function initialize(){
-        if (navigator.geolocation){
+         if (navigator.geolocation){
                 navigator.geolocation.getCurrentPosition(function(position){
 			lat = position.coords.latitude;
 			lon = position.coords.longitude;
-			tomtom.setImagePath("/images/map");
-			map = new tomtom.Map({ 
-				domNode: "map", 
+
+
+			var map = new tomtom.Map({
+				domNode: "map",
 				apiKey: "q3dh8pqnwmbdrvwctrgvm6nu",
-				center: [lat, lon],
-				zoom: 15,
+				center: [lat,lon],
+				zoom: 13,
 				zoomControl: true,
 				enableHighAccuracy: true,
 				watch: true,
 				maximumAge: 6000,
 				displayTraffic: true
-			});
-			
-			var options = {
-				iconUrl: "http://www.airmanopus.net/BoilerMake/images/marker.png", 
-				iconSize: [41, 50],
-				iconAnchor: [11, 39]
-			};
-			
-			var trafficList = new tomtom.controls.TrafficIncidentListControl({
-			map: map,
-			domNode: "traffic"
-			});
+		 	});	
 		});
 	}
 }
+
+
+
+
 </script>
 <style>
-head,body,#map {
+html, body, #map {
 	width: 100%;
-	height: 90%;
-	padding: 1px;
-	margin: 1px;
+	height: 100%;
+	padding: 0;
+	margin: 0;
 }
 </style>
-<body onLoad="initialize()">
+</head>
+<body onload="initialize()">
+
 <div id="map"></div>
-<div id="weather"></div>
+
 </body>
 </html>
+
