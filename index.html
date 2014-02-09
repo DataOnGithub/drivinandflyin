@@ -75,21 +75,6 @@ function initialize(){
 			// done drawing on the map for now
 			// next we take our location and ask twitter what is going on around us
 			
-			var trafficList = new tomtom.controls.TrafficIncidentListControl({
-				map: map,
-				domNode: "traffic"
-			});
-
-		var stateKMLURL = "http://www.airmanopus.net/weathercheck/kml/" + adjacentStates[s] + "_Radar_data.kml?preventcache="+(new Date()).getTime(); 
-		var stateKMLfile = new XMLHttpRequest();
-		stateKMLfile.open('GET',stateKMLURL,false);
-		stateKMLfile.send();
-		
-		var stateKMLStatus = (stateKMLfile.statusText);
-		var stateKMLDoc = stateKMLfile.responseXML;
-		https://api.tomtom.com/lbs/services/flowSegmentData/3/north-america-1/absolute/13/xml?point=40.429198%2C-86.922796&key=q3dh8pqnwmbdrvwctrgvm6nu
-
-			//
 		});
 
 	}
@@ -105,7 +90,7 @@ function weather(latitude,longitude)
 	weather.open('GET',weatherURL,false);
 	weather.send();
 	if (weather.statusText = "200 OK") {
-		document.getElementById("divA").textContent = weather.responseText;
+		document.getElementById("weather").textContent = weather.responseText;
 	}
 }
 
