@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
-<title>Not Google Glass</title>
+<title>dRiving Assistance (or, a heads up display of a sort)</title>
 <link rel="stylesheet" type="text/css" href="css/tomtom.map.min.css" />
 <!--[if lte IE 8]><link rel="stylesheet" href="css/tomtom.map.ie.min.css" /><![endif]-->
 <script type="text/javascript" src="js/leaflet.js"></script>
@@ -16,7 +16,7 @@ tomtom.setImagePath("/images/map");
 tomtom.apiKey = "9fs8y4zjkxtwt26xckpsrs79";
 
 function geoError(){
-        document.write("Shiiiit. You're lost. Geolocation is fucked up. Hope you brought some food.");
+        document.write("Geolocation failed. You may need to enable location services on your device.");
 }
 
 
@@ -39,26 +39,85 @@ function initialize(){
 				displayTraffic: true
 		 	});
 
+			// weather conditions display if I have time
 			var weatherConditionsURL = "http://api.worldweatheronline.com/free/v1/weather.ashx?q=40.429188%2C-86.922822&format=xml&num_of_days=1&date=today&fx=yes&includelocation=yes&key=kc2u593rw3h5bp2pga7fs7ut";
         		var weatherConditions = XMLHttpRequest();
 			weatherConditions.open('GET',weatherConditionsURL,false);
         		weatherConditions.send();	
 			
 			JSON.stringify(weatherConditionsData);
-			console.log(weatherConditionsData);
+			// end weather
+	
+			// airport delays -- truly a hack
 		
+			function reqListener () {
+  				console.log(this.responseText);
+			}
+
+			var airportListURL="http://www.airmanopus.net/cgi-bin/airportlist.csv";
+			var airportListGet =  XMLHttpRequest();
+			airportListGet.onload = reqListener;
+			airportListGet.open('GET',airportListURL,false);
+			airportListGet.send();
+
+			var airportListStatus = (airportListGet.statusText);
+			var airportList = airportListGet.responseText;
+
+			// first need to split the csv file into an array with each element containing info for one airport
+			var airportCSV = airportList.split("\n")		
+
+			const numAirports = 533; 			
+			var airports =  Array();
+			for (var j = 0; j < numAirports; j++) {
+				// we need to split the csv file into arrays, one airport per line 
+				airports[j] = airportCSV[j].split(",");
+
+				var iataIdentifier = airports[j][0];			// 3 letter iata identifier
+				var myLat = lat;					// my latitude
+				var myLon = lon;					// my longitude
+				var airportLat = airports[j][6];			// airport latitude
+				var airportLon	= airports[j][7];			// airport longitude
+				var airportName = airports[j][5];
+
+				const pi = 3.14159265359;	// pi
+				const R = 3959; 		// approximate radius of earth in miles
+
+				// how far away are we from the airport
+				var dLat = ((airportLat-myLat) * (pi/180));
+				var dLon = ((airportLon-myLon) * (pi/180));
+				var myLat = (lat * (pi/180));
+				var airportLat = (airportLat * (pi/180));
+
+				var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+					Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(myLat) * Math.cos(airportLat); 
+				var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+				var distance = R * c;					// miles
+
+				const viewportDistance = 75;	// check to see if this airport is one we need to check status for
+
+				 if ( distance <= viewportDistance ) {
+					// we go ask the FAA if there are any delays happening at this airport
+					var airportStatusURL="http://www.airmanopus.net/cgi-bin/airports.cgi?iata=" + iataIdentifier;
+					var airportStatusGet =  XMLHttpRequest();
+					airportStatusGet.open('GET',airportStatusURL,false);
+					airportStatusGet.send();
+					var airportStatus = airportStatusGet.responseXML;
+					var delayStatus = airportStatus.getElementsByTagName('Delay')[0].textContent;
+					if  ( delayStatus = "true" ) {
+						var delayReason = airportStatus.getElementsByTagName('Reason')[0].textContent;
+						airports.textContent = delayReason; 
+					} 
+
+				} 
+			} 
 		});
 	}
 }
-
-
-
-
 </script>
 <style>
 html, body, #map {
 	width: 100%;
-	height: 100%;
+	height: 85%;
 	padding: 0;
 	margin: 0;
 }
@@ -67,7 +126,7 @@ html, body, #map {
 <body onload="initialize()">
 
 <div id="map"></div>
-
-</body>
+<div id="weather"></div>
+<div id="airports"></div>
 </html>
 
