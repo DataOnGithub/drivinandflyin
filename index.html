@@ -12,22 +12,6 @@
 
 <script type="text/javascript">
 
-function haversineDistance(lat1,lon1,lat2,lon2){
-        var d = Math.acos(Math.sin(lat1)*Math.sin(lat2) +
-                          Math.cos(lat1)*Math.cos(lat2) *
-                          Math.cos(lon2-lon1)) * R;
-        return d;
-}
-
-function calculateBearing(lat1,lat2,dlon){
-        var y = Math.sin(dLon) * Math.cos(lat2);
-        var x = Math.cos(lat1)*Math.sin(lat2) -
-                Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
-        var bearing = Math.atan2(y, x).toDeg();
-        // bearing needs to be 0 to 359 degrees
-        return bearing;
-}
-
 
 function geoError(){
 	document.write("Shit. Geolocation fucked up.");
@@ -36,9 +20,6 @@ function geoError(){
 function updateLocation(){
 	// move the you are here marker to new location
 	marker.setLatLng([position.coords.latitude, position.coords.longitude]);
-	document.getElementById("header").textContent += "Heading: " + position.coords.heading;
-	document.getElementById("header").textContent += "Speed: " + position.coords.speed;
-	document.getElementById("header").textContent += "Time: " + position.coords.timestamp;
 }
 
 function initialize(){
@@ -72,9 +53,6 @@ function initialize(){
 			var marker = new tomtom.Marker([lat,lon], options);
 			map.addLayer(marker);
 
-			// done drawing on the map for now
-			// next we take our location and ask twitter what is going on around us
-			
 		});
 
 	}
@@ -89,8 +67,9 @@ function weather(latitude,longitude)
 	weather = XMLHttpRequest();
 	weather.open('GET',weatherURL,false);
 	weather.send();
-	if (weather.statusText = "200 OK") {
-		document.getElementById("weather").textContent = weather.responseText;
+
+	console.log(weather.responseText);
+	document.getElementById("weather").textContent = weather.responseText;
 	}
 }
 
@@ -98,20 +77,15 @@ function weather(latitude,longitude)
 
 </script>
 <style>
-
-
-
-html, body, #map {
-	width: 75%;
-	height: 75%;
+head,body,#map {
+	width: 100%;
+	height: 90%;
 	padding: 1px;
 	margin: 1px;
 }
 </style>
 <body onLoad="initialize()">
 <div id="map"></div>
-
-
-
+<div id="weather"></div>
 </body>
 </html>
