@@ -1,133 +1,154 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+<title>ForwardObserver</title>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" />
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>AugmentReality</title>
 <script type="text/javascript">
+	var lat;
+	var lon;
 
-function setCookie(c_name,value,exdays)
-    {
-      var exdate=new Date();
-      exdate.setDate(exdate.getDate() + exdays);
-      var c_value=escape(value) + 
-        ((exdays==null) ? "" : ("; expires="+exdate.toUTCString()));
-      document.cookie=c_name + "=" + c_value;
-    }
+	var oldLat;
+	var oldLon;
 
-function getCookie(c_name)
-    {
-     var i,x,y,ARRcookies=document.cookie.split(";");
-     for (i=0;i<ARRcookies.length;i++)
-     {
-      x=ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
-      y=ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);
-      x=x.replace(/^\s+|\s+$/g,"");
-      if (x==c_name)
-      {
-       return unescape(y);
-      }
-     }
-    }
+	var newLat;
+	var newLon;
+
+	var newTime;
+	var initialTime;
+
+	var speed;
+	var moveDistance;
+	var moveTime;
+
+	var timeOfDay = new Date();
+	var initialTime = timeOfDay.getTime();
+
+function getCookie(cname)
+{
+	var name = cname + "=";
+	var ca = document.cookie.split(';');
+	for(var i=0; i<ca.length; i++)
+	  {
+	  var c = ca[i].trim();
+	  if (c.indexOf(name)==0) return c.substring(name.length,c.length);
+	  }
+	return "";
+} 	
 
 
-function initialize(){
-	if (navigator.geolocation) {
-	navigator.geolocation.getCurrentPosition(function(position) {
+function geoError()
+{
+	document.write("Da FUQ? Unable to perform geolocation!")
+}
 
+function haversineDistance(lat1,lon1,lat2,lon2)
+{
+	var R = 3958.6; // mi
+	var d = Math.acos(Math.sin(lat1)*Math.sin(lat2) + 
+			  Math.cos(lat1)*Math.cos(lat2) *
+			  Math.cos(lon2-lon1)) * R;	
+	return d;
+}
 
-	// the last location we had for the device
-	// these will be null if no cookies still present
-	// save these
-	var prevLat = getCookie("latitude");
-	var prevLon = getCookie("longitude");
-	var prevTime = getCookie("currenttime");         
+function calculateBearing(lat1,lat2,dlon)
+{
+	var y = Math.sin(dLon) * Math.cos(lat2);
+	var x = Math.cos(lat1)*Math.sin(lat2) -
+		Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
+	var bearing = Math.atan2(y, x).toDeg();
+	// bearing needs to be 0 to 359 degrees
+	return bearing;
+}
 
-	// get the current location for the device
-	lat = position.coords.latitude;
-	lon = position.coords.longitude;
-
-	// and overwrite the old values with the lat and lon we just got
-	// and repeat next position update
-	setCookie("latitude",lat,1);
-	setCookie("longitude",lon,1);
-	var currentTime = (new Date).getTime();
-	setCookie("currenttime",currentTime,1);
-
-	// look at the difference between current location and the last one
-	// the time always changes but we can use that to set a timeout value
-	var latitudeDelta;
-	var longitudeDelta;	
-	var timeDelta;
-
-	// changes in latitude changes in attitude
-	latitudeDelta = lat - prevLat;
-	longitudeDelta = lon - prevLon;
-	timeDelta = currentTime - prevTime;
-
-	//  um no time has elasped we cannot have moved yet
-	if ( timeDelta >= 0 ) {
-		var latLonDelta = latitudeDelta + longitudeDelta;	
-		//  both physical deltas are zero we have not moved
-		if ( latLonDelta != 0 )  {
-			// passed those tests so yay we moved a distance
-			// that we will express in nautical miles
-			// rather than trying to account exactly for roads
-			var physicalLatDelta = Math.cos(latitudeDelta) * 60;
-			var physicalLonDelta = Math.cos(longitudeDelta) * 60;
-
-			// how fast the device is moving impacts the messages we will send 
-			var NauticalLatSpeed = latitudeDelta / timeDelta;
-			var NauticalLonSpeed = longitudeDelta / timeDelta;
-
-			// comparing the current lat and lon to the previous coords
-			// gives us a compass heading	
-			var NorthSouth;
-			var EastWest;
-				
-			if ( physicalLatitude = lat ) {
-				// net movement was neither north nor south
-				NorthSouth = "";
-			}
-			if ( physicalLatitude > lat ) {
-				// net movement was to the north
-				NorthSouth = "North";
-			} else {
-				// otherwise movement had to be southward
-				NorthSouth = "South";
-			}
-			if ( physicalLongitude = lon ) {
-				// net movement was neither east nor west
-				EastWest = "";
-			}
-			if ( physicalLongitude > lon ) {
-				// net movement was to the west
-				EastWest = "West";
-			} else { 
-				// otherwise net movement had to be eastward
-				EastWest = "East";
-			}
-
-			var heading = NorthSouth + " " + EastWest;
-		} // latlondelta
-	} // time delta
-	)}; // current position
+function tomTomTraffic(latitude, longitude, boxSize, speed)
+{
+	// need to calc the size of the bounding box we want to display using current coordinates
+	// as we go faster we want to display a bigger box
+	// we are at the close side of a box that extends out over the direction we are moving
 	
-} // initaliz
+	var x1,y1,x2,y2;
+	var tomTomTrafficURL="https://api.tomtom.com/lbs/services/trafficIcons/3/s1/34.043985,-118.266328,34.06,-118.28/7/-1/json?language=en&originalPosition=true&key=q3dh8pqnwmbdrvwctrgvm6nu";
+	var tomTomTraffic = XMLHttpRequest();
+	tomTomTraffic.open('GET',tomTomTrafficURL,false);
+	tomTomTraffic.send();
+	var tomTomResponse = tomTomTraffic.responseText;
+	var tomTomStatus = tomTomTraffic.statusText;
+}
+
+function weather(latitude,longitude)
+{    
+	weatherURL = "http://api.worldweatheronline.com/free/v1/weather.ashx?q=" + latitude + "%2C" + longitude + "&format=json&num_of_days=1&includelocation=yes&show_comments=no&key=kc2u593rw3h5bp2pga7fs7ut";
+	weather = XMLHttpRequest();
+	weather.open('GWT',weatherURL,false);
+	weather.send();
+	if (weather.statusText = "200 OK") {
+		weather.innerHTML = weather.responseText;
+	}
+}
+
+
+function haveACoke(latitude, longitude)
+{
+		
+	CokeURL="http://api.cokecce.com/v1/location/search/?latitude=" + latitude + "&longitude=" + longitude + "&rangeKilometers=2&maxLocations=1&format=json&apiKey=bpw7n273sy7rvsyppuks6rma"
+	locateCoke = XMLHttpRequest();
+	locateCoke.open('GET',locateCokeURL,false);
+	locateCoke.send();
+	if (locateCoke.status = 200){
+		returnString[0] = cokeLocations.customers[0].address;
+		returnString[1] = codeLocations.customers[0].distance;
+	}
+		
+}
+
+function updateLocation()
+{
+
+	if (navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(function(position) {
+
+			// keep our last position
+			oldLat = lat;
+			oldLon = lon;
+
+			console.log(oldLat,oldLon);
+
+			// get the time
+
+			// get the new position
+			lat = position.coords.latitude;
+			lon = position.coords.longitude;
+
+			console.log(lat,lon);
+
+			// moment of truth
+			coordinates.innerHTML = lat + "," + lon;	
+			haveACoke.innerHTML = haveACoke(lat,lon);
+
+
+			moveDistance = haversineDistance(lat,lon,newLat,newLon);		
+			moveTime = (newTime - initialTime);
+		
+			speed = (moveDistance * moveTime);
+			speed.innerHTML = speed;
+		});
+	}
+}
+
+watchedPosition = navigator.geolocation.watchPosition(updateLocation, geoError, { enableHighAccuracy: true, maximumAge: 10000, timeout: 6000 });
 
 </script>
-
 </head>
 
-
-<body onload="initialize()">
-
-<div id="position"></div>
-<div id="distance"></div>
-<div id="warnings"></div>
-
-
+<body onLoad="updateLocation()">
+	<!-- content goes here-->
+	<div id="header"><pre>FORWARD OBSERVER</pre></div>
+	<div id="coordinates"></div>
+	<div id="haveACoke"></div>
+	<div id="speed"></div>
+	<div id="tomTomTraffic"></div>
+	<div id="worldWeather"></div>
 </body>
 </html>
-
