@@ -1,154 +1,132 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
 <head>
-<title>ForwardObserver</title>
-<meta http-equiv="Content-type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+<title>dRiving Assistance (or, a heads up display of a sort)</title>
+<link rel="stylesheet" type="text/css" href="css/tomtom.map.min.css" />
+<!--[if lte IE 8]><link rel="stylesheet" href="css/tomtom.map.ie.min.css" /><![endif]-->
+<script type="text/javascript" src="js/leaflet.js"></script>
+<script type="text/javascript" src="js/tomtom.map.js"></script>
 <script type="text/javascript">
-	var lat;
-	var lon;
+tomtom.setImagePath("/images/map");
+tomtom.apiKey = "9fs8y4zjkxtwt26xckpsrs79";
 
-	var oldLat;
-	var oldLon;
-
-	var newLat;
-	var newLon;
-
-	var newTime;
-	var initialTime;
-
-	var speed;
-	var moveDistance;
-	var moveTime;
-
-	var timeOfDay = new Date();
-	var initialTime = timeOfDay.getTime();
-
-function getCookie(cname)
-{
-	var name = cname + "=";
-	var ca = document.cookie.split(';');
-	for(var i=0; i<ca.length; i++)
-	  {
-	  var c = ca[i].trim();
-	  if (c.indexOf(name)==0) return c.substring(name.length,c.length);
-	  }
-	return "";
-} 	
-
-
-function geoError()
-{
-	document.write("Da FUQ? Unable to perform geolocation!")
-}
-
-function haversineDistance(lat1,lon1,lat2,lon2)
-{
-	var R = 3958.6; // mi
-	var d = Math.acos(Math.sin(lat1)*Math.sin(lat2) + 
-			  Math.cos(lat1)*Math.cos(lat2) *
-			  Math.cos(lon2-lon1)) * R;	
-	return d;
-}
-
-function calculateBearing(lat1,lat2,dlon)
-{
-	var y = Math.sin(dLon) * Math.cos(lat2);
-	var x = Math.cos(lat1)*Math.sin(lat2) -
-		Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
-	var bearing = Math.atan2(y, x).toDeg();
-	// bearing needs to be 0 to 359 degrees
-	return bearing;
-}
-
-function tomTomTraffic(latitude, longitude, boxSize, speed)
-{
-	// need to calc the size of the bounding box we want to display using current coordinates
-	// as we go faster we want to display a bigger box
-	// we are at the close side of a box that extends out over the direction we are moving
-	
-	var x1,y1,x2,y2;
-	var tomTomTrafficURL="https://api.tomtom.com/lbs/services/trafficIcons/3/s1/34.043985,-118.266328,34.06,-118.28/7/-1/json?language=en&originalPosition=true&key=q3dh8pqnwmbdrvwctrgvm6nu";
-	var tomTomTraffic = XMLHttpRequest();
-	tomTomTraffic.open('GET',tomTomTrafficURL,false);
-	tomTomTraffic.send();
-	var tomTomResponse = tomTomTraffic.responseText;
-	var tomTomStatus = tomTomTraffic.statusText;
-}
-
-function weather(latitude,longitude)
-{    
-	weatherURL = "http://api.worldweatheronline.com/free/v1/weather.ashx?q=" + latitude + "%2C" + longitude + "&format=json&num_of_days=1&includelocation=yes&show_comments=no&key=kc2u593rw3h5bp2pga7fs7ut";
-	weather = XMLHttpRequest();
-	weather.open('GWT',weatherURL,false);
-	weather.send();
-	if (weather.statusText = "200 OK") {
-		weather.innerHTML = weather.responseText;
-	}
+function geoError(){
+        document.write("Geolocation failed. You may need to enable location services on your device.");
 }
 
 
-function haveACoke(latitude, longitude)
-{
-		
-	CokeURL="http://api.cokecce.com/v1/location/search/?latitude=" + latitude + "&longitude=" + longitude + "&rangeKilometers=2&maxLocations=1&format=json&apiKey=bpw7n273sy7rvsyppuks6rma"
-	locateCoke = XMLHttpRequest();
-	locateCoke.open('GET',locateCokeURL,false);
-	locateCoke.send();
-	if (locateCoke.status = 200){
-		returnString[0] = cokeLocations.customers[0].address;
-		returnString[1] = codeLocations.customers[0].distance;
-	}
-		
-}
-
-function updateLocation()
-{
-
-	if (navigator.geolocation) {
-		navigator.geolocation.getCurrentPosition(function(position) {
-
-			// keep our last position
-			oldLat = lat;
-			oldLon = lon;
-
-			console.log(oldLat,oldLon);
-
-			// get the time
-
-			// get the new position
+function initialize(){
+         if (navigator.geolocation){
+                navigator.geolocation.getCurrentPosition(function(position){
 			lat = position.coords.latitude;
 			lon = position.coords.longitude;
 
-			console.log(lat,lon);
+			// map with traffic notifys
+			var map = new tomtom.Map({
+				domNode: "map",
+				apiKey: "q3dh8pqnwmbdrvwctrgvm6nu",
+				center: [lat,lon],
+				zoom: 13,
+				zoomControl: true,
+				enableHighAccuracy: true,
+				watch: true,
+				maximumAge: 6000,
+				displayTraffic: true
+		 	});
 
-			// moment of truth
-			coordinates.innerHTML = lat + "," + lon;	
-			haveACoke.innerHTML = haveACoke(lat,lon);
-
-
-			moveDistance = haversineDistance(lat,lon,newLat,newLon);		
-			moveTime = (newTime - initialTime);
+			// weather conditions display if I have time
+			var weatherConditionsURL = "http://api.worldweatheronline.com/free/v1/weather.ashx?q=40.429188%2C-86.922822&format=xml&num_of_days=1&date=today&fx=yes&includelocation=yes&key=kc2u593rw3h5bp2pga7fs7ut";
+        		var weatherConditions = XMLHttpRequest();
+			weatherConditions.open('GET',weatherConditionsURL,false);
+        		weatherConditions.send();	
+			
+			JSON.stringify(weatherConditionsData);
+			// end weather
+	
+			// airport delays -- truly a hack
 		
-			speed = (moveDistance * moveTime);
-			speed.innerHTML = speed;
+			function reqListener () {
+  				console.log(this.responseText);
+			}
+
+			var airportListURL="http://www.airmanopus.net/cgi-bin/airportlist.csv";
+			var airportListGet =  XMLHttpRequest();
+			airportListGet.onload = reqListener;
+			airportListGet.open('GET',airportListURL,false);
+			airportListGet.send();
+
+			var airportListStatus = (airportListGet.statusText);
+			var airportList = airportListGet.responseText;
+
+			// first need to split the csv file into an array with each element containing info for one airport
+			var airportCSV = airportList.split("\n")		
+
+			const numAirports = 533; 			
+			var airports =  Array();
+			for (var j = 0; j < numAirports; j++) {
+				// we need to split the csv file into arrays, one airport per line 
+				airports[j] = airportCSV[j].split(",");
+
+				var iataIdentifier = airports[j][0];			// 3 letter iata identifier
+				var myLat = lat;					// my latitude
+				var myLon = lon;					// my longitude
+				var airportLat = airports[j][6];			// airport latitude
+				var airportLon	= airports[j][7];			// airport longitude
+				var airportName = airports[j][5];
+
+				const pi = 3.14159265359;	// pi
+				const R = 3959; 		// approximate radius of earth in miles
+
+				// how far away are we from the airport
+				var dLat = ((airportLat-myLat) * (pi/180));
+				var dLon = ((airportLon-myLon) * (pi/180));
+				var myLat = (lat * (pi/180));
+				var airportLat = (airportLat * (pi/180));
+
+				var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+					Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(myLat) * Math.cos(airportLat); 
+				var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+				var distance = R * c;					// miles
+
+				const viewportDistance = 75;	// check to see if this airport is one we need to check status for
+
+				 if ( distance <= viewportDistance ) {
+					// we go ask the FAA if there are any delays happening at this airport
+					var airportStatusURL="http://www.airmanopus.net/cgi-bin/airports.cgi?iata=" + iataIdentifier;
+					var airportStatusGet =  XMLHttpRequest();
+					airportStatusGet.open('GET',airportStatusURL,false);
+					airportStatusGet.send();
+					var airportStatus = airportStatusGet.responseXML;
+					var delayStatus = airportStatus.getElementsByTagName('Delay')[0].textContent;
+					if  ( delayStatus = "true" ) {
+						var delayReason = airportStatus.getElementsByTagName('Reason')[0].textContent;
+						airports.textContent = delayReason; 
+					} 
+
+				} 
+			} 
 		});
 	}
 }
-
-watchedPosition = navigator.geolocation.watchPosition(updateLocation, geoError, { enableHighAccuracy: true, maximumAge: 10000, timeout: 6000 });
-
 </script>
+<style>
+html, body, #map {
+	width: 100%;
+	height: 85%;
+	padding: 0;
+	margin: 0;
+}
+</style>
 </head>
+<body onload="initialize()">
 
-<body onLoad="updateLocation()">
-	<!-- content goes here-->
-	<div id="header"><pre>FORWARD OBSERVER</pre></div>
-	<div id="coordinates"></div>
-	<div id="haveACoke"></div>
-	<div id="speed"></div>
-	<div id="tomTomTraffic"></div>
-	<div id="worldWeather"></div>
-</body>
+<div id="map"></div>
+<div id="weather"></div>
+<div id="airports"></div>
 </html>
+

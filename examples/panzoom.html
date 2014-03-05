@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>TomTom JavaScript SDK - Map</title>
+		<link rel="stylesheet" type="text/css" href="../css/map.css" />
+        <script type="text/javascript" src="../js/OpenLayers-2.12.min.js"></script>
+        <script type="text/javascript" src="../js/tomtom.map.js"></script>
+        <script type="text/javascript" src="apikey.js"></script>
+        <script>
+        	window.onload = function() {
+        		
+        		tomtom.setImagePath("../images/");
+        		
+        		var map = new tomtom.Map({
+        			domNode: "map",
+        			cookie: true,
+        			scale: true,
+        			panZoomBar: true
+        		});
+        		
+        		var manager = new tomtom.MarkerManager({ map: map, animation: { effect: "drop", delay: 120, duration: 1000 } });
+        		
+        		map.events.register("mapload", window, function() {
+	        		manager.addMarker(new tomtom.Marker(-104.98485, 39.73845));
+	        		manager.addMarker(new tomtom.Marker(-118.24334, 34.05224));
+	        		manager.addMarker(new tomtom.Marker(-122.42017, 37.78008));
+	        		
+	        		manager.update();
+        		});
+        	};
+        </script>
+        <style type="text/css">
+        	html, body {
+        		width: 100%;
+        		height: 100%;
+        		margin: 0;
+        		padding: 0;
+        	}
+        </style>
+	</head>
+	<body>
+		<div style="width: 100%; height: 100%;" id="map"></div>
+	</body>
+</html>

@@ -1,0 +1,29 @@
+			.toptitle-text {
+				background-color: blue;
+				color: white;
+				font-family:'Helvetica','sans-serif';
+				font-size: medium;
+			}
+	
+			.map-initial {
+				height: 215px;
+
+			}                       	
+			.airports-text {
+				visibility: hidden;
+			}
+
+			.alerts-text {
+				font-family:'Helvetica','sans-serif';
+				font-size: medium;
+			}
+			
+
+			.footertext {
+				font-family:'Helvetica','sans-serif';
+				font-size: small;
+			}
+
+
+
+

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src&#x2F;main&#x2F;webapp&#x2F;js&#x2F;tomtom&#x2F;MarkerManager.js - TomTom JavaScript SDK</title>
+    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.5.1&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
+    <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
+    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.5.1&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="http:&#x2F;&#x2F;www.tomtom.com&#x2F;global&#x2F;images&#x2F;tomtom-logo_tcm166-3340.png" title="TomTom JavaScript SDK"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 2.0.0-RELEASE</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="..&#x2F;classes/L.Control.Pan.html">L.Control.Pan</a></li>
+            
+                <li><a href="..&#x2F;classes/L.Control.ZoomSlider.html">L.Control.ZoomSlider</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.AjaxUtil.html">tomtom.AjaxUtil</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.Animation.html">tomtom.Animation</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.controls.AutoComplete.html">tomtom.controls.AutoComplete</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.controls.ContextMenu.html">tomtom.controls.ContextMenu</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.controls.FindLocationControl.html">tomtom.controls.FindLocationControl</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.controls.PanZoomBar.html">tomtom.controls.PanZoomBar</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.controls.RouteControl.html">tomtom.controls.RouteControl</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.controls.RoutePlannerControl.html">tomtom.controls.RoutePlannerControl</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.controls.TabContainer.html">tomtom.controls.TabContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.CustomDivIcon.html">tomtom.CustomDivIcon</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.CustomMarker.html">tomtom.CustomMarker</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.dom.DomUtil.html">tomtom.dom.DomUtil</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.dom.DomUtilResult.html">tomtom.dom.DomUtilResult</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.layers.MapLayer.html">tomtom.layers.MapLayer</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.layers.TrafficIncidentLayer.html">tomtom.layers.TrafficIncidentLayer</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.layers.TrafficLayer.html">tomtom.layers.TrafficLayer</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.layers.WMSLayer.html">tomtom.layers.WMSLayer</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.LocaleManager.html">tomtom.LocaleManager</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.Main.html">tomtom.Main</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.Map.html">tomtom.Map</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.Marker.html">tomtom.Marker</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.MarkerManager.html">tomtom.MarkerManager</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.services.GeocodingService.html">tomtom.services.GeocodingService</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.services.HDTRegionsService.html">tomtom.services.HDTRegionsService</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.services.InitializeService.html">tomtom.services.InitializeService</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.services.LegacyGeocodingService.html">tomtom.services.LegacyGeocodingService</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.services.RoutingService.html">tomtom.services.RoutingService</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.services.TrafficService.html">tomtom.services.TrafficService</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.services.ViewportService.html">tomtom.services.ViewportService</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.StringBundle.html">tomtom.StringBundle</a></li>
+            
+                <li><a href="..&#x2F;classes/tomtom.TrafficMarker.html">tomtom.TrafficMarker</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: src&#x2F;main&#x2F;webapp&#x2F;js&#x2F;tomtom&#x2F;MarkerManager.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+define([
+	&quot;.&#x2F;Main&quot;,
+	&quot;.&#x2F;Logger&quot;,
+	&quot;.&#x2F;lib&#x2F;leaflet.markercluster-src&quot;
+], function(main, Logger) {
+
+	var logger = new Logger();
+
+	tomtom.MarkerManager = L.Class.extend({
+
+		&#x2F;**
+		 * Handles the management of multiple markers.
+		 * This class should be used when more than a handful of related markers are being displayed on the map.
+		 * The marker manager is especially handy when dealing with updating markers periodically as IDs can be assigned to a marker.
+		 * Markers can then be retrieved by their ID so as to update their location without having to redraw all of the markers.
+		 *
+		 * For example:
+		 *
+		 *	&#x2F;&#x2F; create the marker manager
+		 * 	var mm = new tomtom.MarkerManager({ map: map });
+		 *
+		 *	&#x2F;&#x2F; add a marker
+		 *	mm.addMarker(new tomtom.Marker([43.20846, -71.53686]), &quot;marker_123&quot;);
+		 *	mm.update();
+		 *
+		 *	&#x2F;&#x2F; retrieve the marker by its id
+		 *	var marker = mm.getMarkerById(&quot;marker_123&quot;);
+		 *
+		 *	&#x2F;&#x2F; update the marker&#x27;s location
+		 *	marker.setLatLng([34.05224, -118.24334]);
+		 *
+		 * In order for the changes applied to the marker manager, such as adding or removing markers, the update method must be called.
+		 * This allows for processing of many markers all at once, and then the markers being updated in the DOM once processing is completed.
+		 *
+		 * Also, the MarkerManager makes it extremely easy to cluster markers depending on zoom level. See the clustering option below.
+		 *
+		 * @constructor
+		 * @class MarkerManager
+		 * @param {Object} options Options which can be used to customize the behavior of the MarkerManager.
+		 * @param {L.Map} options.map The map which the marker manager should update.
+		 * @param {Object} [options.animation] An object used to customize the animation of any markers displayed by the marker manager.
+		 * 	To disable animations, specify false for this property.
+		 * @param {String} [options.animation.effect=&quot;fade&quot;] The effect used to animate the markers. Can be either &quot;fade&quot; or &quot;drop&quot;.
+		 * @param {Number} [options.animation.duration=250] The duration (ms) of the animations.
+		 * @param {Number} [options.animation.delay=0] The delay between each marker&#x27;s animation.
+		 * @param {Object} [options.clustering=false] Options for clustering of markers.  To disable clustering, specify false for this property.
+		 * 	Please note that depending on the volume of markers, customizing clustering parameters can cause performance issues.  It is recommended
+		 * 	that if clustering is used, the default clustering options be left.  Also, if more than 500 markers are being displayed, it is recommended
+		 * 	that clustering happen at the server side rather than the client side.  Client browsers (especially Internet Explorer) begin to slow down
+		 *  when many markers are being processed.  See https:&#x2F;&#x2F;github.com&#x2F;Leaflet&#x2F;Leaflet.markercluster for all of the options which are available.
+		 *
+		 *&#x2F;
+		initialize: function(options) {
+
+			L.Util.extend(this, options);
+
+			&#x2F;**
+			 * The markers which this MarkerManager manages.
+			 * @property {Array} markers
+			 *&#x2F;
+			this.markers = [];
+
+			&#x2F;**
+			 * The markers which have been removed since the last update.
+			 * @property {Array} removedMarkers
+			 *&#x2F;
+			this.removedMarkers = [];
+
+			this.markerMap = {};
+			this.animationTimeouts = [];
+			this._completedAnimations = 0;
+			this._isMoveEndRegistered = false;
+			this.previousMarkerIds = {};
+
+			if (this.animation &amp;&amp; typeof(this.animation) != &quot;object&quot;)
+				this.animation = { effect: &quot;fade&quot;, duration: DEFAULT_ANIMATION_DURATION, delay: DEFAULT_ANIMATION_DELAY };
+
+			if (this.clustering &amp;&amp; typeof(this.clustering) != &quot;object&quot;)
+				this.clustering = {};
+
+			if (this.clustering)
+				this.layer = new L.MarkerClusterGroup(this.clustering).addTo(this.map);
+			else
+				this.layer = new L.LayerGroup().addTo(this.map);
+
+			this.map.on(&quot;zoomstart&quot;, this._zoomStart, this);
+
+		},
+
+		&#x2F;**
+		 * Adds a marker to the internal list of markers that the MarkerManager manages.
+		 * Please note the marker will not be displayed on the map until update() has been called.
+		 * @method addMarker
+		 * @param {tomtom.Marker} marker The marker to add to the MarkerManager.
+		 * @param {String} [markerId] A string used to identify the marker. Although this parameter is optional,
+		 *  it is recommended in order to take full advantage of this class.
+		 *&#x2F;
+		addMarker: function(marker, markerId) {
+			var map = this.map;
+
+			&#x2F;&#x2F; make sure the marker has a reference to the map
+			marker.map = map;
+
+			this.markers.push(marker);
+
+			&#x2F;&#x2F; if an id is specified, keep track of the marker&#x27;s id
+			if (markerId) {
+				marker.id = markerId;
+				this.markerMap[markerId] = marker;
+			}
+		},
+
+		&#x2F;**
+		 * Gets a marker by the specified identifier.
+		 * @method getMarkerById
+		 * @param {String} markerId The identifier of the marker to retrieve.
+		 * @returns {tomtom.Marker} The marker whose identifier matches the specified markerId.
+		 *&#x2F;
+		getMarkerById: function(markerId) {
+			var marker = this.markerMap[markerId];
+
+			if (marker)
+				return marker;
+			else
+				return null;
+		},
+
+		&#x2F;**
+		 * Removes all markers from the internal collection of markers.
+		 * Please note these markers will not be removed from the map until update() is called.
+		 * @method clearMarkers
+		 *&#x2F;
+		clearMarkers: function() {
+
+			&#x2F;&#x2F; keep track of the previous markers
+			this.previousMarkerIds = {};
+
+			&#x2F;&#x2F; all markers are being removed
+			this.removedMarkers = this.markers;
+
+			for (var markerId in this.markerMap) {
+				this.previousMarkerIds[markerId] = true;
+			}
+
+			this.markers = [];
+			this.markerMap = {};
+
+		},
+
+		&#x2F;**
+		 * Removes the specified marker from the internal collection.
+		 * @method removeMarker
+		 * @param {tomtom.Marker} marker The marker to remove.
+		 *&#x2F;
+		removeMarker: function(marker) {
+
+			&#x2F;&#x2F; remove from the id map
+			if (marker.id)
+				delete this.markerMap[marker.id];
+
+			var markerIndex = this._getMarkerIndex(marker);
+
+			&#x2F;&#x2F; make sure it exists in the collection
+			if (markerIndex &gt;= 0) {
+				&#x2F;&#x2F; add to the removed markers collection
+				this.removedMarkers.push(marker);
+
+				&#x2F;&#x2F; remove the marker from the markers collection
+				this.markers.splice(markerIndex, 1);
+			}
+
+		},
+
+		&#x2F;**
+		 * Updates the map or layer this MarkerManager is associated with to match the internal collection of markers.
+		 * @method update
+		 * @param {boolean} animation Specifies whether or not to animate any updated markers.
+		 *&#x2F;
+		update: function(animation) {
+
+			&#x2F;&#x2F; default animation to true
+			if (typeof(animation) == &quot;undefined&quot;)
+				animation = true;
+
+			var map = this.map;
+			var layer = this.layer;
+
+			&#x2F;&#x2F; make sure the move end event is registered
+			if (!this._isMoveEndRegistered) {
+				this._isMoveEndRegistered = true;
+				map.on(&quot;moveend&quot;, this._mapMoveEnd, this);
+			}
+
+			this._updateLayer(layer, animation);
+
+			this.removedMarkers = [];
+		},
+
+		animateMarker: function(marker, markerIndex, showHide, callback) {
+			if (this.animation &amp;&amp; this.animation.effect) {
+				var suffix = &quot;&quot;;
+				var options = {
+					delay: markerIndex * (this.animation.delay != null ? this.animation.delay : DEFAULT_ANIMATION_DELAY),
+					duration: this.animation.duration ? this.animation.duration : DEFAULT_ANIMATION_DURATION,
+					callback: callback
+				};
+
+				if (showHide)
+					suffix = (showHide == &quot;show&quot; ? &quot;In&quot; : &quot;Out&quot;);
+
+				marker.animate(this.animation.effect + suffix, options);
+			}
+		},
+
+		&#x2F;**
+		 * Destroys the MarkerManager and cleans up any resources it is holding on to.
+		 * @method destroy
+		 *&#x2F;
+		destroy: function() {
+
+			var map = this.map;
+			var markerLayer = this.layer;
+
+			for (var markerIndex = 0; markerIndex &lt; this.markers.length; markerIndex++) {
+				var marker = this.markers[markerIndex];
+				markerLayer.removeMarker(marker);
+			}
+
+			map.off(&quot;moveend&quot;, this._mapMoveEnd);
+			map.off(&quot;zoomstart&quot;, this._zoomStart);
+
+		},
+
+		_getMarkerIndex: function(marker) {
+			for (var markerIndex = 0; markerIndex &lt; this.markers.length; markerIndex++) {
+				if (this.markers[markerIndex] == marker)
+					return markerIndex;
+			}
+
+			return null;
+		},
+
+		_updateLayer: function(layer, animation) {
+
+			&#x2F;&#x2F; get the current map bounds
+			var bounds = this.map.getBounds(),
+				updateStart = new Date(),
+				markers = this.markers;
+
+			&#x2F;&#x2F; make sure all current markers have been added
+			for (var markerIndex = 0; markerIndex &lt; markers.length; markerIndex++) {
+				var marker = this.markers[markerIndex];
+
+				&#x2F;&#x2F; only add the marker if it hasn&#x27;t already been added
+				if (!marker._map &amp;&amp; (bounds.contains(marker.getLatLng()) || this.clustering)) {
+					layer.addLayer(marker);
+
+					&#x2F;&#x2F; check to see if animation should be used
+					if (animation &amp;&amp; this.animation &amp;&amp; (!marker.id || !this.previousMarkerIds[marker.id]))
+						this.animateMarker(marker, markerIndex, &quot;show&quot;);
+				}
+			}
+
+			&#x2F;&#x2F; remove any markers that have been removed
+			for (var removedIndex = 0; removedIndex &lt; this.removedMarkers.length; removedIndex++) {
+				var marker = this.removedMarkers[removedIndex];
+				layer.removeLayer(marker);
+			}
+
+			&#x2F;&#x2F; log the total update time
+			logger.debug(&quot;Updating markers took &quot; + (new Date() - updateStart) + &quot;ms&quot;);
+		},
+
+		_mapMoveEnd: function() {
+			this.update();
+		},
+
+		_zoomStart: function() {
+
+			var markers = this.markers;
+
+			for (var markerIndex = 0; markerIndex &lt; markers.length; markerIndex++) {
+
+				markers[markerIndex].stopAnimation();
+
+			}
+
+		}
+
+	});
+
+	var DEFAULT_ANIMATION_DURATION = 250;
+	var DEFAULT_ANIMATION_DELAY = 0;
+
+	return tomtom.MarkerManager;
+
+});
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="..&#x2F;assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="..&#x2F;assets/js/yui-prettify.js"></script>
+<script src="..&#x2F;assets/../api.js"></script>
+<script src="..&#x2F;assets/js/api-filter.js"></script>
+<script src="..&#x2F;assets/js/api-list.js"></script>
+<script src="..&#x2F;assets/js/api-search.js"></script>
+<script src="..&#x2F;assets/js/apidocs.js"></script>
+</body>
+</html>

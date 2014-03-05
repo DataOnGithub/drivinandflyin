@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>TomTom JavaScript SDK - Map</title>
+		<link rel="stylesheet" type="text/css" href="../../css/map.css" />
+		<script src="http://ajax.googleapis.com/ajax/libs/dojo/1.8.0/dojo/dojo.js"></script>
+        <script type="text/javascript" src="../../js/OpenLayers-2.12.min.js"></script>
+        <script type="text/javascript" src="../../js/tomtom.map.js"></script>
+        <script type="text/javascript" src="../addresses.js"></script>
+        <script type="text/javascript" src="../apikey.js"></script>
+        <script>
+	    	require(["dojo/ready"], function(ready) {
+	    		
+	    		ready(function() {
+	    		
+		    		tomtom.setImagePath("../../images/");
+		    		
+		    		// get addresses is defined in addresses.js
+	        		// due to security restrictions in Chrome, AJAX requests cannot be made against local files
+	        		// which is why the data is being loaded as a JavaScript file
+	        		var addresses = getAddresses();
+		    				
+	   				var map = new tomtom.Map({
+	           			domNode: "map",
+	           			cookie: true,
+	           			scale: true
+	           		});
+	           		
+	   				var manager = new tomtom.MarkerManager({ 
+	           			map: map, 
+	           			animation: false,
+	           			clustering: true,
+	           			onCreateClusterMarker: function(cluster) {
+	           				var marker = new tomtom.ClusterMarker(cluster);
+	           				cluster.marker = marker;
+	           				marker.setPopup(tomtom.ClusterPopup, { cluster: cluster, contentSize: new OpenLayers.Size(300, 200) }, "click");
+	           				return marker;
+	           			}
+	           		});
+	           		
+	           		map.events.register("mapload", window, function() {
+	   	        		for (var addressIndex = 0; addressIndex < addresses.length && addressIndex < 100; addressIndex++) {
+	   	        			var address = addresses[addressIndex];
+	   	        			var marker = new tomtom.Marker(address.lon, address.lat);
+	   	        			
+	   	        			// set the description (used by the cluster popup)
+	   	        			marker.setData({
+	   	        				description: address.streetNumber + " " + address.street + ", " + address.city + " " + address.state + ", " + address.zip
+	   	        			});
+	   	        			
+	   	        			// create a popup
+	   	        			marker.setPopup(tomtom.Popup, {
+	   	        				contentHTML: address.streetNumber + " " + address.street + ", " + address.city + " " + address.state + ", " + address.zip
+	   	        			}, "click");
+	   	        			
+	   	        			manager.addMarker(marker);
+	   	        		}
+	   	        		
+	   	        		manager.update();
+		    		});
+	    		});
+	    	});
+        </script>
+        <style type="text/css">
+        	html, body {
+        		width: 100%;
+        		height: 100%;
+        		margin: 0;
+        		padding: 0;
+        	}
+        </style>
+	</head>
+	<body>
+		<div style="width: 100%; height: 100%;" id="map"></div>
+	</body>
+</html>
