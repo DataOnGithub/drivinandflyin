@@ -5,15 +5,215 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon-precomposed" href="somepath/image.png" />
 <link href='https://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
-<title>dRiving Assistance (or, a heads up display of a sort)</title>
-<link rel="stylesheet" type="text/css" href="css/tomtom.map.min.css" />
-<!--[if lte IE 8]><link rel="stylesheet" href="css/tomtom.map.ie.min.css" /><![endif]-->
-<script type="text/javascript" src="js/leaflet.js"></script>
-<script type="text/javascript" src="js/tomtom.map.js"></script>
+<link rel="StyleSheet" href="https://www.airmanopus.net/weathercheck/iphone.css" type="text/css">
+
+<script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.2/mapbox.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.2/mapbox.css' rel='stylesheet' />
+<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-osm/v0.1.0/leaflet-osm.js'></script>
+
 <script type="text/javascript">
-tomtom.setImagePath("/images/map");
-tomtom.apiKey = "9fs8y4zjkxtwt26xckpsrs79";
+// CSVToArray (c) ben nadel
+// http://www.bennadel.com/blog/1504-ask-ben-parsing-csv-strings-with-javascript-exec-regular-expression-command.htm 
+// 
+// This will parse a delimited string into an array of
+// arrays. The default delimiter is the comma, but this
+// can be overriden in the second argument.
+function CSVToArray( strData, strDelimiter ){
+// Check to see if the delimiter is defined. If not,
+// then default to comma.
+strDelimiter = (strDelimiter || ",");
+ 
+// Create a regular expression to parse the CSV values.
+var objPattern = new RegExp(
+(
+// Delimiters.
+"(\\" + strDelimiter + "|\\r?\\n|\\r|^)" +
+ 
+// Quoted fields.
+"(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
+ 
+// Standard fields.
+"([^\"\\" + strDelimiter + "\\r\\n]*))"
+),
+"gi"
+);
+ 
+ 
+// Create an array to hold our data. Give the array
+// a default empty first row.
+var arrData = [[]];
+ 
+// Create an array to hold our individual pattern
+// matching groups.
+var arrMatches = null;
+ 
+ 
+// Keep looping over the regular expression matches
+// until we can no longer find a match.
+while (arrMatches = objPattern.exec( strData )){
+ 
+// Get the delimiter that was found.
+var strMatchedDelimiter = arrMatches[ 1 ];
+ 
+// Check to see if the given delimiter has a length
+// (is not the start of string) and if it matches
+// field delimiter. If id does not, then we know
+// that this delimiter is a row delimiter.
+if (
+strMatchedDelimiter.length &&
+(strMatchedDelimiter != strDelimiter)
+){
+ 
+// Since we have reached a new row of data,
+// add an empty row to our data array.
+arrData.push( [] );
+ 
+}
+ 
+ 
+// Now that we have our delimiter out of the way,
+// let's check to see which kind of value we
+// captured (quoted or unquoted).
+if (arrMatches[ 2 ]){
+ 
+// We found a quoted value. When we capture
+// this value, unescape any double quotes.
+var strMatchedValue = arrMatches[ 2 ].replace(
+new RegExp( "\"\"", "g" ),
+"\""
+);
+ 
+} else {
+ 
+// We found a non-quoted value.
+var strMatchedValue = arrMatches[ 3 ];
+ 
+}
+ 
+ 
+// Now that we have our value string, let's add
+// it to the data array.
+arrData[ arrData.length - 1 ].push( strMatchedValue );
+}
+ 
+// Return the parsed data.
+return( arrData );
+}
+ 
+
+
+
+
+
+	var statesToAbbreviations = {
+		'Alabama' 	: 'AL',
+		'Alaska'  	: 'AK',
+		'Arizona' 	: 'AZ',
+		'Arkansas'	: 'AR',
+		'California' 	: 'CA',
+		'Colorado' 	: 'CO',
+		'Connecticut' 	: 'CT',
+		'Delaware' 	: 'DE',
+		'District of Columia' : 'DC',
+		'Florida' 	: 'FL',
+		'Georgia' 	: 'GA',
+		'Hawaii' 	: 'HI',
+		'Idaho' 	: 'ID',
+		'Illinois' 	: 'IL',
+		'Indiana' 	: 'IN',
+		'Iowa'		: 'IA',
+		'Kansas' 	: 'KS',
+		'Kentucky' 	: 'KY',
+		'Louisiana' 	: 'LA',
+		'Maine' 	: 'ME',
+		'Maryland' 	: 'MD',
+		'Massachusetts' : 'MA',
+		'Michigan' 	: 'MI',
+		'Minnesota' 	: 'MN',
+		'Mississippi' 	: 'MS',
+		'Missouri' 	: 'MO',
+		'Montana' 	: 'MT',
+		'Nebraska' 	: 'NE',
+		'Nevada' 	: 'NV',
+		'New Hampshire' : 'NH',
+		'New Jersey' 	: 'NJ',
+		'New Mexico' 	: 'NM',
+		'New York' 	: 'NY',
+		'North Carolina': 'NC',
+		'North Dakota' 	: 'NC',
+		'Ohio' 		: 'OH',
+		'Oklahoma' 	: 'OK',
+		'Oregon' 	: 'OR',
+		'Pennsylvania'	: 'PA',
+		'Rhode Island' 	: 'RI',
+		'South Carolina': 'SC',
+		'South Dakota' 	: 'SD',
+		'Tennessee' 	: 'TN',
+		'Texas' 	: 'TX',
+		'Utah' 		: 'UT',
+		'Vermont' 	: 'VT',
+		'Virginia' 	: 'VA',
+		'Washington'	: 'WA',
+		'West Virginia' : 'WV',
+		'Wisconsin' 	: 'WI',
+		'Wyoming' 	: 'WY'
+	};
+
+	var usStates = {
+		'AK': [' '],
+		'AL': ['FL', 'GA', 'MS', 'TN'],
+		'AR': ['LA', 'MO', 'MS', 'OK', 'TN', 'TX'],
+		'AZ': ['CA', 'CO', 'NM', 'NV', 'UT'],
+		'CA': ['NV', 'OR'], 
+		'CO': ['KS', 'NE', 'NM', 'OK', 'UT', 'WY'],
+		'CT': ['MA', 'NY', 'RI'],
+		'DC': ['MD', 'VA'],
+		'DE': ['MD', 'NJ', 'PA'],
+		'FL': ['AL', 'GA'],
+		'GA': ['NC', 'SC', 'TN', 'FL'],
+		'HI': [' '],
+		'IA': ['IL', 'MN', 'MO', 'NE', 'SD', 'WI'],
+		'ID': ['MT', 'NV', 'OR', 'UT', 'WA', 'WY'],
+		'IL': ['IN', 'KY', 'MO', 'WI'],
+		'IN': ['KY', 'MI', 'OH'],
+		'KS': ['CO', 'MO', 'NE', 'OK'],
+		'KY': ['MO', 'OH', 'TN', 'VA', 'WV'],
+		'LA': ['AR', 'MS', 'TX'],
+		'MA': ['CT', 'NH', 'NY', 'RI', 'VT'],
+		'MD': ['DC', 'PA', 'VA', 'WV'],
+		'ME': ['NH'],
+		'MI': ['IN', 'OH', 'WI'],
+		'MN': ['IA', 'ND', 'SD', 'WI'],
+		'MO': ['AR', 'IA', 'IL', 'KS', 'KY', 'NE', 'OK', 'TN'],
+		'MS': ['LA', 'AR', 'TN', 'AL'],
+		'MT': ['ID', 'ND', 'SD', 'NE', 'WY'],
+		'NC': ['SC', 'TN', 'VA'],
+		'ND': ['MN', 'SD', 'MT'],
+		'NE': ['CO', 'IA', 'KS', 'MO', 'SD', 'WY'],
+		'NH': ['VT', 'ME', 'MA'],
+		'NJ': ['DE', 'PA', 'NY'],
+		'NM': ['AZ', 'UT', 'CO', 'OK', 'TX'],
+		'NV': ['CA', 'AZ', 'UT', 'ID', 'OR'],
+		'NY': ['OH', 'MA', 'PA', 'CA'],
+		'OH': ['IN', 'MI', 'PA', 'KY', 'WV'],
+		'OK': ['AK', 'TX', 'NM', 'CO', 'KS', 'MO'],
+		'OR': ['WA', 'ID', 'NV', 'CA'],
+		'PA': ['OH', 'WV', 'MD', 'NJ', 'NY'],
+		'RI': ['CT', 'MA', 'NY'],
+		'SC': ['GA', 'NC'],
+		'SD': ['ND', 'IA', 'NE', 'MN', 'MT', 'WY'],
+		'TN': ['AK', 'MS', 'AL', 'GA', 'NC', 'VA', 'MO', 'AR'],
+		'TX': ['NM', 'OK', 'AR', 'LA'],
+		'UT': ['CO', 'NM', 'AZ', 'NV', 'ID', 'WY'],
+		'VA': ['NC', 'KY', 'WV', 'MD'],
+		'WA': ['ID', 'OR'],
+		'WV': ['OH', 'PA', 'MD', 'KY'],
+		'WI': ['IA', 'IL', 'MN', 'MI'],
+		'WY': ['MT', 'SD', 'NE', 'CO', 'UT', 'ID']
+	};
+	
 
 function geoError(){
         document.write("Geolocation failed. You may need to enable location services on your device.");
@@ -26,89 +226,132 @@ function initialize(){
 			lat = position.coords.latitude;
 			lon = position.coords.longitude;
 
-			// map with traffic notifys
-			var map = new tomtom.Map({
-				domNode: "map",
-				apiKey: "q3dh8pqnwmbdrvwctrgvm6nu",
-				center: [lat,lon],
-				zoom: 13,
-				zoomControl: true,
-				enableHighAccuracy: true,
-				watch: true,
-				maximumAge: 6000,
-				displayTraffic: true
-		 	});
+		// the map
+		var map = L.mapbox.map('map', 'airmanopus.hm9c0o4f', {
+			center: [lat, lon],
+			zoom: 12,
+			inertia: true,
+			watch: true,
+			enableHighAccuracy: true,
+			maximumAge: 50000,
+			trackResize: true,
+			attributionControl : true
+		});
+		L.marker([lat, lon]).addTo(map);
 
-			// weather conditions display if I have time
-			var weatherConditionsURL = "https://api.worldweatheronline.com/free/v1/weather.ashx?q=40.429188%2C-86.922822&format=xml&num_of_days=1&date=today&fx=yes&includelocation=yes&key=kc2u593rw3h5bp2pga7fs7ut";
-        		var weatherConditions = new XMLHttpRequest();
-			weatherConditions.open('GET',weatherConditionsURL,false);
-        		weatherConditions.send();	
-			
-			JSON.stringify(weatherConditionsData);
-			// end weather
-	
-			// airport delays -- truly a hack
+		// next find the longname of the US state we are in so we can load the right radar images
+		var reverseGeocodeURL = "https://api.tiles.mapbox.com/v3/airmanopus.hm9c0o4f/geocode/" + lon + "," + lat + ".json";
+		var reverseGeocode = new XMLHttpRequest();
+                reverseGeocode.open('GET',reverseGeocodeURL,false);
+                reverseGeocode.send();
+		// need to use the 2-letter abbrev to match up with kml
+		var reverseGeocodeParsed = JSON.parse(reverseGeocode.responseText);
+		var stateLongName = reverseGeocodeParsed.results[0][2].name; // Wisconsin
+		var stateAbbrev = statesToAbbreviations[stateLongName];      // WI
+
+		// get weather data for current location and time	
+		// weather data is courtesy http://www.worldweatheronline.com free api
+		// via mashery.com
+		const weatherDataElement = 0;		// data.current_condition[weatherDataElement]
+		const weatherDisplaySize = 10;		// size of weatherDisplay array	
+		var localWeatherURL="https://www.airmanopus.net/cgi-bin/worldweatheronline.cgi?lat=" + lat + "&lon=" + lon;
+		var localWeatherGet = new XMLHttpRequest();
+		localWeatherGet.open('GET',localWeatherURL,false);
+		localWeatherGet.send();
+		var weatherConditions = JSON.parse(localWeatherGet.responseText);
+
+		// not completely decided which fields are going to be included so these may change
+		var weatherDesc = weatherConditions.data.current_condition[weatherDataElement].weatherDesc[0].value;
+		var temp_F = weatherConditions.data.current_condition[weatherDataElement].temp_F;
+		var visibility = weatherConditions.data.current_condition[weatherDataElement].visibility;
+		var humidity = weatherConditions.data.current_condition[weatherDataElement].humidity;   
+		var precipMM = weatherConditions.data.current_condition[weatherDataElement].precipMM;
+		var windSpeed = weatherConditions.data.weather[weatherDataElement].windspeedMiles;
+		var windDir = weatherConditions.data.weather[weatherDataElement].winddirection;
+		var obsTime = weatherConditions.data.current_condition[weatherDataElement].observation_time;
+		var city = weatherConditions.data.nearest_area[weatherDataElement].areaName[0].value;
+		var state = weatherConditions.data.nearest_area[weatherDataElement].region[0].value;
 		
-			function reqListener () {
-  				console.log(this.responseText);
-			}
+		var weatherIconURL = weatherConditions.data.weather[weatherDataElement].weatherIconURL;
+		var weatherInfoURL = weatherConditions.data.weather[weatherDataElement].weatherURL;
 
-			var airportListURL="https://www.airmanopus.net/cgi-bin/airportlist.csv";
-			var airportListGet = new XMLHttpRequest();
-			airportListGet.onload = reqListener;
-			airportListGet.open('GET',airportListURL,false);
-			airportListGet.send();
+		// assemble the fields to output into one array, then loop once to display
+		// TODO when we refresh after changing location we need to refresh this information as well
+		weatherDisplay = new Array(weatherDisplaySize);
+		weatherDisplay[0] = city + ", " + state;
+		weatherDisplay[1] = lat + "," + lon;
+		weatherDisplay[2] = weatherDesc + " and " + temp_F + "\xB0" + "F";
+		weatherDisplay[3] = "Humidity " + humidity + "% Visibility " + visibility + " mi";
+		weatherDisplay[4] = "Wind " + windDir + " at " + windSpeed + "mph";
+		weatherDisplay[5] =(precipMM>0.0)?"Precip "+ precipMM:"Precip: none";
+		weatherDisplay[6] = "Observed at " + obsTime + " UTC";
+		for (var i = 0; i <= 6; i++)
+		{
+			weather.innerHTML += weatherDisplay[i] + "<br>";
+		} 
+		// end worldweatheronline.com data
 
-			var airportListStatus = (airportListGet.statusText);
-			var airportList = airportListGet.responseText;
 
-			// first need to split the csv file into an array with each element containing info for one airport
-			var airportCSV = airportList.split("\n")		
+		// now check on airport delays
+	
+		var airportListURL="https://www.airmanopus.net/cgi-bin/airportlist.csv";
+		var airportListGet = new XMLHttpRequest();
+		airportListGet.open('GET',airportListURL,false);
+		airportListGet.send();
 
-			const numAirports = 533; 			
-			var airports =  Array();
-			for (var j = 0; j < numAirports; j++) {
-				// we need to split the csv file into arrays, one airport per line 
-				airports[j] = airportCSV[j].split(",");
+		var airportListStatus = (airportListGet.statusText);
+		var airportList = (airportListGet.responseText);
 
-				var iataIdentifier = airports[j][0];			// 3 letter iata identifier
-				var myLat = lat;					// my latitude
-				var myLon = lon;					// my longitude
-				var airportLat = airports[j][6];			// airport latitude
-				var airportLon	= airports[j][7];			// airport longitude
-				var airportName = airports[j][5];
+		console.log(airportListStatus);
+		console.log(airportList);
 
-				const pi = 3.14159265359;	// pi
-				const R = 3959; 		// approximate radius of earth in miles
+		var airports = CSVToArray(airportList);
+		console.log(airports);
 
-				// how far away are we from the airport
-				var dLat = ((airportLat-myLat) * (pi/180));
-				var dLon = ((airportLon-myLon) * (pi/180));
-				var myLat = (lat * (pi/180));
-				var airportLat = (airportLat * (pi/180));
+		const numAirports = 533; 			
+		for (var j = 0; j < numAirports; j++) {
+			var iataIdentifier = airports[j][0];			// 3 letter iata identifier
+			var myLat = lat;					// my latitude
+			var myLon = lon;					// my longitude
+			var airportLat = airports[j][1];			// airport latitude
+			var airportLon	= airports[j][2];			// airport longitude
+			//var airportName = airports[j][5];
 
-				var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-					Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(myLat) * Math.cos(airportLat); 
-				var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-				var distance = R * c;					// miles
+			const pi = 3.14159265359;	// pi
+			const R = 3959; 		// approximate radius of earth in miles
 
-				const viewportDistance = 75;	// check to see if this airport is one we need to check status for
+			// how far away are we from the airport
+			var dLat = ((airportLat-myLat) * (pi/180));
+			var dLon = ((airportLon-myLon) * (pi/180));
+			var myLat = (lat * (pi/180));
+			var airportLat = (airportLat * (pi/180));
 
-				 if ( distance <= viewportDistance ) {
-					// we go ask the FAA if there are any delays happening at this airport
-					var airportStatusURL="https://www.airmanopus.net/cgi-bin/airports.cgi?iata=" + iataIdentifier;
-					var airportStatusGet = new XMLHttpRequest();
-					airportStatusGet.open('GET',airportStatusURL,false);
-					airportStatusGet.send();
-					var airportStatus = airportStatusGet.responseXML;
-					var delayStatus = airportStatus.getElementsByTagName('Delay')[0].textContent;
-					if  ( delayStatus = "true" ) {
-						var delayReason = airportStatus.getElementsByTagName('Reason')[0].textContent;
-						airports.textContent = delayReason; 
-					} 
+			var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+				Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(myLat) * Math.cos(airportLat); 
+			var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+			var distance = R * c;					// miles
 
+			const viewportDistance = 75;	// radius in which to worry about airport delays
+							// we go ask the FAA about delays only for airports within
+							// viewportDistance
+ 
+			 if ( distance <= viewportDistance ) {
+
+				var airportStatusURL="https://www.airmanopus.net/cgi-bin/airports.cgi?iata=" + iataIdentifier;
+				var airportStatusGet = new XMLHttpRequest();
+				airportStatusGet.open('GET',airportStatusURL,false);
+				airportStatusGet.send();
+				var airportStatus = airportStatusGet.responseXML;
+				var delayStatus = airportStatus.getElementsByTagName('Delay')[0].textContent;
+				if  ( delayStatus = "true" ) {
+					var delayReason = airportStatus.getElementsByTagName('Reason')[0].textContent;
+					airports.textContent = delayReason; 
+					console.log("Delays at " + iataIdentifier);
+					console.log("Reason    " + delayReason);
 				} 
+				// TODO need to handle both true and false
+
+			} 
 			} 
 		});
 	}
@@ -126,7 +369,6 @@ html, body, #map {
 <body onload="initialize()">
 
 <div id="map"></div>
-<div id="msg">Borked until I can switch this apps map provider, eta 4/16/2014 </div>
 <div id="weather"></div>
 <div id="airports"></div>
 </html>
