@@ -14,97 +14,97 @@
 <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-osm/v0.1.0/leaflet-osm.js'></script>
 
 <script type="text/javascript">
-// CSVToArray (c) ben nadel
-// http://www.bennadel.com/blog/1504-ask-ben-parsing-csv-strings-with-javascript-exec-regular-expression-command.htm 
-// 
-// This will parse a delimited string into an array of
-// arrays. The default delimiter is the comma, but this
-// can be overriden in the second argument.
-function CSVToArray( strData, strDelimiter ){
-// Check to see if the delimiter is defined. If not,
-// then default to comma.
-strDelimiter = (strDelimiter || ",");
+	// CSVToArray (c) ben nadel
+	// http://www.bennadel.com/blog/1504-ask-ben-parsing-csv-strings-with-javascript-exec-regular-expression-command.htm 
+	// 
+	// This will parse a delimited string into an array of
+	// arrays. The default delimiter is the comma, but this
+	// can be overriden in the second argument.
+	function CSVToArray( strData, strDelimiter ){
+	// Check to see if the delimiter is defined. If not,
+	// then default to comma.
+	strDelimiter = (strDelimiter || ",");
+	 
+	// Create a regular expression to parse the CSV values.
+	var objPattern = new RegExp(
+	(
+	// Delimiters.
+	"(\\" + strDelimiter + "|\\r?\\n|\\r|^)" +
+	 
+	// Quoted fields.
+	"(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
+	 
+	// Standard fields.
+	"([^\"\\" + strDelimiter + "\\r\\n]*))"
+	),
+	"gi"
+	);
+	 
+	 
+	// Create an array to hold our data. Give the array
+	// a default empty first row.
+	var arrData = [[]];
+	 
+	// Create an array to hold our individual pattern
+	// matching groups.
+	var arrMatches = null;
+	 
+	 
+	// Keep looping over the regular expression matches
+	// until we can no longer find a match.
+	while (arrMatches = objPattern.exec( strData )){
+	 
+	// Get the delimiter that was found.
+	var strMatchedDelimiter = arrMatches[ 1 ];
+	 
+	// Check to see if the given delimiter has a length
+	// (is not the start of string) and if it matches
+	// field delimiter. If id does not, then we know
+	// that this delimiter is a row delimiter.
+	if (
+	strMatchedDelimiter.length &&
+	(strMatchedDelimiter != strDelimiter)
+	){
+	 
+	// Since we have reached a new row of data,
+	// add an empty row to our data array.
+	arrData.push( [] );
+	 
+	}
+	 
+	 
+	// Now that we have our delimiter out of the way,
+	// let's check to see which kind of value we
+	// captured (quoted or unquoted).
+	if (arrMatches[ 2 ]){
+	 
+	// We found a quoted value. When we capture
+	// this value, unescape any double quotes.
+	var strMatchedValue = arrMatches[ 2 ].replace(
+	new RegExp( "\"\"", "g" ),
+	"\""
+	);
+	 
+	} else {
+	 
+	// We found a non-quoted value.
+	var strMatchedValue = arrMatches[ 3 ];
+	 
+	}
+	 
+	 
+	// Now that we have our value string, let's add
+	// it to the data array.
+	arrData[ arrData.length - 1 ].push( strMatchedValue );
+	}
+	 
+	// Return the parsed data.
+	return( arrData );
+	}
  
-// Create a regular expression to parse the CSV values.
-var objPattern = new RegExp(
-(
-// Delimiters.
-"(\\" + strDelimiter + "|\\r?\\n|\\r|^)" +
- 
-// Quoted fields.
-"(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
- 
-// Standard fields.
-"([^\"\\" + strDelimiter + "\\r\\n]*))"
-),
-"gi"
-);
- 
- 
-// Create an array to hold our data. Give the array
-// a default empty first row.
-var arrData = [[]];
- 
-// Create an array to hold our individual pattern
-// matching groups.
-var arrMatches = null;
- 
- 
-// Keep looping over the regular expression matches
-// until we can no longer find a match.
-while (arrMatches = objPattern.exec( strData )){
- 
-// Get the delimiter that was found.
-var strMatchedDelimiter = arrMatches[ 1 ];
- 
-// Check to see if the given delimiter has a length
-// (is not the start of string) and if it matches
-// field delimiter. If id does not, then we know
-// that this delimiter is a row delimiter.
-if (
-strMatchedDelimiter.length &&
-(strMatchedDelimiter != strDelimiter)
-){
- 
-// Since we have reached a new row of data,
-// add an empty row to our data array.
-arrData.push( [] );
- 
-}
- 
- 
-// Now that we have our delimiter out of the way,
-// let's check to see which kind of value we
-// captured (quoted or unquoted).
-if (arrMatches[ 2 ]){
- 
-// We found a quoted value. When we capture
-// this value, unescape any double quotes.
-var strMatchedValue = arrMatches[ 2 ].replace(
-new RegExp( "\"\"", "g" ),
-"\""
-);
- 
-} else {
- 
-// We found a non-quoted value.
-var strMatchedValue = arrMatches[ 3 ];
- 
-}
- 
- 
-// Now that we have our value string, let's add
-// it to the data array.
-arrData[ arrData.length - 1 ].push( strMatchedValue );
-}
- 
-// Return the parsed data.
-return( arrData );
-}
- 
+	// end of bens code
 
-
-
+	// start of mine
 
 
 	var statesToAbbreviations = {
@@ -289,7 +289,7 @@ function initialize(){
 		{
 			weather.innerHTML += weatherDisplay[i] + "<br>";
 		} 
-		// end worldweatheronline.com data
+		// end worldweatheronline.com 
 
 
 		// now check on airport delays
@@ -302,16 +302,14 @@ function initialize(){
 		var airportListStatus = (airportListGet.statusText);
 		var airportList = (airportListGet.responseText);
 
-		console.log(airportListStatus);
-		console.log(airportList);
-
 		var airports = CSVToArray(airportList);
-		console.log(airports);
 
 		const numAirports = 533; 			
+		var airportDelayString = ""; // will be the contents of the airports div
+
 		for (var j = 0; j < numAirports; j++) {
 			var iataIdentifier = airports[j][0];			// 3 letter iata identifier
-			var myLat = lat;					// my latitude
+	 		var myLat = lat;					// my latitude
 			var myLon = lon;					// my longitude
 			var airportLat = airports[j][1];			// airport latitude
 			var airportLon	= airports[j][2];			// airport longitude
@@ -332,26 +330,59 @@ function initialize(){
 			var distance = R * c;					// miles
 
 			const viewportDistance = 75;	// radius in which to worry about airport delays
-							// we go ask the FAA about delays only for airports within
+							// we go ask the FAA about delays only airports within
 							// viewportDistance
  
-			 if ( distance <= viewportDistance ) {
+			 if ( distance <= viewportDistance ) 
+				{
+					console.log(iataIdentifier);
+					var airportStatusURL="https://www.airmanopus.net/cgi-bin/airports.cgi?iata=" + iataIdentifier;
+					console.log(airportStatusURL);
+					var airportStatusGet = new XMLHttpRequest();
+					airportStatusGet.open('GET',airportStatusURL,false);
+					airportStatusGet.send();
 
-				var airportStatusURL="https://www.airmanopus.net/cgi-bin/airports.cgi?iata=" + iataIdentifier;
-				var airportStatusGet = new XMLHttpRequest();
-				airportStatusGet.open('GET',airportStatusURL,false);
-				airportStatusGet.send();
-				var airportStatus = airportStatusGet.responseXML;
-				var delayStatus = airportStatus.getElementsByTagName('Delay')[0].textContent;
-				if  ( delayStatus = "true" ) {
-					var delayReason = airportStatus.getElementsByTagName('Reason')[0].textContent;
-					airports.textContent = delayReason; 
-					console.log("Delays at " + iataIdentifier);
-					console.log("Reason    " + delayReason);
-				} 
-				// TODO need to handle both true and false
+					if ( airportStatusGet.statusText == "OK" )
+					{
+						var airportStatus = JSON.parse(airportStatusGet.responseText);
+						console.log(airportStatus);	
 
-			} 
+						var airportIATA = airportStatus.IATA;
+						var airportName = airportStatus.name;
+						var delayStatus = airportStatus.delay;
+
+	
+						if  ( delayStatus = "true" ) {
+							var airportDelayReason = airportStatus.status.reason;
+							var airportClosureBegin = airportStatus.status.closureBegin;
+							var airportClosureEnd = airportStatus.status.closureEnd;
+							var airportMinDelay = airportStatus.status.MinDelay;
+							var airportMaxDelay = airportStatus.status.MaxDelay;
+							var airportAvgDelay = airportStatus.status.AvgDelay;
+
+							airportDelayString = concat("\nairportName + "\(" + airportIATA + "\) " + delayStatus);
+
+							// is the airport closed?
+							if ( airportClosureBegin != "")
+							{
+								airportDelayString = concat("\nClosure from ",airportClosureBegin," to ",airportClosureEnd);
+							}
+
+
+						} else {
+							// airport is not closed so it is open YAY
+							// but airport does have delays
+							// delayStatus = 'No known delays for this airport' so we just use that
+							airportDelayString += airportDelayReason + "\nAverage delay time " + airportAvgDelay + " \(Min " + airportsMinDelay + " " + airportsMaxDelay + "\)";
+			
+						}
+						airports.innerHTML += airportDelayString;
+					}
+					// if we did not get an OK as status the airport code we gave does not
+					// have status information associated with it. generally true for 
+					// local and regional airports so we just ignore
+				}
+
 			} 
 		});
 	}
@@ -372,4 +403,5 @@ html, body, #map {
 <div id="weather"></div>
 <div id="airports"></div>
 </html>
+
 
