@@ -285,6 +285,7 @@ function initialize(){
 		weatherDisplay[4] = "Wind " + windDir + " at " + windSpeed + "mph";
 		weatherDisplay[5] =(precipMM>0.0)?"Precip "+ precipMM:"Precip: none";
 		weatherDisplay[6] = "Observed at " + obsTime + " UTC";
+		weather.innerHTML += "Local Weather <br><br>";
 		for (var i = 0; i <= 6; i++)
 		{
 			weather.innerHTML += weatherDisplay[i] + "<br>";
@@ -293,7 +294,8 @@ function initialize(){
 
 
 		// now check on airport delays
-	
+		document.getElementById("airports").innerHTML += "<br>Nearby Airports<br><br>";
+
 		var airportListURL="https://www.airmanopus.net/cgi-bin/airportlist.csv";
 		var airportListGet = new XMLHttpRequest();
 		airportListGet.open('GET',airportListURL,false);
@@ -305,8 +307,7 @@ function initialize(){
 		var airports = CSVToArray(airportList);
 
 		const numAirports = 533; 			
-		var airportDelayString = ""; // will be the contents of the airports div
-
+		var airportDelayString; // will be the contents of the airports div
 		const viewportDistance = 75;	// only process airports within this many miles
 		const pi = 3.14159265359;	// pi
 		const R = 3959; 		// approximate radius of earth in miles
@@ -319,8 +320,7 @@ function initialize(){
 			var myLon = lon;					// my longitude
 			var airportLat = airports[j][1];			// airport latitude
 			var airportLon	= airports[j][2];			// airport longitude
-			//var airportName = airports[j][5];
-
+		
 			// how far away are we from the airport
 			var dLat = ((airportLat-myLat) * (pi/180));
 			var dLon = ((airportLon-myLon) * (pi/180));
@@ -331,8 +331,9 @@ function initialize(){
 				Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(myLat) * Math.cos(airportLat); 
 			var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
 			var distance = R * c;					// miles
-				
+
 			// if we are within viewportDistance look up the airport status 
+
 			 if ( distance <= viewportDistance ) 
 				{
 					var airportStatusURL="https://www.airmanopus.net/cgi-bin/airports.cgi?iata=" + iataIdentifier;
@@ -356,28 +357,33 @@ function initialize(){
 						var airportMinDelay = airportStatus.status.MinDelay;
 						var airportMaxDelay = airportStatus.status.MaxDelay;
 						var airportAvgDelay = airportStatus.status.AvgDelay;
-
-						// fill airportDisplay
-						
+	
 						// compulsories
 						airportDisplay[0] = airportName + "(" + airportIATA + ")";
 						airportDisplay[1] = airportDelayReason;
 
-						// always display closure info if airport is closed 
+						// display closure info only if airport is closed 
 						if ( airportClosureBegin != "")
 						{
-							airportDisplay[2] = "Closure from " + airportClosureBegin + " to " + airportClosureEnd;
+							airportDisplay[2] = "Closed from " + airportClosureBegin + " to " + airportClosureEnd;
 						
 						} 
 	
 						// only display delay details if there is actually a delay
-						if  ( delayStatus != "false" ) {
+						if  ( delayStatus != "false" )
+						{
 							airportDisplay[3] = "Min " + airportMinDelay + " Max " + airportMaxDelay + " Avg " + airportAvgDelay;
 						}
+
 						for (var i = 0; i <= 3; i++)
 						{
-						airports.innerHTML += airportDisplay[i] + "<br>"; 
+							if ( airportDisplay[i] != null )
+							{
+								document.getElementById("airports").innerHTML += airportDisplay[i] + "<br>";
+							}
 						}
+						
+						
 
 					}
 				}
