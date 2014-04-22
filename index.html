@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
 <title>dRiving Assistance (or, a heads up display of a sort)</title>
 <link rel="stylesheet" type="text/css" href="css/tomtom.map.min.css" />
 <!--[if lte IE 8]><link rel="stylesheet" href="css/tomtom.map.ie.min.css" /><![endif]-->
@@ -40,8 +40,8 @@ function initialize(){
 		 	});
 
 			// weather conditions display if I have time
-			var weatherConditionsURL = "http://api.worldweatheronline.com/free/v1/weather.ashx?q=40.429188%2C-86.922822&format=xml&num_of_days=1&date=today&fx=yes&includelocation=yes&key=kc2u593rw3h5bp2pga7fs7ut";
-        		var weatherConditions = XMLHttpRequest();
+			var weatherConditionsURL = "https://api.worldweatheronline.com/free/v1/weather.ashx?q=40.429188%2C-86.922822&format=xml&num_of_days=1&date=today&fx=yes&includelocation=yes&key=kc2u593rw3h5bp2pga7fs7ut";
+        		var weatherConditions = new XMLHttpRequest();
 			weatherConditions.open('GET',weatherConditionsURL,false);
         		weatherConditions.send();	
 			
@@ -54,8 +54,8 @@ function initialize(){
   				console.log(this.responseText);
 			}
 
-			var airportListURL="http://www.airmanopus.net/cgi-bin/airportlist.csv";
-			var airportListGet =  XMLHttpRequest();
+			var airportListURL="https://www.airmanopus.net/cgi-bin/airportlist.csv";
+			var airportListGet = new XMLHttpRequest();
 			airportListGet.onload = reqListener;
 			airportListGet.open('GET',airportListURL,false);
 			airportListGet.send();
@@ -97,8 +97,8 @@ function initialize(){
 
 				 if ( distance <= viewportDistance ) {
 					// we go ask the FAA if there are any delays happening at this airport
-					var airportStatusURL="http://www.airmanopus.net/cgi-bin/airports.cgi?iata=" + iataIdentifier;
-					var airportStatusGet =  XMLHttpRequest();
+					var airportStatusURL="https://www.airmanopus.net/cgi-bin/airports.cgi?iata=" + iataIdentifier;
+					var airportStatusGet = new XMLHttpRequest();
 					airportStatusGet.open('GET',airportStatusURL,false);
 					airportStatusGet.send();
 					var airportStatus = airportStatusGet.responseXML;
