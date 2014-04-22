@@ -307,6 +307,12 @@ function initialize(){
 		const numAirports = 533; 			
 		var airportDelayString = ""; // will be the contents of the airports div
 
+		const viewportDistance = 75;	// only process airports within this many miles
+		const pi = 3.14159265359;	// pi
+		const R = 3959; 		// approximate radius of earth in miles
+		airportDisplay = new Array(3);
+		
+		// we need to check all of the airports to see if they are within viewportDistance of us
 		for (var j = 0; j < numAirports; j++) {
 			var iataIdentifier = airports[j][0];			// 3 letter iata identifier
 	 		var myLat = lat;					// my latitude
@@ -314,9 +320,6 @@ function initialize(){
 			var airportLat = airports[j][1];			// airport latitude
 			var airportLon	= airports[j][2];			// airport longitude
 			//var airportName = airports[j][5];
-
-			const pi = 3.14159265359;	// pi
-			const R = 3959; 		// approximate radius of earth in miles
 
 			// how far away are we from the airport
 			var dLat = ((airportLat-myLat) * (pi/180));
@@ -328,59 +331,55 @@ function initialize(){
 				Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(myLat) * Math.cos(airportLat); 
 			var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
 			var distance = R * c;					// miles
-
-			const viewportDistance = 75;	// radius in which to worry about airport delays
-							// we go ask the FAA about delays only airports within
-							// viewportDistance
- 
+				
+			// if we are within viewportDistance look up the airport status 
 			 if ( distance <= viewportDistance ) 
 				{
-					console.log(iataIdentifier);
 					var airportStatusURL="https://www.airmanopus.net/cgi-bin/airports.cgi?iata=" + iataIdentifier;
-					console.log(airportStatusURL);
 					var airportStatusGet = new XMLHttpRequest();
 					airportStatusGet.open('GET',airportStatusURL,false);
 					airportStatusGet.send();
-
-					if ( airportStatusGet.statusText == "OK" )
+					var airportStatusResponse = airportStatusGet.responseText;
+							
+					// if we see a less than chr we didnt get a json response
+					// so ignore that airport even though it is within range
+					if ( airportStatusResponse.charAt(0) != "<" )
 					{
 						var airportStatus = JSON.parse(airportStatusGet.responseText);
-						console.log(airportStatus);	
 
 						var airportIATA = airportStatus.IATA;
 						var airportName = airportStatus.name;
 						var delayStatus = airportStatus.delay;
+						var airportDelayReason = airportStatus.status.reason;
+						var airportClosureBegin = airportStatus.status.closureBegin;
+						var airportClosureEnd = airportStatus.status.closureEnd;
+						var airportMinDelay = airportStatus.status.MinDelay;
+						var airportMaxDelay = airportStatus.status.MaxDelay;
+						var airportAvgDelay = airportStatus.status.AvgDelay;
 
+						// fill airportDisplay
+						
+						// compulsories
+						airportDisplay[0] = airportName + "(" + airportIATA + ")";
+						airportDisplay[1] = airportDelayReason;
+
+						// always display closure info if airport is closed 
+						if ( airportClosureBegin != "")
+						{
+							airportDisplay[2] = "Closure from " + airportClosureBegin + " to " + airportClosureEnd;
+						
+						} 
 	
-						if  ( delayStatus = "true" ) {
-							var airportDelayReason = airportStatus.status.reason;
-							var airportClosureBegin = airportStatus.status.closureBegin;
-							var airportClosureEnd = airportStatus.status.closureEnd;
-							var airportMinDelay = airportStatus.status.MinDelay;
-							var airportMaxDelay = airportStatus.status.MaxDelay;
-							var airportAvgDelay = airportStatus.status.AvgDelay;
-
-							airportDelayString = concat("\nairportName + "\(" + airportIATA + "\) " + delayStatus);
-
-							// is the airport closed?
-							if ( airportClosureBegin != "")
-							{
-								airportDelayString = concat("\nClosure from ",airportClosureBegin," to ",airportClosureEnd);
-							}
-
-
-						} else {
-							// airport is not closed so it is open YAY
-							// but airport does have delays
-							// delayStatus = 'No known delays for this airport' so we just use that
-							airportDelayString += airportDelayReason + "\nAverage delay time " + airportAvgDelay + " \(Min " + airportsMinDelay + " " + airportsMaxDelay + "\)";
-			
+						// only display delay details if there is actually a delay
+						if  ( delayStatus != "false" ) {
+							airportDisplay[3] = "Min " + airportMinDelay + " Max " + airportMaxDelay + " Avg " + airportAvgDelay;
 						}
-						airports.innerHTML += airportDelayString;
+						for (var i = 0; i <= 3; i++)
+						{
+						airports.innerHTML += airportDisplay[i] + "<br>"; 
+						}
+
 					}
-					// if we did not get an OK as status the airport code we gave does not
-					// have status information associated with it. generally true for 
-					// local and regional airports so we just ignore
 				}
 
 			} 
