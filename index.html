@@ -325,10 +325,10 @@ function initialize(){
 			var dLat = ((airportLat-myLat) * (pi/180));
 			var dLon = ((airportLon-myLon) * (pi/180));
 			var myLat = (lat * (pi/180));
-			var airportLat = (airportLat * (pi/180));
+			var airportLatRad = (airportLat * (pi/180));
 
 			var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-				Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(myLat) * Math.cos(airportLat); 
+				Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(myLat) * Math.cos(airportLatRad); 
 			var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
 			var distance = R * c;					// miles
 
@@ -358,6 +358,27 @@ function initialize(){
 						var airportMaxDelay = airportStatus.status.MaxDelay;
 						var airportAvgDelay = airportStatus.status.AvgDelay;
 	
+
+						console.log("updating traffic");
+
+						// now check on real time traffic and time to get to each of the airports
+						airportETA = new XMLHttpRequest();
+
+						airportETAURL = "https://www.airmanopus.net/cgi-bin/tomtomAirportTraffic.cgi?lat=" + lat + "&lon=" + lon + "&airportLat=" + airportLat + "&airportLon=" + airportLon;
+						console.log(airportETAURL);
+						airportETA.open('GET', airportETAURL, false);
+						airportETA.send();
+						console.log(airportETA.statusText);
+						console.log(airportETA.responseText);
+						airportETAParsed = JSON.parse(airportETA.responseText);
+
+						// TODO here we need to use the results to get travel time from here to the airport
+						console.log(airportETAParsed);
+
+						
+						// now we can start displaying some stuff
+
+
 						// compulsories
 						airportDisplay[0] = airportName + "(" + airportIATA + ")";
 						airportDisplay[1] = airportDelayReason;
