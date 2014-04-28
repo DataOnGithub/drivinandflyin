@@ -239,18 +239,6 @@ function initialize(){
 		});
 		L.marker([lat, lon]).addTo(map);
 
-		// next find the longname of the US state we are in so we can load the right radar images
-		var reverseGeocodeURL = "https://api.tiles.mapbox.com/v3/airmanopus.hm9c0o4f/geocode/" + lon + "," + lat + ".json";
-		var reverseGeocode = new XMLHttpRequest();
-                reverseGeocode.open('GET',reverseGeocodeURL,false);
-                reverseGeocode.send();
-		// need to use the 2-letter abbrev to match up with kml
-		var reverseGeocodeParsed = JSON.parse(reverseGeocode.responseText);
-		var stateLongName = reverseGeocodeParsed.results[0][2].name; // Wisconsin
-		var stateAbbrev = statesToAbbreviations[stateLongName];      // WI
-
-		console.log(stateAbbrev);
-
 		// get weather data for current location and time	
 		// weather data is courtesy http://www.worldweatheronline.com free api
 		// via mashery.com
@@ -353,7 +341,7 @@ function initialize(){
 					if ( airportStatusResponse.charAt(0) != "<" )
 					{
 						var airportStatus = JSON.parse(airportStatusGet.responseText);
-
+						
 						var airportIATA = airportStatus.IATA;
 						var airportName = airportStatus.name;
 						var delayStatus = airportStatus.delay;
@@ -363,35 +351,30 @@ function initialize(){
 						var airportMinDelay = airportStatus.status.MinDelay;
 						var airportMaxDelay = airportStatus.status.MaxDelay;
 						var airportAvgDelay = airportStatus.status.AvgDelay;
-	
-						airportDisplay[0] = airportName + " (" + airportIATA + ")";
-						airportDisplay[1] = airportDelayReason;
+
+						// name and IATA always display if within viewPortdistance 	
+						document.getElementById("airports").innerHTML += airportName + " (" + airportIATA + ")<br>";
+						document.getElementById("airports").innerHTML += airportDelayReason + "<br>";
+
 
 						// display closure info only if airport is closed 
 						if ( airportClosureBegin != "")
 						{
-							airportDisplay[2] = "Closed from " + airportClosureBegin + " to " + airportClosureEnd;
+							 document.getElementById("airports").innerHTML +=  "<br>Closed from " + airportClosureBegin + " to " + airportClosureEnd;
 						
 						} 
 	
-						// only display delay details if there is actually a delay
+						// display delay details only when there is a delay
 						if  (delayStatus != "false")
 						{
 							if (airportMinDelay != null)
 							{
-							airportDisplay[3] = "Min " + airportMinDelay + " Max " + airportMaxDelay + " Avg " + airportAvgDelay;
+							document.getElementById("airports").innerHTML += "<br>Min " + airportMinDelay + " Max " + airportMaxDelay + " Avg " + airportAvgDelay;
 							}
 						}
 						
-						for (var i = 0; i <= 3; i++)
-						{
-							if ( airportDisplay[i] != null )
-							{
-								document.getElementById("airports").innerHTML += airportDisplay[i] + "<br>";
-							}
-						}
-						
-						// when will we get to the airport
+						// check traffic to get estimate on when will we get to the airport 
+						// always display ETA for this airport
 						var airportETAGet = new XMLHttpRequest();
 						var airportETAURL="https://api.tomtom.com/lbs/services/route/3/" + lat + "," + lon + ":" + airportLat + "," + airportLon + "/Quickest/json?avoidTraffic=true&includeTraffic=true&day=today&iqRoutes=2&includeInstructions=false&key=knpmsu5p59rxdud2rmghsxd7"
 						var airportETAProcess="https://www.airmanopus.net/cgi-bin/tomtom.cgi?" + airportETAURL;
@@ -399,24 +382,15 @@ function initialize(){
 						airportETAGet.open('GET', airportETAProcess, false);
 						airportETAGet.send();
 						
-						
 						airportETAParsed=JSON.parse(airportETAGet.responseText);
 						airportETA = airportETAParsed.route.summary.arrivalOverview.time;
-						document.getElementById("traffic").innerHTML += "Arrive " + airportETA;
-
-
-				
-
-						
-						
-
-					}
-				}
-
-			} 
-		});
-	}
-}
+						document.getElementById("airports").innerHTML += "Est arrival " + airportETA + "<br><br>";
+					} // iffn
+				} // iffn
+			} // fer 
+		}); // positien
+	} // geolocatien
+} // initializze
 </script>
 <style>
 html, body, #map {
