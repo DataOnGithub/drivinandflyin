@@ -106,123 +106,174 @@
 
 	// start of mine
 
-
-	var statesToAbbreviations = {
-		'Alabama' 	: 'AL',
-		'Alaska'  	: 'AK',
-		'Arizona' 	: 'AZ',
-		'Arkansas'	: 'AR',
-		'California' 	: 'CA',
-		'Colorado' 	: 'CO',
-		'Connecticut' 	: 'CT',
-		'Delaware' 	: 'DE',
-		'District of Columia' : 'DC',
-		'Florida' 	: 'FL',
-		'Georgia' 	: 'GA',
-		'Hawaii' 	: 'HI',
-		'Idaho' 	: 'ID',
-		'Illinois' 	: 'IL',
-		'Indiana' 	: 'IN',
-		'Iowa'		: 'IA',
-		'Kansas' 	: 'KS',
-		'Kentucky' 	: 'KY',
-		'Louisiana' 	: 'LA',
-		'Maine' 	: 'ME',
-		'Maryland' 	: 'MD',
-		'Massachusetts' : 'MA',
-		'Michigan' 	: 'MI',
-		'Minnesota' 	: 'MN',
-		'Mississippi' 	: 'MS',
-		'Missouri' 	: 'MO',
-		'Montana' 	: 'MT',
-		'Nebraska' 	: 'NE',
-		'Nevada' 	: 'NV',
-		'New Hampshire' : 'NH',
-		'New Jersey' 	: 'NJ',
-		'New Mexico' 	: 'NM',
-		'New York' 	: 'NY',
-		'North Carolina': 'NC',
-		'North Dakota' 	: 'NC',
-		'Ohio' 		: 'OH',
-		'Oklahoma' 	: 'OK',
-		'Oregon' 	: 'OR',
-		'Pennsylvania'	: 'PA',
-		'Rhode Island' 	: 'RI',
-		'South Carolina': 'SC',
-		'South Dakota' 	: 'SD',
-		'Tennessee' 	: 'TN',
-		'Texas' 	: 'TX',
-		'Utah' 		: 'UT',
-		'Vermont' 	: 'VT',
-		'Virginia' 	: 'VA',
-		'Washington'	: 'WA',
-		'West Virginia' : 'WV',
-		'Wisconsin' 	: 'WI',
-		'Wyoming' 	: 'WY'
-	};
-
-	var usStates = {
-		'AK': [' '],
-		'AL': ['FL', 'GA', 'MS', 'TN'],
-		'AR': ['LA', 'MO', 'MS', 'OK', 'TN', 'TX'],
-		'AZ': ['CA', 'CO', 'NM', 'NV', 'UT'],
-		'CA': ['NV', 'OR'], 
-		'CO': ['KS', 'NE', 'NM', 'OK', 'UT', 'WY'],
-		'CT': ['MA', 'NY', 'RI'],
-		'DC': ['MD', 'VA'],
-		'DE': ['MD', 'NJ', 'PA'],
-		'FL': ['AL', 'GA'],
-		'GA': ['NC', 'SC', 'TN', 'FL'],
-		'HI': [' '],
-		'IA': ['IL', 'MN', 'MO', 'NE', 'SD', 'WI'],
-		'ID': ['MT', 'NV', 'OR', 'UT', 'WA', 'WY'],
-		'IL': ['IN', 'KY', 'MO', 'WI'],
-		'IN': ['KY', 'MI', 'OH'],
-		'KS': ['CO', 'MO', 'NE', 'OK'],
-		'KY': ['MO', 'OH', 'TN', 'VA', 'WV'],
-		'LA': ['AR', 'MS', 'TX'],
-		'MA': ['CT', 'NH', 'NY', 'RI', 'VT'],
-		'MD': ['DC', 'PA', 'VA', 'WV'],
-		'ME': ['NH'],
-		'MI': ['IN', 'OH', 'WI'],
-		'MN': ['IA', 'ND', 'SD', 'WI'],
-		'MO': ['AR', 'IA', 'IL', 'KS', 'KY', 'NE', 'OK', 'TN'],
-		'MS': ['LA', 'AR', 'TN', 'AL'],
-		'MT': ['ID', 'ND', 'SD', 'NE', 'WY'],
-		'NC': ['SC', 'TN', 'VA'],
-		'ND': ['MN', 'SD', 'MT'],
-		'NE': ['CO', 'IA', 'KS', 'MO', 'SD', 'WY'],
-		'NH': ['VT', 'ME', 'MA'],
-		'NJ': ['DE', 'PA', 'NY'],
-		'NM': ['AZ', 'UT', 'CO', 'OK', 'TX'],
-		'NV': ['CA', 'AZ', 'UT', 'ID', 'OR'],
-		'NY': ['OH', 'MA', 'PA', 'CA'],
-		'OH': ['IN', 'MI', 'PA', 'KY', 'WV'],
-		'OK': ['AK', 'TX', 'NM', 'CO', 'KS', 'MO'],
-		'OR': ['WA', 'ID', 'NV', 'CA'],
-		'PA': ['OH', 'WV', 'MD', 'NJ', 'NY'],
-		'RI': ['CT', 'MA', 'NY'],
-		'SC': ['GA', 'NC'],
-		'SD': ['ND', 'IA', 'NE', 'MN', 'MT', 'WY'],
-		'TN': ['AK', 'MS', 'AL', 'GA', 'NC', 'VA', 'MO', 'AR'],
-		'TX': ['NM', 'OK', 'AR', 'LA'],
-		'UT': ['CO', 'NM', 'AZ', 'NV', 'ID', 'WY'],
-		'VA': ['NC', 'KY', 'WV', 'MD'],
-		'WA': ['ID', 'OR'],
-		'WV': ['OH', 'PA', 'MD', 'KY'],
-		'WI': ['IA', 'IL', 'MN', 'MI'],
-		'WY': ['MT', 'SD', 'NE', 'CO', 'UT', 'ID']
-	};
-	
-
 function geoError(){
         document.write("Geolocation failed. You may need to enable location services on your device.");
+}
+
+function updateWeather(){
+	// get weather data for current location and time	
+	
+	// todo this is kinda fugly
+	// 	better to do this as a weatherConditions object that has some reuse possibility
+
+	// weather data is courtesy http://www.worldweatheronline.com free api
+	// via mashery.com
+	const weatherDataElement = 0;		// data.current_condition[weatherDataElement]
+	const weatherDisplaySize = 10;		// size of weatherDisplay array	
+	var localWeatherURL="https://www.airmanopus.net/cgi-bin/worldweatheronline.cgi?lat=" + lat + "&lon=" + lon;
+	var localWeatherGet = new XMLHttpRequest();
+	localWeatherGet.open('GET',localWeatherURL,false);
+	localWeatherGet.send();
+	var weatherConditions = JSON.parse(localWeatherGet.responseText);
+
+	// not completely decided which fields are going to be included so these may change
+	var weatherDesc = weatherConditions.data.current_condition[weatherDataElement].weatherDesc[0].value;
+	var temp_F = weatherConditions.data.current_condition[weatherDataElement].temp_F;
+	var visibility = weatherConditions.data.current_condition[weatherDataElement].visibility;
+	var humidity = weatherConditions.data.current_condition[weatherDataElement].humidity;   
+	var precipMM = weatherConditions.data.current_condition[weatherDataElement].precipMM;
+	var windSpeed = weatherConditions.data.weather[weatherDataElement].windspeedMiles;
+	var windDir = weatherConditions.data.weather[weatherDataElement].winddirection;
+	var obsTime = weatherConditions.data.current_condition[weatherDataElement].observation_time;
+	var city = weatherConditions.data.nearest_area[weatherDataElement].areaName[0].value;
+	var state = weatherConditions.data.nearest_area[weatherDataElement].region[0].value;
+	
+	var weatherIconURL = weatherConditions.data.weather[weatherDataElement].weatherIconURL;
+	var weatherInfoURL = weatherConditions.data.weather[weatherDataElement].weatherURL;
+
+	// assemble the fields to output into one array, then loop once to display
+	// TODO when we refresh after changing location we need to refresh this information as well
+	weatherDisplay = new Array(weatherDisplaySize);
+	weatherDisplay[0] = city + ", " + state;
+	weatherDisplay[1] = lat + "," + lon;
+	weatherDisplay[2] = weatherDesc + " and " + temp_F + "\xB0" + "F";
+	weatherDisplay[3] = "Humidity " + humidity + "% Visibility " + visibility + " mi";
+	weatherDisplay[4] = "Wind " + windDir + " at " + windSpeed + "mph";
+	weatherDisplay[5] =(precipMM>0.0)?"Precip "+ precipMM:"Precip: none";
+	weatherDisplay[6] = "Observed at " + obsTime + " UTC";
+	weather.innerHTML += "Local Conditions<br><br>";
+	for (var i = 0; i <= 6; i++)
+	{
+		weather.innerHTML += weatherDisplay[i] + "<br>";
+	} 
+	// end worldweatheronline.com 
+
+}
+function updateAirportDelays(){
+
+	document.getElementById("airports").innerHTML += "<br>Closest Airports<br><br>";
+
+	var airportListURL="https://www.airmanopus.net/cgi-bin/airportlist.csv";
+	var airportListGet = new XMLHttpRequest();
+	airportListGet.open('GET',airportListURL,false);
+	airportListGet.send();
+
+	var airportListStatus = (airportListGet.statusText);
+	var airportList = (airportListGet.responseText);
+
+	var airports = CSVToArray(airportList);	// array of airport IATA identifiers and corresponding coordinates
+
+	const numAirports = 533;	// number of airports we can check status on 			
+	var airportDelayString; 	// will be the contents of the airports div
+	const viewportDistance = 75;	// only process airports within this many miles
+	const pi = 3.14159265359;	// pi
+	const R = 3959; 		// approximate radius of earth in miles
+
+	const METERS_TO_MILES = 1609.344	// meters in one mile
+	
+	// we need to check all of the airports to see if they are within viewportDistance of us
+	for (var j = 0; j < numAirports; j++) {
+		var iataIdentifier = airports[j][0];			// 3 letter iata identifier
+		var myLat = lat;					// my latitude
+		var myLon = lon;					// my longitude
+		var airportLat = airports[j][1];			// airport latitude
+		var airportLon	= airports[j][2];			// airport longitude
+	
+		// how far away are we from the airport
+		var dLat = ((airportLat-myLat) * (pi/180));
+		var dLon = ((airportLon-myLon) * (pi/180));
+		var myLat = (lat * (pi/180));
+		var airportLatRad = (airportLat * (pi/180));
+
+		var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+			Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(myLat) * Math.cos(airportLatRad); 
+		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+		var distance = R * c;					// miles
+
+		// if we are within viewportDistance look up the airport status 
+		// if we are not within we do nothing
+		 if ( distance <= viewportDistance ) 
+			{
+				var airportStatusURL="https://www.airmanopus.net/cgi-bin/airports.cgi?iata=" + iataIdentifier;
+				var airportStatusGet = new XMLHttpRequest();
+				airportStatusGet.open('GET',airportStatusURL,false);
+				airportStatusGet.send();
+				var airportStatusResponse = airportStatusGet.responseText;
+						
+				// if we see a less than chr we didnt get a json response
+				// we didnt get a json response because FAA doesnt keep status on this airport
+				// so we ignore this airport even though it is within viewportDistance
+				if ( airportStatusResponse.charAt(0) != "<" )
+				{
+					var airportStatus = JSON.parse(airportStatusGet.responseText);
+					
+					var airportIATA = airportStatus.IATA;
+					var airportName = airportStatus.name;
+					var delayStatus = airportStatus.delay;
+					var airportDelayReason = airportStatus.status.reason;
+					var airportClosureBegin = airportStatus.status.closureBegin;
+					var airportClosureEnd = airportStatus.status.closureEnd;
+					var airportMinDelay = airportStatus.status.MinDelay;
+					var airportMaxDelay = airportStatus.status.MaxDelay;
+					var airportAvgDelay = airportStatus.status.AvgDelay;
+
+					// name and IATA always display if within viewPortdistance 	
+					document.getElementById("airports").innerHTML += airportName + " (" + airportIATA + ")<br>";
+					document.getElementById("airports").innerHTML += airportDelayReason + "<br>";
+
+
+					// display closure info only if airport is closed 
+					if ( airportClosureBegin != "")
+					{
+						 document.getElementById("airports").innerHTML +=  "<br>Closed from " + airportClosureBegin + " to " + airportClosureEnd;
+					
+					} 
+
+					// display delay details only when there is a delay
+					// todo delay info can contain airline 3 letter codes so we want to parse those into
+					//      curresponding human readable airline names 
+					//	something like... cat airlineCodesNames.csv | grep \,"AEF"
+
+					
+					if  (delayStatus != "false")
+					{
+						if (airportMinDelay != null)
+						{
+						document.getElementById("airports").innerHTML += "<br>Min " + airportMinDelay + " Max " + airportMaxDelay + " Avg " + airportAvgDelay;
+						}
+					}
+					
+					// check traffic to get estimate on when will we get to the airport 
+					// always display ETA for this airport
+					var airportETAGet = new XMLHttpRequest();
+					var airportETAURL="https://api.tomtom.com/lbs/services/route/3/" + lat + "," + lon + ":" + airportLat + "," + airportLon + "/Quickest/json?avoidTraffic=true&includeTraffic=true&day=today&iqRoutes=2&includeInstructions=false&key=knpmsu5p59rxdud2rmghsxd7"
+					var airportETAProcess="https://www.airmanopus.net/cgi-bin/tomtom.cgi?" + airportETAURL;
+					console.log(airportETAProcess);
+					airportETAGet.open('GET', airportETAProcess, false);
+					airportETAGet.send();
+					
+					airportETAParsed=JSON.parse(airportETAGet.responseText);
+					airportETA = airportETAParsed.route.summary.arrivalOverview.time;
+					document.getElementById("airports").innerHTML += "Your est arrival time " + airportETA + "<br><br>";
+				} // iffn
+			} // iffn
+		} // fer 
 }
 
 
 function initialize(){
          if (navigator.geolocation){
-                navigator.geolocation.getCurrentPosition(function(position){
+                navigator.geolocation.watchPosition(function(position){
 			lat = position.coords.latitude;
 			lon = position.coords.longitude;
 
@@ -239,155 +290,9 @@ function initialize(){
 		});
 		L.marker([lat, lon]).addTo(map);
 
-		// get weather data for current location and time	
-		// weather data is courtesy http://www.worldweatheronline.com free api
-		// via mashery.com
-		const weatherDataElement = 0;		// data.current_condition[weatherDataElement]
-		const weatherDisplaySize = 10;		// size of weatherDisplay array	
-		var localWeatherURL="https://www.airmanopus.net/cgi-bin/worldweatheronline.cgi?lat=" + lat + "&lon=" + lon;
-		var localWeatherGet = new XMLHttpRequest();
-		localWeatherGet.open('GET',localWeatherURL,false);
-		localWeatherGet.send();
-		var weatherConditions = JSON.parse(localWeatherGet.responseText);
+		updateWeather();
+		updateAirportDelays();
 
-		// not completely decided which fields are going to be included so these may change
-		var weatherDesc = weatherConditions.data.current_condition[weatherDataElement].weatherDesc[0].value;
-		var temp_F = weatherConditions.data.current_condition[weatherDataElement].temp_F;
-		var visibility = weatherConditions.data.current_condition[weatherDataElement].visibility;
-		var humidity = weatherConditions.data.current_condition[weatherDataElement].humidity;   
-		var precipMM = weatherConditions.data.current_condition[weatherDataElement].precipMM;
-		var windSpeed = weatherConditions.data.weather[weatherDataElement].windspeedMiles;
-		var windDir = weatherConditions.data.weather[weatherDataElement].winddirection;
-		var obsTime = weatherConditions.data.current_condition[weatherDataElement].observation_time;
-		var city = weatherConditions.data.nearest_area[weatherDataElement].areaName[0].value;
-		var state = weatherConditions.data.nearest_area[weatherDataElement].region[0].value;
-		
-		var weatherIconURL = weatherConditions.data.weather[weatherDataElement].weatherIconURL;
-		var weatherInfoURL = weatherConditions.data.weather[weatherDataElement].weatherURL;
-
-		// assemble the fields to output into one array, then loop once to display
-		// TODO when we refresh after changing location we need to refresh this information as well
-		weatherDisplay = new Array(weatherDisplaySize);
-		weatherDisplay[0] = city + ", " + state;
-		weatherDisplay[1] = lat + "," + lon;
-		weatherDisplay[2] = weatherDesc + " and " + temp_F + "\xB0" + "F";
-		weatherDisplay[3] = "Humidity " + humidity + "% Visibility " + visibility + " mi";
-		weatherDisplay[4] = "Wind " + windDir + " at " + windSpeed + "mph";
-		weatherDisplay[5] =(precipMM>0.0)?"Precip "+ precipMM:"Precip: none";
-		weatherDisplay[6] = "Observed at " + obsTime + " UTC";
-		weather.innerHTML += "Local Conditions<br><br>";
-		for (var i = 0; i <= 6; i++)
-		{
-			weather.innerHTML += weatherDisplay[i] + "<br>";
-		} 
-		// end worldweatheronline.com 
-
-
-		// now check on airport delays
-		document.getElementById("airports").innerHTML += "<br>Closest Airports<br><br>";
-
-		var airportListURL="https://www.airmanopus.net/cgi-bin/airportlist.csv";
-		var airportListGet = new XMLHttpRequest();
-		airportListGet.open('GET',airportListURL,false);
-		airportListGet.send();
-
-		var airportListStatus = (airportListGet.statusText);
-		var airportList = (airportListGet.responseText);
-
-		var airports = CSVToArray(airportList);
-
-		const numAirports = 533;	// number of airports we can check status on 			
-		var airportDelayString; 	// will be the contents of the airports div
-		const viewportDistance = 75;	// only process airports within this many miles
-		const pi = 3.14159265359;	// pi
-		const R = 3959; 		// approximate radius of earth in miles
-
-		const METERS_TO_MILES = 1609.344	// meters in one mile
-		airportDisplay = new Array(3);
-		
-		// we need to check all of the airports to see if they are within viewportDistance of us
-		for (var j = 0; j < numAirports; j++) {
-			var iataIdentifier = airports[j][0];			// 3 letter iata identifier
-	 		var myLat = lat;					// my latitude
-			var myLon = lon;					// my longitude
-			var airportLat = airports[j][1];			// airport latitude
-			var airportLon	= airports[j][2];			// airport longitude
-		
-			// how far away are we from the airport
-			var dLat = ((airportLat-myLat) * (pi/180));
-			var dLon = ((airportLon-myLon) * (pi/180));
-			var myLat = (lat * (pi/180));
-			var airportLatRad = (airportLat * (pi/180));
-
-			var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-				Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(myLat) * Math.cos(airportLatRad); 
-			var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-			var distance = R * c;					// miles
-
-			// if we are within viewportDistance look up the airport status 
-			// if we are not within we do nothing
-			 if ( distance <= viewportDistance ) 
-				{
-					console.log(iataIdentifier);
-
-					var airportStatusURL="https://www.airmanopus.net/cgi-bin/airports.cgi?iata=" + iataIdentifier;
-					var airportStatusGet = new XMLHttpRequest();
-					airportStatusGet.open('GET',airportStatusURL,false);
-					airportStatusGet.send();
-					var airportStatusResponse = airportStatusGet.responseText;
-							
-					// if we see a less than chr we didnt get a json response
-					// so ignore that airport even though it is within range
-					if ( airportStatusResponse.charAt(0) != "<" )
-					{
-						var airportStatus = JSON.parse(airportStatusGet.responseText);
-						
-						var airportIATA = airportStatus.IATA;
-						var airportName = airportStatus.name;
-						var delayStatus = airportStatus.delay;
-						var airportDelayReason = airportStatus.status.reason;
-						var airportClosureBegin = airportStatus.status.closureBegin;
-						var airportClosureEnd = airportStatus.status.closureEnd;
-						var airportMinDelay = airportStatus.status.MinDelay;
-						var airportMaxDelay = airportStatus.status.MaxDelay;
-						var airportAvgDelay = airportStatus.status.AvgDelay;
-
-						// name and IATA always display if within viewPortdistance 	
-						document.getElementById("airports").innerHTML += airportName + " (" + airportIATA + ")<br>";
-						document.getElementById("airports").innerHTML += airportDelayReason + "<br>";
-
-
-						// display closure info only if airport is closed 
-						if ( airportClosureBegin != "")
-						{
-							 document.getElementById("airports").innerHTML +=  "<br>Closed from " + airportClosureBegin + " to " + airportClosureEnd;
-						
-						} 
-	
-						// display delay details only when there is a delay
-						if  (delayStatus != "false")
-						{
-							if (airportMinDelay != null)
-							{
-							document.getElementById("airports").innerHTML += "<br>Min " + airportMinDelay + " Max " + airportMaxDelay + " Avg " + airportAvgDelay;
-							}
-						}
-						
-						// check traffic to get estimate on when will we get to the airport 
-						// always display ETA for this airport
-						var airportETAGet = new XMLHttpRequest();
-						var airportETAURL="https://api.tomtom.com/lbs/services/route/3/" + lat + "," + lon + ":" + airportLat + "," + airportLon + "/Quickest/json?avoidTraffic=true&includeTraffic=true&day=today&iqRoutes=2&includeInstructions=false&key=knpmsu5p59rxdud2rmghsxd7"
-						var airportETAProcess="https://www.airmanopus.net/cgi-bin/tomtom.cgi?" + airportETAURL;
-						console.log(airportETAProcess);
-						airportETAGet.open('GET', airportETAProcess, false);
-						airportETAGet.send();
-						
-						airportETAParsed=JSON.parse(airportETAGet.responseText);
-						airportETA = airportETAParsed.route.summary.arrivalOverview.time;
-						document.getElementById("airports").innerHTML += "Est arrival " + airportETA + "<br><br>";
-					} // iffn
-				} // iffn
-			} // fer 
 		}); // positien
 	} // geolocatien
 } // initializze
