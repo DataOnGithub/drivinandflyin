@@ -176,7 +176,7 @@ function updateAirportDelays(){
 	const numAirports = 533;		// number of airports we can check status on 			
 	var airportDelayString; 		// will be the contents of the airports div
 	const viewportDistance = 75;		// watch airports for delays within this many miles
-	const zoomedViewportDistance = 30; 	// within this many miles of an airport get detailed flight info
+	const zoomedViewportDistance = 15; 	// within this many miles of an airport get detailed flight info
 	const pi = 3.14159265359;		// pi
 	const R = 3959; 			// approximate radius of earth in miles
 
@@ -261,7 +261,7 @@ function updateAirportDelays(){
 						document.getElementById("airports").innerHTML += "<br>Min " + airportMinDelay + " Max " + airportMaxDelay + " Avg " + airportAvgDelay;
 						}
 					}
-					
+					// TODO server side listener for tomtom
 					// check traffic to get estimate on when will we get to the airport 
 					// we always display ETA from our location to each airport
 					var airportETAGet = new XMLHttpRequest();
@@ -287,52 +287,77 @@ function updateAirportDelays(){
 			var month = currentTime.getMonth() + 1;
 			var year = currentTime.getFullYear();
 
+			// TODO server side listener for flightstats
 			// departures
- 			var departingFlightsGet = new XMLHttpRequest();
-			var departingFlightsURL="https://api.flightstats.com/flex/flightstatus/rest/v2/json/airport/status/" + airportIATA + "/dep/" + year + "/" + month + "/" + day + "/" + hour + "?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&utc=false&excludeCargoOnlyFlights=true&numHours=" + NUM_HOURS_FLIGHTS;
+			var departingFlightsGet = new XMLHttpRequest();
+			var departingFlightsURL="https://api.flightstats.com/flex/fids/rest/v1/json/" + airportIATA + "/departures?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&requestedFields=airlineCode%2CflightNumber%2Ccity%2CcurrentTime%2Cgate%2Cremarks&timeFormat=24&timeWindowBegin=30&timeWindowEnd=300&lateMinutes=15&boardingMinutes=45&useRunwayTimes=false&excludeCargoOnlyFlights=true";
 			var departingFlightsProcess="https://www.airmanopus.net/cgi-bin/departures.cgi?" + departingFlightsURL;
 			departingFlightsGet.open('GET', departingFlightsProcess, false);
 			departingFlightsGet.send();
 			var departingFlightsJSON = JSON.parse(departingFlightsGet.responseText);
 			console.log(departingFlightsGet.statusText);
 		
-			// skip display there are no departures scheduled in next NUM_FLIGHTS_HOURS			
-			if ( departingFlightsJSON.flightStatuses.length > 0 )
+			// skip display iffn there are no departures scheduled
+			console.log(airportIATA);
+
+			if (departingFlightsJSON.fidsData.length > 0)
 			{
 				document.getElementById("airports").innerHTML += "Departures<br>";
 				var i = 0;
-				while ( i < departingFlightsJSON.flightStatuses.length)
-				{
-					document.getElementById("airports").innerHTML += departingFlightsJSON.flightStatuses[i].carrierFsCode + " Flight " + departingFlightsJSON.flightStatuses[i].flightNumber + " ";
-					document.getElementById("airports").innerHTML += " departs at " + departingFlightsJSON.flightStatuses[i].departureDate.dateLocal + "<br>";
+				while ( i < departingFlightsJSON.fidsData.length )
+				{ 
+					document.getElementById("airports").innerHTML += departingFlightsJSON.fidsData[i].airlineCode + " ";
+					document.getElementById("airports").innerHTML += departingFlightsJSON.fidsData[i].flightNumber + " ";
+					document.getElementById("airports").innerHTML += departingFlightsJSON.fidsData[i].remarks + " ";
+					document.getElementById("airports").innerHTML += departingFlightsJSON.fidsData[i].city + " ";
+					// make sure a gate has been assigned
+					if (departingFlightsJSON.fidsData[i].gate == null)
+					{
+						document.getElementById("airports").innerHTML += "--- ";
+					} else {
+						document.getElementById("airports").innerHTML += departingFlightsJSON.fidsData[i].gate + " ";
+					}
+					document.getElementById("airports").innerHTML += departingFlightsJSON.fidsData[i].currentTime + "<br>";
 					i++;
-				}
-				document.getElementById("airports").innerHTML += "<br><br>";
-			}	
-			
+				}			
+			}
+
+			// TODO WS 5615 On-Time Chicago 12 09:55 parse the airline code to its full name
+			// TODO On-Time should always be green on white
+			// TODO Boarding should always be white on green
+			// TODO Delayed should alwayes be white on red
 
 			// arrivals
 			var arrivingFlightsGet = new XMLHttpRequest();
-			var arrivingFlightsURL = "https://api.flightstats.com/flex/flightstatus/rest/v2/json/airport/status/" + airportIATA + "/arr/" + year + "/" + month + "/" + day + "/" + hour + "?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&excludeCargoOnlyFlights=true&utc=false&numHours=" + NUM_HOURS_FLIGHTS;
+			var arrivingFlightsURL = "https://api.flightstats.com/flex/fids/rest/v1/json/" + airportIATA + "/arrivals?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&requestedFields=airlineCode%2CflightNumber%2Ccity%2CcurrentTime%2Cgate%2Cremarks&timeFormat=24&timeWindowBegin=30&timeWindowEnd=300&lateMinutes=15&boardingMinutes=45&useRunwayTimes=false&excludeCargoOnlyFlights=true";
 			var arrivingFlightsProcess="https://www.airmanopus.net/cgi-bin/arrivals.cgi?" + arrivingFlightsURL;
 			arrivingFlightsGet.open('GET', arrivingFlightsProcess, false);
 			arrivingFlightsGet.send();
 			var arrivingFlightsJSON = JSON.parse(arrivingFlightsGet.responseText);
 			console.log(arrivingFlightsGet.statusText);
 
- 			// skip display there are no departures scheduled in next NUM_FLIGHTS_HOURS                     
-                        if ( arrivingFlightsJSON.flightStatuses.length > 0 )
+			// skip display there are no arrivals scheduled                     
+ 			if (arrivingFlightsJSON.fidsData.length > 0)
                         {
-                                document.getElementById("airports").innerHTML += "Arrivals<br>";
-				var i = 0;
-                                while ( i < arrivingFlightsJSON.flightStatuses.length)
+				document.getElementById("airports").innerHTML += "<br>Arrivals<br>";
+                                var i = 0;
+                                while ( i < arrivingFlightsJSON.fidsData.length ) 
                                 {
-                                        document.getElementById("airports").innerHTML += arrivingFlightsJSON.flightStatuses[i].carrierFsCode + " Flight " + arrivingFlightsJSON.flightStatuses[i].flightNumber + " ";
-                                        document.getElementById("airports").innerHTML += " arrives at " + arrivingFlightsJSON.flightStatuses[i].arrivalDate.dateLocal + "<br>";
-                                        i++;
-                                }
-				document.getElementById("airports").innerHTML += "<br><br>";
-                        }       
+				        document.getElementById("airports").innerHTML += arrivingFlightsJSON.fidsData[i].airlineCode + " ";
+                                        document.getElementById("airports").innerHTML += arrivingFlightsJSON.fidsData[i].flightNumber + "";
+                                        document.getElementById("airports").innerHTML += arrivingFlightsJSON.fidsData[i].remarks + " ";
+                                        document.getElementById("airports").innerHTML += arrivingFlightsJSON.fidsData[i].city + " ";
+                                        // make sure a gate has been assigned
+                                        if (arrivingFlightsJSON.fidsData[i].gate == null)
+                                        {
+                                                document.getElementById("airports").innerHTML += "--- ";
+                                        } else {
+                                                document.getElementById("airports").innerHTML += arrivingFlightsJSON.fidsData[i].gate + " ";
+                                        }
+					document.getElementById("airports").innerHTML += arrivingFlightsJSON.fidsData[i].currentTime + "<br>";
+					i++
+                                }                       
+                        }
 
 
 			// todo menu
@@ -388,5 +413,4 @@ html, body, #map {
 <div id="weather" class="weatherDisplay"></div>
 <div id="airports" class="airportFlights"></div>
 </html>
-
 
