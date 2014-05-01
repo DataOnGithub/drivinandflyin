@@ -175,14 +175,14 @@ function updateAirportDelays(){
 
 	const numAirports = 533;		// number of airports we can check status on 			
 	var airportDelayString; 		// will be the contents of the airports div
-	const viewportDistance = 75;		// watch airports for delays within this many miles
-	const zoomedViewportDistance = 15; 	// within this many miles of an airport get detailed flight info
+	const viewportDistance = 100;		// watch airports for delays within this many miles
+	const zoomedViewportDistance = 30; 	// within this many miles of an airport get detailed flight info
 	const pi = 3.14159265359;		// pi
 	const R = 3959; 			// approximate radius of earth in miles
 
 	const METERS_TO_MILES = 1609.344;	// meters in one mile
 	
-	const NUM_HOURS_FLIGHTS = 3;		// get arr and dep flights for this many hours from now
+	const NUM_HOURS_FLIGHTS = 2;		// get arr and dep flights for this many hours from now
 
 	var d = new Date();			// current date to use for requesting flight data for an airport
 	var year = d.getFullYear();		// current year
@@ -277,7 +277,7 @@ function updateAirportDelays(){
 				} // iffn
 			} // iffn
 
-		// if we are within zoomedViewportDistance miles of the airport we begin to be concerned about specific flights
+		// if we are within zoomedViewportDistance miles of an airport we want to see its incoming and outgoing flights
 		if ( distance <= zoomedViewportDistance )
 		{
 
@@ -287,26 +287,54 @@ function updateAirportDelays(){
 			var month = currentTime.getMonth() + 1;
 			var year = currentTime.getFullYear();
 
-			// departures 
-			var departingFlightsGet = new XMLHttpRequest();
+			// departures
+ 			var departingFlightsGet = new XMLHttpRequest();
 			var departingFlightsURL="https://api.flightstats.com/flex/flightstatus/rest/v2/json/airport/status/" + airportIATA + "/dep/" + year + "/" + month + "/" + day + "/" + hour + "?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&utc=false&numHours=" + NUM_HOURS_FLIGHTS;
 			var departingFlightsProcess="https://www.airmanopus.net/cgi-bin/departures.cgi?" + departingFlightsURL;
 			departingFlightsGet.open('GET', departingFlightsProcess, false);
 			departingFlightsGet.send();
-			
+			var departingFlightsJSON = JSON.parse(departingFlightsGet.responseText);
 			console.log(departingFlightsGet.statusText);
-			console.log(departingFlightsGet.responseText);			
-
+		
+			// skip display there are no departures scheduled in next NUM_FLIGHTS_HOURS			
+			if ( departingFlightsJSON.flightStatuses.length > 0 )
+			{
+				document.getElementById("airports").innerHTML += "Departures<br>";
+				var i = 0;
+				while ( i < departingFlightsJSON.flightStatuses.length)
+				{
+					document.getElementById("airports").innerHTML += departingFlightsJSON.flightStatuses[i].carrierFsCode + " Flight " + departingFlightsJSON.flightStatuses[i].flightNumber + " ";
+					document.getElementById("airports").innerHTML += " departs at " + departingFlightsJSON.flightStatuses[i].departureDate.dateLocal + "<br>";
+					i++;
+				}
+				document.getElementById("airports").innerHTML += "<br><br>";
+			}	
+			
 
 			// arrivals
+
 			var arrivingFlightsGet = new XMLHttpRequest();
 			var arrivingFlightsURL = "https://api.flightstats.com/flex/flightstatus/rest/v2/json/airport/status/" + airportIATA + "/arr/" + year + "/" + month + "/" + day + "/" + hour + "?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&utc=false&numHours=" + NUM_HOURS_FLIGHTS;
 			var arrivingFlightsProcess="https://www.airmanopus.net/cgi-bin/arrivals.cgi?" + arrivingFlightsURL;
 			arrivingFlightsGet.open('GET', arrivingFlightsProcess, false);
 			arrivingFlightsGet.send();
-
+			var arrivingFlightsJSON = JSON.parse(arrivingFlightsGet.responseText);
 			console.log(arrivingFlightsGet.statusText);
-			console.log(arrivingFlightsGet.responseText);
+
+ 			// skip display there are no departures scheduled in next NUM_FLIGHTS_HOURS                     
+                        if ( arrivingFlightsJSON.flightStatuses.length > 0 )
+                        {
+                                document.getElementById("airports").innerHTML += "Arrivals<br>";
+				var i = 0;
+                                while ( i < arrivingFlightsJSON.flightStatuses.length)
+                                {
+                                        document.getElementById("airports").innerHTML += arrivingFlightsJSON.flightStatuses[i].carrierFsCode + " Flight " + arrivingFlightsJSON.flightStatuses[i].flightNumber + " ";
+                                        document.getElementById("airports").innerHTML += " arrives at " + arrivingFlightsJSON.flightStatuses[i].arrivalDate.dateLocal + "<br>";
+                                        i++;
+                                }
+				document.getElementById("airports").innerHTML += "<br><br>";
+                        }       
+
 
 			// todo menu
 			// choose arrivals or departures
