@@ -281,8 +281,12 @@ function updateAirportDelays(){
 		if ( distance <= zoomedViewportDistance )
 		{
 
-			var hour = d.getHours();
-			
+			var currentTime = new Date();
+			var hour = currentTime.getHours();
+			var day = currentTime.getDate();
+			var month = currentTime.getMonth() + 1;
+			var year = currentTime.getFullYear();
+
 			// departures 
 			var departingFlightsGet = new XMLHttpRequest();
 			var departingFlightsURL="https://api.flightstats.com/flex/flightstatus/rest/v2/json/airport/status/" + airportIATA + "/dep/" + year + "/" + month + "/" + day + "/" + hour + "?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&utc=false&numHours=" + NUM_HOURS_FLIGHTS;
@@ -296,7 +300,7 @@ function updateAirportDelays(){
 
 			// arrivals
 			var arrivingFlightsGet = new XMLHttpRequest();
-			var arrivingFlightsURL = "https://api.flightstats.com/flex/flightstatus/rest/v2/json/airport/status/" + airportIATA + "/arr/" + year + "/" + day + "/" + hour + "?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&utc=false&numHours=" + NUM_HOURS_FLIGHTS;
+			var arrivingFlightsURL = "https://api.flightstats.com/flex/flightstatus/rest/v2/json/airport/status/" + airportIATA + "/arr/" + year + "/" + month + "/" + day + "/" + hour + "?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&utc=false&numHours=" + NUM_HOURS_FLIGHTS;
 			var arrivingFlightsProcess="https://www.airmanopus.net/cgi-bin/arrivals.cgi?" + arrivingFlightsURL;
 			arrivingFlightsGet.open('GET', arrivingFlightsProcess, false);
 			arrivingFlightsGet.send();
