@@ -1,0 +1,34 @@
+			.toptitle-text {
+				background-color: blue;
+				color: white;
+				font-family: 'Cinzel','sans-serif';
+				font-size: medium;
+			}
+	
+			.weatherDisplay {
+
+				width: 310px;
+				font-family: 'Arimo','sans-serif';
+				font-size: medium;
+			}
+
+			.airportTitle {
+				font-family: 'Arimo','sans-serif';
+				font-size: medium;
+			}
+			
+
+			.airportFlights {
+				font-family: 'Arimo','sans-serif';
+				font-size: small;
+			}
+	
+			.errorText {
+				font-family 'Arimo','sans-serif';
+				font-size: medium;
+				color: red;
+			}
+			
+
+
+

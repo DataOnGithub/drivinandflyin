@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link href='https://fonts.googleapis.com/css?family=Arimo:400,700,400italic|Oxygen' rel='stylesheet' type='text/css'>
 <link rel="apple-touch-icon-precomposed" href="somepath/image.png" />
-<link href='https://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
 <link rel="StyleSheet" href="https://www.airmanopus.net/weathercheck/iphone.css" type="text/css">
 
 <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.2/mapbox.js'></script>
@@ -107,7 +107,7 @@
 	// start of mine
 
 function geoError(){
-        document.write("Geolocation failed. You may need to enable location services on your device.");
+        document.write("<span class='errorText'>Geolocation failed. You may need to enable location services on your device.</span>");
 }
 
 function updateWeather(){
@@ -175,14 +175,14 @@ function updateAirportDelays(){
 
 	const numAirports = 533;		// number of airports we can check status on 			
 	var airportDelayString; 		// will be the contents of the airports div
-	const viewportDistance = 100;		// watch airports for delays within this many miles
+	const viewportDistance = 75;		// watch airports for delays within this many miles
 	const zoomedViewportDistance = 30; 	// within this many miles of an airport get detailed flight info
 	const pi = 3.14159265359;		// pi
 	const R = 3959; 			// approximate radius of earth in miles
 
 	const METERS_TO_MILES = 1609.344;	// meters in one mile
 	
-	const NUM_HOURS_FLIGHTS = 2;		// get arr and dep flights for this many hours from now
+	const NUM_HOURS_FLIGHTS = 5;		// get arr and dep flights for this many hours from now
 
 	var d = new Date();			// current date to use for requesting flight data for an airport
 	var year = d.getFullYear();		// current year
@@ -206,9 +206,9 @@ function updateAirportDelays(){
 		var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
 			Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(myLat) * Math.cos(airportLatRad); 
 		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-		var distance = R * c;					// miles
+		var distance = R * c;					// distance to airport in NM
 
-		// if we are within viewportDistance look up the airport delay status and always display result
+		// if we are within viewportDistance look up the airport delay status and always display that result
 		// we ignore airports outside viewportDistance
 		 if ( distance <= viewportDistance ) 
 			{
@@ -236,10 +236,10 @@ function updateAirportDelays(){
 					var airportAvgDelay = airportStatus.status.AvgDelay;
 
 					// name and IATA always display if within viewPortdistance 	
+					document.getElementById("airports").innerHTML += "<span class='airportTitle'>";
 					document.getElementById("airports").innerHTML += airportName + " (" + airportIATA + ")<br>";
 					document.getElementById("airports").innerHTML += airportDelayReason + "<br>";
-
-
+					document.getElementById("airports").innerHTML += "</span>";
 					// display closure info only if airport is closed 
 					if ( airportClosureBegin != "")
 					{
@@ -263,7 +263,7 @@ function updateAirportDelays(){
 					}
 					
 					// check traffic to get estimate on when will we get to the airport 
-					// we always display ETA for each airport
+					// we always display ETA from our location to each airport
 					var airportETAGet = new XMLHttpRequest();
 					var airportETAURL="https://api.tomtom.com/lbs/services/route/3/" + lat + "," + lon + ":" + airportLat + "," + airportLon + "/Quickest/json?avoidTraffic=true&includeTraffic=true&day=today&iqRoutes=2&includeInstructions=false&key=knpmsu5p59rxdud2rmghsxd7"
 					var airportETAProcess="https://www.airmanopus.net/cgi-bin/tomtom.cgi?" + airportETAURL;
@@ -274,13 +274,13 @@ function updateAirportDelays(){
 					airportETAParsed=JSON.parse(airportETAGet.responseText);
 					airportETA = airportETAParsed.route.summary.arrivalOverview.time;
 					document.getElementById("airports").innerHTML += "Your est arrival time " + airportETA + "<br><br>";
-				} // iffn
-			} // iffn
+				}
+			} 
 
 		// if we are within zoomedViewportDistance miles of an airport we want to see its incoming and outgoing flights
 		if ( distance <= zoomedViewportDistance )
 		{
-
+			// use the date at this moment
 			var currentTime = new Date();
 			var hour = currentTime.getHours();
 			var day = currentTime.getDate();
@@ -312,7 +312,6 @@ function updateAirportDelays(){
 			
 
 			// arrivals
-
 			var arrivingFlightsGet = new XMLHttpRequest();
 			var arrivingFlightsURL = "https://api.flightstats.com/flex/flightstatus/rest/v2/json/airport/status/" + airportIATA + "/arr/" + year + "/" + month + "/" + day + "/" + hour + "?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&utc=false&numHours=" + NUM_HOURS_FLIGHTS;
 			var arrivingFlightsProcess="https://www.airmanopus.net/cgi-bin/arrivals.cgi?" + arrivingFlightsURL;
@@ -386,9 +385,8 @@ html, body, #map {
 <body onload="initialize()">
 
 <div id="map"></div>
-<div id="weather"></div>
-<div id="airports"></div>
-<div id ="flights"></div>
+<div id="weather" class="weatherDisplay"></div>
+<div id="airports" class="airportFlights"></div>
 </html>
 
 
