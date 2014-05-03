@@ -114,7 +114,6 @@ function updateWeather(){
 	// get weather data for current location and time	
 	
 	// todo this is kinda fugly
-	// 	better to do this as a weatherConditions object that has some reuse possibility
 
 	// weather data is courtesy http://www.worldweatheronline.com free api
 	// via mashery.com
@@ -141,17 +140,14 @@ function updateWeather(){
 	var weatherIconURL = weatherConditions.data.weather[weatherDataElement].weatherIconURL;
 	var weatherInfoURL = weatherConditions.data.weather[weatherDataElement].weatherURL;
 
-	// assemble the fields to output into one array, then loop once to display
-	// TODO when we refresh after changing location we need to refresh this information as well
 	weatherDisplay = new Array(weatherDisplaySize);
-	weatherDisplay[0] = city + ", " + state;
-	weatherDisplay[1] = lat + "," + lon;
+	weatherDisplay[0] = city + ", " + state + " (" + lat + "," + lon + ")";
+	weatherDisplay[1] = " ";
 	weatherDisplay[2] = weatherDesc + " and " + temp_F + "\xB0" + "F";
 	weatherDisplay[3] = "Humidity " + humidity + "% Visibility " + visibility + " mi";
 	weatherDisplay[4] = "Wind " + windDir + " at " + windSpeed + "mph";
 	weatherDisplay[5] =(precipMM>0.0)?"Precip "+ precipMM:"Precip: none";
 	weatherDisplay[6] = "Observed at " + obsTime + " UTC";
-	weather.innerHTML += "Local Conditions<br><br>";
 	for (var i = 0; i <= 6; i++)
 	{
 		weather.innerHTML += weatherDisplay[i] + "<br>";
@@ -159,9 +155,9 @@ function updateWeather(){
 	// end worldweatheronline.com 
 
 }
+
+
 function updateAirportDelays(){
-
-
 
 	var airportListURL="https://www.airmanopus.net/cgi-bin/airportlist.csv";
 	var airportListGet = new XMLHttpRequest();
@@ -175,8 +171,8 @@ function updateAirportDelays(){
 
 	const numAirports = 533;		// number of airports we can check status on 			
 	var airportDelayString; 		// will be the contents of the airports div
-	const viewportDistance = 75;		// watch airports for delays within this many miles
-	const zoomedViewportDistance = 65; 	// within this many miles of an airport get detailed flight info
+	const viewportDistance = 50;		// watch airports for delays within this many miles
+	const zoomedViewportDistance = 15; 	// within this many miles of an airport get detailed flight info
 	const pi = 3.14159265359;		// pi
 	const R = 3959; 			// approximate radius of earth in miles
 
@@ -209,15 +205,12 @@ function updateAirportDelays(){
 		var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
 			Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(myLat) * Math.cos(airportLatRad); 
 		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-		var distance = R * c;					// distance to airport in NM
+		var distance = R * c;					// distance to airport as the crow flies
 
-
-
-		
-		// if we are within viewportDistance look up the airport delay status and always display that result
-		// we ignore airports outside viewportDistance
+		// we ignore all airports outside viewportDistance
 		 if ( distance <= viewportDistance ) 
 			{
+				// see if this airport has a delay or closure notice posted
 				var airportStatusURL="https://www.airmanopus.net/cgi-bin/airports.cgi?iata=" + iataIdentifier;
 				var airportStatusGet = new XMLHttpRequest();
 				airportStatusGet.open('GET',airportStatusURL,false);
@@ -253,11 +246,6 @@ function updateAirportDelays(){
 					
 					} 
 
-
-					// todo delay info can contain airline 3 letter codes so we want to parse those into
-					//      curresponding human readable airline names 
-					//	something like... cat airlineCodesNames.csv | grep \,"AEF"
-
 					// display delay reason only when there is a delay
 					if  (delayStatus != "false")
 					{
@@ -267,22 +255,24 @@ function updateAirportDelays(){
 						document.getElementById("airports").innerHTML += "<br>Min " + airportMinDelay + " Max " + airportMaxDelay + " Avg " + airportAvgDelay;
 						}
 					}
-					// TODO server side listener for tomtom
 					// check traffic to get estimate on when will we get to the airport 
 					// we always display ETA from our location to each airport
 					var airportETAGet = new XMLHttpRequest();
-					var airportETAURL="https://api.tomtom.com/lbs/services/route/3/" + lat + "," + lon + ":" + airportLat + "," + airportLon + "/Quickest/json?avoidTraffic=true&includeTraffic=true&day=today&iqRoutes=2&includeInstructions=false&key=knpmsu5p59rxdud2rmghsxd7"
+					var airportETAURL="https://api.tomtom.com/lbs/services/route/3/" + lat + "," + lon + ":" + airportLat + "," + airportLon + "/Quickest/json?avoidTraffic=true&includeTraffic=true&day=today&iqRoutes=2&includeInstructions=true&key=knpmsu5p59rxdud2rmghsxd7"
 					var airportETAProcess="https://www.airmanopus.net/cgi-bin/tomtom.cgi?" + airportETAURL;
 					airportETAGet.open('GET', airportETAProcess, false);
 					airportETAGet.send();
 					
 					airportETAParsed=JSON.parse(airportETAGet.responseText);
 					airportETA = airportETAParsed.route.summary.arrivalOverview.time;
-					document.getElementById("airports").innerHTML += "This airport is approx " + distance + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + "<br><br>";
+					document.getElementById("airports").innerHTML += "This airport is approx " + distance.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + "<br><br>";
 				}
 			} 
 
+
 		// if we are within zoomedViewportDistance miles of an airport we want to see its incoming and outgoing flights
+		// so we can select the one we want and just monitor that one
+
 		if ( distance <= zoomedViewportDistance )
 		{
 			// use the date at this moment
@@ -291,9 +281,6 @@ function updateAirportDelays(){
 			var day = currentTime.getDate();
 			var month = currentTime.getMonth() + 1;
 			var year = currentTime.getFullYear();
-
-			// TODO server side listener for flightstats
-
 
 			// departures
 			var departingFlightsGet = new XMLHttpRequest();
@@ -304,29 +291,32 @@ function updateAirportDelays(){
 			var departingFlightsJSON = JSON.parse(departingFlightsGet.responseText);
 		
 			// skip display iffn there are no departures scheduled
+			// often occurs between 0000-0500 airport local time
 
 			if (departingFlightsJSON.fidsData.length > 0)
 			{
-				document.getElementById("airports").innerHTML += "Departures<br>";
+				document.getElementById("airports").innerHTML += "Departures<br><br>";
 				var i = 0;
 				while ( i < departingFlightsJSON.fidsData.length )
 				{ 
-					document.getElementById("airports").innerHTML += departingFlightsJSON.fidsData[i].operatingAirlineName + " " + departingFlightsJSON.fidsData[i].flight + " ";
-					document.getElementById("airports").innerHTML += departingFlightsJSON.fidsData[i].destinationFamiliarName + " ";
-					document.getElementById("airports").innerHTML += departingFlightsJSON.fidsData[i].scheduledTime + " ";
+					var departureAirlineName = departingFlightsJSON.fidsData[i].operatingAirlineName;
+					var departureAirlineLogo = departingFlightsJSON.fidsData[i].airlineLogoUrlPng;
+					var departureFlight = departingFlightsJSON.fidsData[i].flight;
+					var departureDestination = departingFlightsJSON.fidsData[i].destinationFamiliarName;
+					var departureScheduledTime = departingFlightsJSON.fidsData[i].scheduledTime;
+					var departureGate = departingFlightsJSON.fidsData[i].gate;
+					var departureRemarks = departingFlightsJSON.fidsData[i].remarksWithTime;
 
-
-
-					// make sure a gate has been assigned
-					if (departingFlightsJSON.fidsData[i].gate == null)
-					{
-						document.getElementById("airports").innerHTML += "--- ";
-					} else {
-						document.getElementById("airports").innerHTML += departingFlightsJSON.fidsData[i].gate + " ";
-					}
-					
-					document.getElementById("airports").innerHTML += departingFlightsJSON.fidsData[i].remarksWithTime + " as of " + departingFlightsJSON.fidsData[i].lastUpdatedTime + "<br>";
 					i++;
+
+					if ( departureGate == null )
+                                        {
+                                                departureGate = " ";
+                                        }       
+
+                                        document.getElementById("airports").innerHTML += "<p><img src=https://" + departureAirlineLogo.substring(7) + " alt='" + departureAirlineName + "' height=16 width=55> " + departureFlight + " " + departureDestination + " " + departureScheduledTime + " " + departureGate + " "+ departureRemarks + "</p>";
+
+
 				}			
 			}
 
@@ -346,32 +336,38 @@ function updateAirportDelays(){
 			// skip display there are no arrivals scheduled                     
  			if (arrivingFlightsJSON.fidsData.length > 0)
                         {
+
 				document.getElementById("airports").innerHTML += "<br>Arrivals<br>";
                                 var i = 0;
                                 while ( i < arrivingFlightsJSON.fidsData.length ) 
                                 {
-                                        
-					document.getElementById("airports").innerHTML += arrivingFlightsJSON.fidsData[i].operatingAirlineName + " ";
-					document.getElementById("airports").innerHTML += arrivingFlightsJSON.fidsData[i].flight + " ";
-                                        document.getElementById("airports").innerHTML += arrivingFlightsJSON.fidsData[i].city + " ";
-                                        document.getElementById("airports").innerHTML += arrivingFlightsJSON.fidsData[i].scheduledTime + " ";
+                                       	var arrivalAirlineLogo = arrivingFlightsJSON.fidsData[i].airlineLogoUrlPng; 
+					var arrivalAirlineName = arrivingFlightsJSON.fidsData[i].operatingAirlineName;
+					var arrivalFlight = arrivingFlightsJSON.fidsData[i].flight;
+                                        var arrivalCity = arrivingFlightsJSON.fidsData[i].city;
+                                        var arrivalScheduled = arrivingFlightsJSON.fidsData[i].scheduledTime;
+					var arrivalGate = arrivingFlightsJSON.fidsData[i].gate;
+                                        var arrivalBaggage = arrivingFlightsJSON.fidsData[i].baggage;
+					var arrivalRemarks = arrivingFlightsJSON.fidsData[i].remarksWithTime;
 
-					// make sure a gate has been assigned
-                                        if (arrivingFlightsJSON.fidsData[i].gate == null)
-                                        {
-                                                document.getElementById("airports").innerHTML += "--- ";
-                                        } else {
-                                                document.getElementById("airports").innerHTML += arrivingFlightsJSON.fidsData[i].gate + " ";
-                                        }
-					document.getElementById("airports").innerHTML += arrivingFlightsJSON.fidsData[i].baggage + " ";
-					document.getElementById("airports").innerHTML += arrivingFlightsJSON.fidsData[i].remarksWithTime + " as of " + arrivingFlightsJSON.fidsData[i].lastUpdatedTime + "<br>";
+					// handle fields that might not have values
+
+					if ( arrivalGate == null )
+					{
+						arrivalGate = " ";
+					}	
+
+					if ( arrivalBaggage == null )
+					{
+						arrivalBaggage = " ";
+					}
+				
+					document.getElementById("airports").innerHTML += "<p><img src=https://" + arrivalAirlineLogo.substring(7) + " alt='" + arrivalAirlineName + "' height=16 width=55> " + arrivalAirlineName + " " + arrivalFlight + " " + arrivalCity + " " + arrivalScheduled + " " + arrivalGate + " " + arrivalBaggage + " " + arrivalRemarks + "</p>";
 
 
 					i++
                                 }                       
                         }
-
-			document.getElementById("airports").innerHTML += "<br><br>";
 			// todo menu
 			// choose arrivals or departures
 			// choose airline
@@ -397,7 +393,7 @@ function initialize(){
 			inertia: true,
 			watch: true,
 			enableHighAccuracy: true,
-			maximumAge: 50000,
+			maximumAge: 25000,
 			trackResize: true,
 			attributionControl : true
 		});
