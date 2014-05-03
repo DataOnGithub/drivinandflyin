@@ -113,8 +113,6 @@ function geoError(){
 function updateWeather(){
 	// get weather data for current location and time	
 	
-	// todo this is kinda fugly
-
 	// weather data is courtesy http://www.worldweatheronline.com free api
 	// via mashery.com
 	const weatherDataElement = 0;		// data.current_condition[weatherDataElement]
@@ -171,8 +169,8 @@ function updateAirportDelays(){
 
 	const numAirports = 533;		// number of airports we can check status on 			
 	var airportDelayString; 		// will be the contents of the airports div
-	const viewportDistance = 50;		// watch airports for delays within this many miles
-	const zoomedViewportDistance = 15; 	// within this many miles of an airport get detailed flight info
+	const viewportDistance = 15;		// watch airports for delays within this many miles
+	const zoomedViewportDistance = 6; 	// within this many miles of an airport get detailed flight info
 	const pi = 3.14159265359;		// pi
 	const R = 3959; 			// approximate radius of earth in miles
 
@@ -217,9 +215,8 @@ function updateAirportDelays(){
 				airportStatusGet.send();
 				var airportStatusResponse = airportStatusGet.responseText;
 						
-				// if we see a less than chr we didnt get a json response
-				// we didnt get a json response because FAA doesnt keep status on this airport
-				// so we ignore this airport even though it is within viewportDistance
+				// if we see a less than chr we didnt get a json response so no delays
+				// probably a smaller airport that FAA doesnt keep status on
 				if ( airportStatusResponse.charAt(0) != "<" )
 				{
 					var airportStatus = JSON.parse(airportStatusGet.responseText);
@@ -256,7 +253,7 @@ function updateAirportDelays(){
 						}
 					}
 					// check traffic to get estimate on when will we get to the airport 
-					// we always display ETA from our location to each airport
+					// we always display driving  ETA from our location to each airport
 					var airportETAGet = new XMLHttpRequest();
 					var airportETAURL="https://api.tomtom.com/lbs/services/route/3/" + lat + "," + lon + ":" + airportLat + "," + airportLon + "/Quickest/json?avoidTraffic=true&includeTraffic=true&day=today&iqRoutes=2&includeInstructions=true&key=knpmsu5p59rxdud2rmghsxd7"
 					var airportETAProcess="https://www.airmanopus.net/cgi-bin/tomtom.cgi?" + airportETAURL;
@@ -264,6 +261,7 @@ function updateAirportDelays(){
 					airportETAGet.send();
 					
 					airportETAParsed=JSON.parse(airportETAGet.responseText);
+					console.log(airportETAParsed);
 					airportETA = airportETAParsed.route.summary.arrivalOverview.time;
 					document.getElementById("airports").innerHTML += "This airport is approx " + distance.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + "<br><br>";
 				}
@@ -309,13 +307,24 @@ function updateAirportDelays(){
 
 					i++;
 
+					// make dynamic changes
 					if ( departureGate == null )
                                         {
                                                 departureGate = " ";
                                         }       
 
-                                        document.getElementById("airports").innerHTML += "<p><img src=https://" + departureAirlineLogo.substring(7) + " alt='" + departureAirlineName + "' height=16 width=55> " + departureFlight + " " + departureDestination + " " + departureScheduledTime + " " + departureGate + " "+ departureRemarks + "</p>";
+					if ( departureRemarks = "Boarding" )
+					{
+						departureRemarksTemp = "<span style='color:green;font-weight:bold'>" + departureRemarks + "</span>";
+						departureRemarks = departureRemarksTemp;
+					}
+				
+					if ( departureRemarks = "On-time" )
+					{
+						departureRemarksTemp = "<span style='color:green'>" + departureRemarks + "</span>";
+					}
 
+                                        document.getElementById("airports").innerHTML += "<p><img src=https://" + departureAirlineLogo.substring(7) + " alt='" + departureAirlineName + "' height=18 width=55>" + departureFlight + " to " + departureDestination + " at " + departureScheduledTime + " from gate [" + departureGate + "] "+ departureRemarks + "</p>";
 
 				}			
 			}
@@ -350,19 +359,40 @@ function updateAirportDelays(){
                                         var arrivalBaggage = arrivingFlightsJSON.fidsData[i].baggage;
 					var arrivalRemarks = arrivingFlightsJSON.fidsData[i].remarksWithTime;
 
-					// handle fields that might not have values
+					// make dynamic changes
 
 					if ( arrivalGate == null )
 					{
 						arrivalGate = " ";
-					}	
+					}
 
 					if ( arrivalBaggage == null )
 					{
 						arrivalBaggage = " ";
 					}
-				
-					document.getElementById("airports").innerHTML += "<p><img src=https://" + arrivalAirlineLogo.substring(7) + " alt='" + arrivalAirlineName + "' height=16 width=55> " + arrivalAirlineName + " " + arrivalFlight + " " + arrivalCity + " " + arrivalScheduled + " " + arrivalGate + " " + arrivalBaggage + " " + arrivalRemarks + "</p>";
+	
+					if ( arrivalRemarks.indexOf("Estimated") != -1)
+					{				
+						arrivalRemarksTemp = "<span style='color:red'>" + arrivalRemarks + "</span>";
+                                                arrivalRemarks = arrivalRemarksTemp;
+
+					}
+					if ( arrivalRemarks.indexOf("Cancelled") != -1)
+                                        {                               
+                                                arrivalRemarksTemp = "<span style='color:red;font-weight:bold'>" + arrivalRemarks + "</span>";
+                                                arrivalRemarks = arrivalRemarksTemp;
+
+                                        }
+
+
+					if ( arrivalRemarks == "Arrived On-Time" )
+					{
+
+						arrivalRemarksTemp = "<span style='color:green;font-weight:bold'>" + arrivalRemarks + "</span>";
+                                                arrivalRemarks = arrivalRemarksTemp;
+
+					}
+					document.getElementById("airports").innerHTML += "<p><img src=https://" + arrivalAirlineLogo.substring(7) + " alt='" + arrivalAirlineName + "' height=18 width=55> " + arrivalAirlineName + " " + arrivalFlight + " " + arrivalCity + " " + arrivalScheduled + " " + arrivalGate + " " + arrivalBaggage + " " + arrivalRemarks + "</p>";
 
 
 					i++
@@ -416,7 +446,7 @@ html, body, #map {
 </style>
 </head>
 <body onload="initialize()">
-
+<div id="top-title" class="top-title">AirportHack</div>
 <div id="map"></div>
 <div id="weather" class="weatherDisplay"></div>
 <div id="airports" class="airportFlights"></div>
