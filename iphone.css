@@ -1,3 +1,5 @@
+			
+
 			.toptitle-text {
 				background-color: blue;
 				color: white;
@@ -12,13 +14,13 @@
 			}
 
 			.airportTitle {
-				font-family: 'Arimo',sans-serif;
+				font-family: 'Inconsolata',sans-serif;
 				font-size: medium;
 			}
 			
 
 			.airportFlights {
-				font-family: 'Arimo',sans-serif;
+				font-family: 'Inconsolata',sans-serif;
 				font-size: small;
 			}
 
@@ -30,7 +32,7 @@
 			}
 
 			.errorText {
-				font-family 'Arimo','sans-serif';
+				font-family 'Inconsolata','sans-serif';
 				font-size: medium;
 				color: red;
 			}

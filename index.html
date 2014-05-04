@@ -6,6 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link href='https://fonts.googleapis.com/css?family=Arimo:400,700,400italic|Oxygen' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Inconsolata:400,700' rel='stylesheet' type='text/css'>
 <link rel="apple-touch-icon-precomposed" href="somepath/image.png" />
 <link rel="StyleSheet" href="https://www.airmanopus.net/weathercheck/iphone.css" type="text/css">
 
@@ -282,7 +283,7 @@ function updateAirportDelays(){
 
 			// departures
 			var departingFlightsGet = new XMLHttpRequest();
-			var departingFlightsURL="https://api.flightstats.com/flex/fids/rest/v1/json/" + airportIATA + "/departures?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&codeType=IATA&requestedFields=airlineLogoUrlPng%2CoperatingAirlineName%2Cflight%2CdestinationFamiliarName%2CscheduledTime%2Cgate%2CremarksWithTime%2ClastUpdatedTime&sortFields=operatingAirlineName%2Cflight%2CscheduledTime&timeFormat=24&timeWindowBegin=30&timeWindowEnd=30&lateMinutes=15&boardingMinutes=45&useRunwayTimes=true&excludeCargoOnlyFlights=true";
+			var departingFlightsURL="https://api.flightstats.com/flex/fids/rest/v1/json/" + airportIATA + "/departures?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&codeType=IATA&requestedFields=airlineLogoUrlPng%2operatingAirlineName%2Cflight%2CdestinationFamiliarName%2CscheduledTime%2Cgate%2CremarksWithTime%2ClastUpdatedTime&sortFields=operatingAirlineName%2Cflight%2CscheduledTime&timeFormat=24&timeWindowBegin=30&timeWindowEnd=30&lateMinutes=15&boardingMinutes=45&useRunwayTimes=true&excludeCargoOnlyFlights=true";
 			var departingFlightsProcess="https://www.airmanopus.net/cgi-bin/departures.cgi?" + departingFlightsURL;
 			departingFlightsGet.open('GET', departingFlightsProcess, false);
 			departingFlightsGet.send();
@@ -336,7 +337,7 @@ function updateAirportDelays(){
 
 			// arrivals
 			var arrivingFlightsGet = new XMLHttpRequest();
-			var arrivingFlightsURL = "https://api.flightstats.com/flex/fids/rest/v1/json/" + airportIATA + "/arrivals?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&requestedFields=airlineLogoUrlPng%2CoperatingAirlineName%2Cflight%2Ccity%2CscheduledTime%2Cgate%2Cbaggage%2CremarksWithTime%2Cgate%2ClastUpdatedTime&sortFields=operatingAirlineName%2Cflight%2CscheduledTime&timeFormat=24&timeWindowBegin=30&timeWindowEnd=30&lateMinutes=15&boardingMinutes=45&useRunwayTimes=true&excludeCargoOnlyFlights=true"; 
+			var arrivingFlightsURL = "https://api.flightstats.com/flex/fids/rest/v1/json/" + airportIATA + "/arrivals?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&requestedFields=flightId%2CairlineLogoUrlPng%2CoperatingAirlineName%2Cflight%2Ccity%2CscheduledTime%2Cgate%2Cbaggage%2CremarksWithTime%2Cgate%2ClastUpdatedTime&sortFields=operatingAirlineName%2Cflight%2CscheduledTime&timeFormat=24&timeWindowBegin=30&timeWindowEnd=30&lateMinutes=15&boardingMinutes=45&useRunwayTimes=true&excludeCargoOnlyFlights=true"; 
 			var arrivingFlightsProcess="https://www.airmanopus.net/cgi-bin/arrivals.cgi?" + arrivingFlightsURL;
 			arrivingFlightsGet.open('GET', arrivingFlightsProcess, false);
 			arrivingFlightsGet.send();
@@ -358,7 +359,7 @@ function updateAirportDelays(){
 					var arrivalGate = arrivingFlightsJSON.fidsData[i].gate;
                                         var arrivalBaggage = arrivingFlightsJSON.fidsData[i].baggage;
 					var arrivalRemarks = arrivingFlightsJSON.fidsData[i].remarksWithTime;
-
+					var arrivalFlightID = arrivingFlightsJSON.fidsData[i].flightId;
 					// make dynamic changes
 
 					if ( arrivalGate == null )
@@ -392,7 +393,7 @@ function updateAirportDelays(){
                                                 arrivalRemarks = arrivalRemarksTemp;
 
 					}
-					document.getElementById("airports").innerHTML += "<p><img src=https://" + arrivalAirlineLogo.substring(7) + " alt='" + arrivalAirlineName + "' height=18 width=55> " + arrivalAirlineName + " " + arrivalFlight + " " + arrivalCity + " " + arrivalScheduled + " " + arrivalGate + " " + arrivalBaggage + " " + arrivalRemarks + "</p>";
+					document.getElementById("airports").innerHTML += "<p class=airportFlights><img src=https://" + arrivalAirlineLogo.substring(7) + " alt='" + arrivalAirlineName + "' height=18 width=55> " + arrivalAirlineName + " " + arrivalFlight + " " + arrivalCity + " " + arrivalScheduled + " Gate [" + arrivalGate + "] Bags [" + arrivalBaggage + "] " + arrivalRemarks + "</p>";
 
 
 					i++
@@ -449,7 +450,7 @@ html, body, #map {
 <div id="top-title" class="top-title">AirportHack</div>
 <div id="map"></div>
 <div id="weather" class="weatherDisplay"></div>
-<div id="airports" class="airportFlights"></div>
+<div id="airports" class="Inconsolata"></div>
 </html>
 
 
