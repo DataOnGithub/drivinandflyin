@@ -215,13 +215,15 @@ function updateAirportDelays(){
 				airportStatusGet.open('GET',airportStatusURL,false);
 				airportStatusGet.send();
 				var airportStatusResponse = airportStatusGet.responseText;
-						
 				// if we see a less than chr we didnt get a json response so no delays
 				// probably a smaller airport that FAA doesnt keep status on
 				if ( airportStatusResponse.charAt(0) != "<" )
 				{
+					// if we get an error from FAA give up on checking airport status
+					// we will still see delays reflected in flight information
+					console.log(airportStatusGet.Exception);
+					console.log(airportStatusGet);
 					var airportStatus = JSON.parse(airportStatusGet.responseText);
-					
 					var airportIATA = airportStatus.IATA;
 					var airportName = airportStatus.name;
 					var delayStatus = airportStatus.delay;
@@ -265,6 +267,7 @@ function updateAirportDelays(){
 					console.log(airportETAParsed);
 					airportETA = airportETAParsed.route.summary.arrivalOverview.time;
 					document.getElementById("airports").innerHTML += "This airport is approx " + distance.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + "<br><br>";
+					
 				}
 			} 
 
