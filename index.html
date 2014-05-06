@@ -219,8 +219,8 @@ function updateAirportDelays(){
 				// probably a smaller airport that FAA doesnt keep status on
 				if ( airportStatusResponse.charAt(0) != "<" )
 				{
-					// if we get an error from FAA give up on checking airport status
-					// we will still see delays reflected in flight information
+					// this is borked. getting bad response from FAA.
+
 					console.log(airportStatusGet.Exception);
 					console.log(airportStatusGet);
 					var airportStatus = JSON.parse(airportStatusGet.responseText);
@@ -255,6 +255,17 @@ function updateAirportDelays(){
 						document.getElementById("airports").innerHTML += "<br>Min " + airportMinDelay + " Max " + airportMaxDelay + " Avg " + airportAvgDelay;
 						}
 					}
+
+					
+					// TODO
+					// can get all of the above with two new calls
+					// note lat and lon are lon and lat here radius is distance 
+					// https://api.flightstats.com/flex/airports/rest/v1/json/withinRadius/" + lon + "/" + "+ lat + "/" + viewportDistance + "?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453" to get information for all airports within viewportdistance
+					// we need to filter out airports with "classification" > 3 so we only get regional to major airports
+
+					// https://api.flightstats.com/flex/delayindex/rest/v1/json/airports/MSN?codeType=fs&appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453
+					// 
+
 					// check traffic to get estimate on when will we get to the airport 
 					// we always display driving  ETA from our location to each airport
 					var airportETAGet = new XMLHttpRequest();
