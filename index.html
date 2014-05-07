@@ -140,13 +140,13 @@ function updateWeather(){
 	var weatherInfoURL = weatherConditions.data.weather[weatherDataElement].weatherURL;
 
 	weatherDisplay = new Array(weatherDisplaySize);
-	weatherDisplay[0] = city + ", " + state + " (" + lat + "," + lon + ")";
-	weatherDisplay[1] = " ";
+	weatherDisplay[0] = city + ", " + state;
+	weatherDisplay[1] = lat + "," + lon;
 	weatherDisplay[2] = weatherDesc + " and " + temp_F + "\xB0" + "F";
 	weatherDisplay[3] = "Humidity " + humidity + "% Visibility " + visibility + " mi";
 	weatherDisplay[4] = "Wind " + windDir + " at " + windSpeed + "mph";
 	weatherDisplay[5] =(precipMM>0.0)?"Precip "+ precipMM:"Precip: none";
-	weatherDisplay[6] = "Observed at " + obsTime + " UTC";
+	weatherDisplay[6] = "Observation time " + obsTime + " UTC";
 	for (var i = 0; i <= 6; i++)
 	{
 		weather.innerHTML += weatherDisplay[i] + "<br>";
@@ -219,10 +219,6 @@ function updateAirportDelays(){
 				// probably a smaller airport that FAA doesnt keep status on
 				if ( airportStatusResponse.charAt(0) != "<" )
 				{
-					// this is borked. getting bad response from FAA.
-
-					console.log(airportStatusGet.Exception);
-					console.log(airportStatusGet);
 					var airportStatus = JSON.parse(airportStatusGet.responseText);
 					var airportIATA = airportStatus.IATA;
 					var airportName = airportStatus.name;
@@ -297,7 +293,7 @@ function updateAirportDelays(){
 
 			// departures
 			var departingFlightsGet = new XMLHttpRequest();
-			var departingFlightsURL="https://api.flightstats.com/flex/fids/rest/v1/json/" + airportIATA + "/departures?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&codeType=IATA&requestedFields=airlineLogoUrlPng%2operatingAirlineName%2Cflight%2CdestinationFamiliarName%2CscheduledTime%2Cgate%2CremarksWithTime%2ClastUpdatedTime&sortFields=operatingAirlineName%2Cflight%2CscheduledTime&timeFormat=24&timeWindowBegin=30&timeWindowEnd=30&lateMinutes=15&boardingMinutes=45&useRunwayTimes=true&excludeCargoOnlyFlights=true";
+			var departingFlightsURL="https://api.flightstats.com/flex/fids/rest/v1/json/" + airportIATA + "/departures?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&codeType=IATA&requestedFields=airlineLogoUrlPng%2CoperatingAirlineName%2Cflight%2CdestinationFamiliarName%2CscheduledTime%2Cgate%2CremarksWithTime%2ClastUpdatedTime&sortFields=operatingAirlineName%2Cflight%2CscheduledTime&timeFormat=24&timeWindowBegin=30&timeWindowEnd=30&lateMinutes=15&boardingMinutes=45&useRunwayTimes=true&excludeCargoOnlyFlights=true";
 			var departingFlightsProcess="https://www.airmanopus.net/cgi-bin/departures.cgi?" + departingFlightsURL;
 			departingFlightsGet.open('GET', departingFlightsProcess, false);
 			departingFlightsGet.send();
@@ -345,9 +341,6 @@ function updateAirportDelays(){
 			}
 
 			// TODO WS 5615 On-Time Chicago 12 09:55 parse the airline code to its full name
-			// TODO On-Time should always be green on white
-			// TODO Boarding should always be white on green
-			// TODO Delayed should alwayes be white on red
 
 			// arrivals
 			var arrivingFlightsGet = new XMLHttpRequest();
