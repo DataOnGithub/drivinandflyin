@@ -113,11 +113,12 @@ function geoError() {
 
 function updateWeather() {
         // get current weather conditions 
-        var weatherGetURL = "https://api.worldweatheronline.com/free/v1/weather.ashx?q=" + lat + "%2C" + lon + "&format=json&extra=localObsTime%2CisDayTime&num_of_days=1&date=tomorrow&includelocation=yes&key=kc2u593rw3h5bp2pga7fs7ut";
+
+	var weatherGetURL = "https://api.worldweatheronline.com/free/v1/weather.ashx?q=" + lat + "%2C" + lon + "&format=json&extra=localObsTime%2CisDayTime&num_of_days=1&date=tomorrow&includelocation=yes&key=kc2u593rw3h5bp2pga7fs7ut";
         var weatherGet = new XMLHttpRequest();
         weatherGet.open('GET',weatherGetURL,false);
         weatherGet.send();
-        
+	
         var weatherResponse = JSON.parse(weatherGet.responseText);
         console.log("wwo " + weatherGet.statusText);
         var weatherDesc = weatherResponse.data.current_condition[0].weatherDesc[0].value;
@@ -160,6 +161,28 @@ function updateWeather() {
 
 }
 
+function updateWeatherAtAirport() {
+  // get current weather conditions st one of the airports we may be going to 
+	var weatherLat = arguments[0];
+	var weatherLon = arguments[1];
+
+        var weatherGetURL = "https://api.worldweatheronline.com/free/v1/weather.ashx?q=" + weatherLat + "%2C" + weatherLon + "&format=json&extra=localObsTime%2CisDayTime&num_of_days=1&date=tomorrow&includelocation=yes&key=kc2u593rw3h5bp2pga7fs7ut";
+        var weatherGet = new XMLHttpRequest();
+        weatherGet.open('GET',weatherGetURL,false);
+        weatherGet.send();
+        
+        var weatherResponse = JSON.parse(weatherGet.responseText);
+        var weatherDesc = weatherResponse.data.current_condition[0].weatherDesc[0].value;
+        var temp_F = weatherResponse.data.current_condition[0].temp_F;
+        var visibility = weatherResponse.data.current_condition[0].visibility;
+        var precipMM = weatherResponse.data.current_condition[0].precipMM;
+        var windSpeed = weatherResponse.data.weather[0].windspeedMiles;
+        var windDir = weatherResponse.data.weather[0].winddirection;
+        var obsTime = weatherResponse.data.current_condition[0].localObsDateTime;
+        
+	document.getElementById("airports").innerHTML += "Currently " + weatherDesc + " and " + temp_F + "\xB0" + "F<br>";
+
+}
 
 function updateAirports() {
 
@@ -170,7 +193,6 @@ function updateAirports() {
 
 	var airportListStatus = (airportListGet.statusText);
 	var airportList = (airportListGet.responseText);
-
 	var airports = CSVToArray(airportList);	// array of airport IATA identifiers and corresponding coordinates
 
         const numAirports = 533;		// number of airports we can check status on 			
@@ -189,8 +211,8 @@ function updateAirports() {
 	var month = d.getMonth();		// current month
 	var day = d.getDay();			// current day
 
-	document.getElementById("airports").innerHTML += "<br><i>Delay status is available for airports within " + viewportDistance + " mi</i><br>";
-	document.getElementById("airports").innerHTML += "<i>Flight information is available within " + zoomedViewportDistance + " mi of airport(s)</i><br><br>";
+	document.getElementById("airports").innerHTML += "<br><i>Delay status for airports within " + viewportDistance + " mi</i><br>";
+	document.getElementById("airports").innerHTML += "<i>Flight information within " + zoomedViewportDistance + " mi of airport(s)</i><br><br>";
 	
 	// we need to check all of the airports to see if they are within viewportDistance of us
 	for (var j = 0; j < numAirports; j++) {
@@ -245,6 +267,7 @@ function updateAirports() {
 				document.getElementById("airports").innerHTML += airportName + " (" + airportIATA + ")<br>";
 				document.getElementById("airports").innerHTML += airportDelayReason + "<br>";
 				document.getElementById("airports").innerHTML += "</span>";
+				updateWeatherAtAirport(airportLat,airportLon);
 				// display closure info only if airport is closed 
 				if ( airportClosureBegin != "")
 				{
@@ -281,14 +304,17 @@ function updateAirports() {
 				if (airportIATA != null)
 				{
 					document.getElementById("airports").innerHTML += "This airport is approx " + distance.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + "<br><br>";
-				}
+			 	}	
+
+
 				// use the date at this moment
 				var currentTime = new Date();
 				var hour = currentTime.getHours();
 				var day = currentTime.getDate();
 				var month = currentTime.getMonth() + 1;
 				var year = currentTime.getFullYear();
-
+				
+				
 				// departures
 				var departingFlightsGet = new XMLHttpRequest();
 				var departingFlightsURL="https://api.flightstats.com/flex/fids/rest/v1/json/" + airportIATA + "/departures?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&codeType=IATA&requestedFields=airlineLogoUrlPng%2CoperatingAirlineName%2Cflight%2CdestinationFamiliarName%2CscheduledTime%2Cgate%2CremarksWithTime%2ClastUpdatedTime&sortFields=currentTime,destinationFamiliarName%2Cflight%2CscheduledTime&timeFormat=24&timeWindowBegin=30&timeWindowEnd=30&lateMinutes=15&boardingMinutes=45&useRunwayTimes=true&excludeCargoOnlyFlights=true";
@@ -404,7 +430,7 @@ function updateAirports() {
 							}
 
 							// display status info line fer this flight	
-							document.getElementById("airports").innerHTML += "<p class=airportFlights><img src=https://" + arrivalAirlineLogo.substring(7) + " alt='" + arrivalAirlineName + "' height=18 width=55> " + arrivalAirlineName + " " + arrivalFlight + " " + arrivalCity + " " + arrivalScheduled + arrivalGateDisplay + " " + arrivalBaggageDisplay + " " + arrivalRemarks + "</p>";
+							document.getElementById("airports").innerHTML += "<p class=airportFlights><img src=https://" + arrivalAirlineLogo.substring(7) + " alt='" + arrivalAirlineName + "' height=18 width=55> " +  arrivalFlight + " from " + arrivalCity + " " + arrivalScheduled + arrivalGateDisplay + " " + arrivalBaggageDisplay + " " + arrivalRemarks + "</p>";
 							
 							i++;
 
