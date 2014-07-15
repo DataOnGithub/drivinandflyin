@@ -211,8 +211,8 @@ function updateAirports() {
 	var month = d.getMonth();		// current month
 	var day = d.getDay();			// current day
 
-	document.getElementById("airports").innerHTML += "<br><i>Delay status for airports within " + viewportDistance + " mi</i><br>";
-	document.getElementById("airports").innerHTML += "<i>Flight information within " + zoomedViewportDistance + " mi of airport(s)</i><br><br>";
+	document.getElementById("airports").innerHTML = "<br><i>Delay status for airports within " + viewportDistance + " mi</i><br>";
+	document.getElementById("airports").innerHTML += "<i>Flight information for airports within " + zoomedViewportDistance + " mi</i><br><br>";
 	
 	// we need to check all of the airports to see if they are within viewportDistance of us
 	for (var j = 0; j < numAirports; j++) {
@@ -303,7 +303,7 @@ function updateAirports() {
 				airportETA = airportETAParsed.route.summary.arrivalOverview.time;
 				if (airportIATA != null)
 				{
-					document.getElementById("airports").innerHTML += "This airport is approx " + distance.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + "<br><br>";
+					document.getElementById("airports").innerHTML += "This airport is approx " + distance.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + ".<br><br>";
 			 	}	
 
 
