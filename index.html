@@ -401,8 +401,7 @@ function updateAirports() {
 
 						} // while
 					} // if
-										
-
+		
 				} // airports in zoom range
 
 
@@ -426,13 +425,14 @@ function initialize() {
 				// the map
 				var map = L.mapbox.map('map', 'airmanopus.hm9c0o4f', {
 					center: [lat, lon],
-					zoom: 12,
+					zoom: 14,
 					inertia: true,
 					watch: true,
 					enableHighAccuracy: true,
-					maximumAge: 25000,
+					maximumAge: 3000,
 					trackResize: true,
-					attributionControl : true
+					attributionControl : true,
+					setView : true,
 				});
 				mapFirstDraw = false;
 			} else {
