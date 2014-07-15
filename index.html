@@ -112,46 +112,51 @@ function geoError() {
 }
 
 function updateWeather() {
-        // get weather data for current location and time	
-	
-	// weather data is courtesy http://www.worldweatheronline.com free api
-	// via mashery.com
-	const weatherDataElement = 0;		// data.current_condition[weatherDataElement]
-	const weatherDisplaySize = 10;		// size of weatherDisplay array	
-	var localWeatherURL="https://www.airmanopus.net/cgi-bin/worldweatheronline.cgi?lat=" + lat + "&lon=" + lon;
-	var localWeatherGet = new XMLHttpRequest();
-	localWeatherGet.open('GET',localWeatherURL,false);
-	localWeatherGet.send();
-	var weatherConditions = JSON.parse(localWeatherGet.responseText);
+        // get current weather conditions 
+        var weatherGetURL = "https://api.worldweatheronline.com/free/v1/weather.ashx?q=" + lat + "%2C" + lon + "&format=json&extra=localObsTime%2CisDayTime&num_of_days=1&date=tomorrow&includelocation=yes&key=kc2u593rw3h5bp2pga7fs7ut";
+        var weatherGet = new XMLHttpRequest();
+        weatherGet.open('GET',weatherGetURL,false);
+        weatherGet.send();
+        
+        var weatherResponse = JSON.parse(weatherGet.responseText);
+        console.log("wwo " + weatherGet.statusText);
+        var weatherDesc = weatherResponse.data.current_condition[0].weatherDesc[0].value;
+        var temp_F = weatherResponse.data.current_condition[0].temp_F;
+        var visibility = weatherResponse.data.current_condition[0].visibility;
+        var humidity = weatherResponse.data.current_condition[0].humidity;   
+        var precipMM = weatherResponse.data.current_condition[0].precipMM;
+        var windSpeed = weatherResponse.data.weather[0].windspeedMiles;
+        var windDir = weatherResponse.data.weather[0].winddirection;
+        var obsTime = weatherResponse.data.current_condition[0].localObsDateTime;
+        var city = weatherResponse.data.nearest_area[0].areaName[0].value;
+        var state = weatherResponse.data.nearest_area[0].region[0].value;
 
-	// not completely decided which fields are going to be included so these may change
-	var weatherDesc = weatherConditions.data.current_condition[weatherDataElement].weatherDesc[0].value;
-	var temp_F = weatherConditions.data.current_condition[weatherDataElement].temp_F;
-	var visibility = weatherConditions.data.current_condition[weatherDataElement].visibility;
-	var humidity = weatherConditions.data.current_condition[weatherDataElement].humidity;   
-	var precipMM = weatherConditions.data.current_condition[weatherDataElement].precipMM;
-	var windSpeed = weatherConditions.data.weather[weatherDataElement].windspeedMiles;
-	var windDir = weatherConditions.data.weather[weatherDataElement].winddirection;
-	var obsTime = weatherConditions.data.current_condition[weatherDataElement].observation_time;
-	var city = weatherConditions.data.nearest_area[weatherDataElement].areaName[0].value;
-	var state = weatherConditions.data.nearest_area[weatherDataElement].region[0].value;
-	
-	var weatherIconURL = weatherConditions.data.weather[weatherDataElement].weatherIconURL;
-	var weatherInfoURL = weatherConditions.data.weather[weatherDataElement].weatherURL;
 
-	weatherDisplay = new Array(weatherDisplaySize);
-	weatherDisplay[0] = city + ", " + state;
-	weatherDisplay[1] = lat + "," + lon;
-	weatherDisplay[2] = weatherDesc + " and " + temp_F + "\xB0" + "F";
-	weatherDisplay[3] = "Humidity " + humidity + "% Visibility " + visibility + " mi";
-	weatherDisplay[4] = "Wind " + windDir + " at " + windSpeed + "mph";
-	weatherDisplay[5] =(precipMM>0.0)?"Precip "+ precipMM:"Precip: none";
-	weatherDisplay[6] = "Observation time " + obsTime + " UTC";
-	for (var i = 0; i <= 6; i++)
-	{
-		weather.innerHTML += weatherDisplay[i] + "<br>";
-	} 
-	// end worldweatheronline.com 
+        // calculate heat index and wind chill
+        var tempSquared = temp_F * temp_F;
+        var relHSquared = humidity * humidity;
+        var heatIndex = Math.round(-42.379 + (2.04901523 * temp_F) + (10.14333127 * humidity) - (0.22475541 * temp_F * humidity) - ( .00683783 * tempSquared) - (.05481717 * relHSquared) + ( .00122874 * tempSquared * humidity) + (.00085282 * temp_F * relHSquared) - (.00000199 * tempSquared * relHSquared));
+        var windChill = Math.round(35.74 + (0.6215 * temp_F) - (35.75 * Math.pow(windSpeed,0.16)) + (0.4275 * temp_F * Math.pow(windSpeed,0.16)));
+
+        // TODO re add one line short term forecast 
+        
+        var weatherIconURL = weatherResponse.data.weather[0].weatherIconURL;
+        var weatherInfoURL = weatherResponse.data.weather[0].weatherURL;
+        
+        weather.innerHTML = ""; // clear last observation data
+        weather.innerHTML += city + ", " + state + "<br>";
+        weather.innerHTML += lat.toPrecision(9) + "," + lon.toPrecision(9) + "<br>";
+        weather.innerHTML += weatherDesc + " and " + temp_F + "\xB0" + "F<br>";
+        weather.innerHTML += "Humidity " + humidity + "% Visibility " + visibility + " mi<br>";
+        weather.innerHTML += "Wind " + windDir + " at " + windSpeed + "mph<br>";
+        if (temp_F < 45){
+                weather.innerHTML += "Wind Chill " + windChill + "\xB0" + "F<br>";
+        }
+        if (temp_F > 70){
+                weather.innerHTML += "Heat Index " + heatIndex + "\xB0" + "F<br>";
+        }
+        weather.innerHTML += (precipMM>0.0)?"Precip (mm) "+ precipMM + "<br>":"Precip none<br>";
+        weather.innerHTML += "Observation time " + obsTime + "<br>";
 
 }
 
@@ -407,35 +412,47 @@ function updateAirports() {
 	} // j
 } // updateAirports	 
 
+var mapFirstDraw = true; // true until initial map is drawn, false thereafter
 
 function initialize() {
          if (navigator.geolocation) {
                 navigator.geolocation.watchPosition(function(position){
-			lat = position.coords.latitude;
-			lon = position.coords.longitude;
+			if (mapFirstDraw)
+			{
+				// init and draw the initial map
+				lat = position.coords.latitude;
+				lon = position.coords.longitude;
 		
-		// check to see if we have already created the map
-		// create it if we have not	
-		if (map == null)
-		{
-			console.log("making a new map");
-			// the map
-			var map = L.mapbox.map('map', 'airmanopus.hm9c0o4f', {
-				center: [lat, lon],
-				zoom: 12,
-				inertia: true,
-				watch: true,
-				enableHighAccuracy: true,
-				maximumAge: 25000,
-				trackResize: true,
-				attributionControl : true
-			});
+				// the map
+				var map = L.mapbox.map('map', 'airmanopus.hm9c0o4f', {
+					center: [lat, lon],
+					zoom: 12,
+					inertia: true,
+					watch: true,
+					enableHighAccuracy: true,
+					maximumAge: 25000,
+					trackResize: true,
+					attributionControl : true
+				});
+				mapFirstDraw = false;
+			} else {
+				// update map view to new location
+				lat = position.coords.latitude;
+				lon = position.coords.longitude;
 
-		}
-		L.marker([lat, lon]).addTo(map);
+				// pan the map to current coordinates 
+				map.setView([lat, lon]);
+				console.log(lat, lon);
+                	}
+		
+			// we are likely moving so we want to keep these updated
+			updateWeather();
+			updateAirports();
+
+
+
 	
-		updateWeather();
-		updateAirports();
+
 		
 		}); // positien
 	} // geolocatien
@@ -451,7 +468,7 @@ html, body, #map {
 </style>
 </head>
 <body onload="initialize()">
-<div id="top-title" class="top-title">AirportHack</div>
+<div id="top-title" class="top-title"><pre>Drivin' and Flyin'</div>
 <div id="map"></div>
 <div id="weather" class="weatherDisplay"></div>
 <div id="airports" class="Inconsolata"></div>
