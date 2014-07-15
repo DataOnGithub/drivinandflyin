@@ -312,14 +312,17 @@ function updateAirports() {
 						var departureScheduledTime = departingFlightsJSON.fidsData[i].scheduledTime;
 						var departureGate = departingFlightsJSON.fidsData[i].gate;
 						var departureRemarks = departingFlightsJSON.fidsData[i].remarksWithTime;
+						var departureGateDisplay;
 
 						i++;
 
 						// make dynamic changes
 						if ( departureGate == null )
 						{
-							departureGate = " ";
-						}       
+							departureGateDisplay = " ";
+						} else {
+							departureGateDisplay = "<b>Gate " + departureGate + "</b>";
+						}      
 
 						if ( departureRemarks = "Boarding" )
 						{
@@ -332,7 +335,7 @@ function updateAirports() {
 							departureRemarksTemp = "<span style='color:green'>" + departureRemarks + "</span>";
 						}
 
-						document.getElementById("airports").innerHTML += "<p><img src=https://" + departureAirlineLogo.substring(7) + " alt='" + departureAirlineName + "' height=18 width=55>" + departureFlight + " to " + departureDestination + " at " + departureScheduledTime + " from gate [" + departureGate + "] "+ departureRemarks + "</p>";
+						document.getElementById("airports").innerHTML += "<p><img src=https://" + departureAirlineLogo.substring(7) + " alt='" + departureAirlineName + "' height=18 width=55>" + departureFlight + " to " + departureDestination + " at " + departureScheduledTime + " from " + departureGateDisplay + " " + departureRemarks + "</p>";
 
 						} // while			
 					} // if
@@ -363,16 +366,23 @@ function updateAirports() {
 							var arrivalBaggage = arrivingFlightsJSON.fidsData[i].baggage;
 							var arrivalRemarks = arrivingFlightsJSON.fidsData[i].remarksWithTime;
 							var arrivalFlightID = arrivingFlightsJSON.fidsData[i].flightId;
+							var arrivalBaggageDisplay;
+							var arrivalGateDisplay;
+
 							// make dynamic changes
 
 							if ( arrivalGate == null )
 							{
-								arrivalGate = " ";
+								arrivalGateDisplay = " ";
+							} else {
+								arrivalGateDisplay = " <b>Gate " + arrivalGate + "</b>";
 							}
 
 							if ( arrivalBaggage == null )
 							{
-								arrivalBaggage = " ";
+								arrivalBaggageDisplay = " ";
+							} else {
+								arrivalBaggageDisplay = "<b>Carousel " + arrivalBaggage + "</b>";
 							}
 			
 							if ( arrivalRemarks.indexOf("Estimated") != -1)
@@ -394,7 +404,7 @@ function updateAirports() {
 							}
 
 							// display status info line fer this flight	
-							document.getElementById("airports").innerHTML += "<p class=airportFlights><img src=https://" + arrivalAirlineLogo.substring(7) + " alt='" + arrivalAirlineName + "' height=18 width=55> " + arrivalAirlineName + " " + arrivalFlight + " " + arrivalCity + " " + arrivalScheduled + " Gate [" + arrivalGate + "] Bags [" + arrivalBaggage + "] " + arrivalRemarks + "</p>";
+							document.getElementById("airports").innerHTML += "<p class=airportFlights><img src=https://" + arrivalAirlineLogo.substring(7) + " alt='" + arrivalAirlineName + "' height=18 width=55> " + arrivalAirlineName + " " + arrivalFlight + " " + arrivalCity + " " + arrivalScheduled + arrivalGateDisplay + " " + arrivalBaggageDisplay + " " + arrivalRemarks + "</p>";
 							
 							i++;
 
