@@ -171,7 +171,7 @@ function updateAirports() {
         const numAirports = 533;		// number of airports we can check status on 			
 	var airportDelayString; 		// will be the contents of the airports div
 	const viewportDistance = 50;		// watch airports for delays within this many miles
-	const zoomedViewportDistance = 63; 	// within this many miles of an airport get detailed flight info
+	const zoomedViewportDistance = 35; 	// within this many miles of an airport get detailed flight info
 	const pi = 3.14159265359;		// pi
 	const R = 3959; 			// approximate radius of earth in miles
 
@@ -273,7 +273,6 @@ function updateAirports() {
 				
 				airportETAParsed=JSON.parse(airportETAGet.responseText);
 				airportETA = airportETAParsed.route.summary.arrivalOverview.time;
-				console.log(airportETAParsed);
 				if (airportIATA != null)
 				{
 					document.getElementById("airports").innerHTML += "This airport is approx " + distance.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + "<br><br>";
