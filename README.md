@@ -19,14 +19,16 @@ I've worked on it since, and it featurecreeped to do the following:
    - gate number, and if it's available, baggage claim carousel number
 * Real time traffic information, used to calculate your ETA at each airport
 
-I live in Madison WI; around here it's very common to fly out of Milwaukee WI, Chicago O'Hare, Chicago Midway, or even Rockford IL. Weather here can change drastically between here and whichever airport you're headed for. So--if you're headed to an airport to pick someone up, or to fly out yourself, you don't have to mess around with three different apps. Just keep Drivin' and Flyin' up on your device and you'll get the information you need on the way to the airport. 
+I live in Madison WI; around here it's very common to fly out of Milwaukee WI, Chicago O'Hare, Chicago Midway, or even
+Rockford IL. Weather here can change drastically between here and whichever airport you're headed for. If you're
+headed to an airport to pick someone up, or to fly out yourself, you don't want to mess around with a maps app, and a 
+weather app, and an airline app to know what's going on.
 
+Just keep Drivin' and Flyin' up on your device and you'll get the information you need on the way to the airport. 
 Whichever airport you decide/need to use.
 
 GPLv3
 http://www.gnu.org/licenses/gpl-3.0.txt
 
-If you find my code interesting enough to use, please let me know.
-If you find bugs in my code, please let me know about that too.
 
 
