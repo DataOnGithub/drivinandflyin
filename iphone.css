@@ -4,7 +4,7 @@
 				background-color: blue;
 				color: white;
 				font-family: 'Cinzel',sans-serif;
-				font-size: medium;
+				font-size: small;
 			}
 	
 			.weatherDisplay {
@@ -21,7 +21,7 @@
 
 			.airportFlights {
 				font-family: 'Inconsolata',sans-serif;
-				font-size: small;
+				font-size: x-small;
 			}
 
 			.whiteongreen {
