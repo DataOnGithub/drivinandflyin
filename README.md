@@ -1,8 +1,10 @@
+```html
+<pre>
    ___      _      _     _                __  ______     _     _
   / _ \____(_)  __(_)__ ( ) ___ ____  ___/ / / __/ /_ __(_)__ ( )
  / // / __/ / |/ / / _ \|/ / _ `/ _ \/ _  / / _// / // / / _ \|/
 /____/_/ /_/|___/_/_//_/   \_,_/_//_/\_,_/ /_/ /_/\_, /_/_//_/
-                                                 /___/
+                                                   /_/     
 
 This is a hack I initially did at BoilerMake Spring 2014 at Purdue University.
 I've worked on it since, and it featurecreeped to do the following:
@@ -20,4 +22,5 @@ http://www.gnu.org/licenses/gpl-3.0.txt
 
 If you find my code interesting enough to use, please let me know.
 
+</pre>
 
