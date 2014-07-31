@@ -293,6 +293,7 @@ function updateAirports() {
 
 				// check traffic to get estimate on when will we get to the airport 
 				// we always display driving  ETA from our location to each airport
+				// TODO we also want to include directions slash routing information
 				var airportETAGet = new XMLHttpRequest();
 				var airportETAURL="https://api.tomtom.com/lbs/services/route/3/" + lat + "," + lon + ":" + airportLat + "," + airportLon + "/Quickest/json?avoidTraffic=true&includeTraffic=true&day=today&iqRoutes=2&includeInstructions=true&key=knpmsu5p59rxdud2rmghsxd7"
 				var airportETAProcess="https://www.airmanopus.net/cgi-bin/tomtom.cgi?" + airportETAURL;
@@ -307,70 +308,147 @@ function updateAirports() {
 			 	}	
 
 
-				// use the date at this moment
+				// use the date at this. moment. here.
 				var currentTime = new Date();
 				var hour = currentTime.getHours();
 				var day = currentTime.getDate();
 				var month = currentTime.getMonth() + 1;
 				var year = currentTime.getFullYear();
-				
-				
+
+				numHourstoInclude = 5;
+
+				// TODO see issue #3 arrivals and departures need to be changed to use the Flight Status & Track API rather than the FIDS API
+	
 				// departures
+
 				var departingFlightsGet = new XMLHttpRequest();
-				var departingFlightsURL="https://api.flightstats.com/flex/fids/rest/v1/json/" + airportIATA + "/departures?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&codeType=IATA&requestedFields=airlineLogoUrlPng%2CoperatingAirlineName%2Cflight%2CdestinationFamiliarName%2CscheduledTime%2Cgate%2CremarksWithTime%2ClastUpdatedTime&sortFields=currentTime,destinationFamiliarName%2Cflight%2CscheduledTime&timeFormat=24&timeWindowBegin=30&timeWindowEnd=30&lateMinutes=15&boardingMinutes=45&useRunwayTimes=true&excludeCargoOnlyFlights=true";
+				var departingFlightsURL="https://api.flightstats.com/flex/flightstatus/rest/v2/json/airport/status/" + airportIATA + "/dep/" + year + "/" + month + "/" + day + "?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&utc=false&numHours=" + numHourstoInclude;
+t
 				var departingFlightsProcess="https://www.airmanopus.net/cgi-bin/departures.cgi?" + departingFlightsURL;
 				departingFlightsGet.open('GET', departingFlightsProcess, false);
 				departingFlightsGet.send();
 				var departingFlightsJSON = JSON.parse(departingFlightsGet.responseText);
-			
-				// skip display iffn there are no departures scheduled
-				// often occurs between 0000-0500 airport local time
-				if (departingFlightsJSON.fidsData.length > 0)
+
+				// NOTE hey Opus -- departingFlightsJSON contains information about the airport including elevation YAY
+				
+				// skip display iffn there are no departures scheduled, this often occurs between 0000-0500 airport local time
+				if (departingFlightsJSON.flightStatuses.length > 0)
 				{
 					document.getElementById("airports").innerHTML += "Departures<br><br>";
 					var i = 0;
-					while ( i < departingFlightsJSON.fidsData.length )
+					while ( i < departingFlightsJSON.flightStatuses.length )
 					{ 
-						var departureAirlineName = departingFlightsJSON.fidsData[i].operatingAirlineName;
-						var departureAirlineLogo = departingFlightsJSON.fidsData[i].airlineLogoUrlPng;
-						var departureFlight = departingFlightsJSON.fidsData[i].flight;
-						var departureDestination = departingFlightsJSON.fidsData[i].destinationFamiliarName;
-						var departureScheduledTime = departingFlightsJSON.fidsData[i].scheduledTime;
-						var departureGate = departingFlightsJSON.fidsData[i].gate;
-						var departureRemarks = departingFlightsJSON.fidsData[i].remarksWithTime;
-						var departureGateDisplay;
+						// status of an individual scheduled flight
+						// I am taking Delta Flight 123 from Milwaukee to Los Angeles today at 2100
+						// this is a flight that is departing from one of the airports we are in proximity of
+						
 
+						var departingFlightStatus = {
+							carrierName 			: flightStatuses[i].carrier.Name,
+							carrierPhone			: flightStatuses[i].carrier.phoneNumber,
+							flightNumber			: flightStatuses[i].flightNumber,
+				
+							carrierIATA			: flightStatuses[i].carrier.iata,
+							carrierName			: flightStatuses[i].carrier.name,
+							carrierPhoneNumber		: flightStatuses[i].carrier.phoneNumber,
+				
+							departureAirportIATA		: flightStatuses[i].departureAirport.iata,
+							departureAirportName		: flightStatuses[i].departureAirport.name,
+							departureAirportCity		: flightStatuses[i].departureAirport.city,
+							departureAirportState		: flightStatuses[i].departureAirport.stateCode.
+							departureAirportTZ		: flightStatuses[i].departureAirport.timeZoneRegionalName,
+							departureAirportLocalTime	: flightStatuses[i].departureAirport.localTime,
+							departureAirportElevation 	: flightStatuses[i].departureAirport.elevationFeet	
+							departureDateLocal		: flightStatuses[i].departureDate.dateLocal,
+							departureGate			: flightStatuses[i].airportResources.departureGate,
+
+							arrivalAirportIATA		: flightStatuses[i].arrivalAirport.iata,
+							arrivalAirportName 		: flightStatuses[i].arrivalAirport.name,
+							arrivalAirportCity		: flightStatuses[i].arrivalAirport.city,
+							arrivalAirportState		: flightStatuses[i].arrivalAirport.stateCode,
+							arrivalAirportTZ		: flightStatuses[i].arrivalAirport.timeZoneRegionalName,
+							arrivalAirportLocalTime		: flightStatuses[i].arrivalAirport.localtime,
+							arrivalAirportElevation		: flightStatuses[i].arrivalAirport.elevationFeet,
+							arrivalDateLocal		: flightStatuses[i].arrivalDate.dateLocal,
+							arrivalTerminal			: flightStatuses[i].airportResources.arrivalTerminal,
+							arrivalGate			: flightStatuses[i].airportResources.arrivalGate,
+				
+							opPublishedDeparture		: flightStatuses[i].operationalTimes.publishedDeparture.dateLocal,
+							opPublishedArrival		: flightStatuses[i].operationalTimes.publishedArrival.dateLocal,									 opSchedGateDeparture		 : flightStatuses[i].operationalTimes.scheduledGateDeparture.dateLocal,
+							opFlightPlanDeparture		: flightStatuses[i].operationalTimes.flightPlanPlannedDeparture.dateLocal,	
+							opEstRunwayDeparture		: flightStatuses[i].operationalTimes.estimatedRunwayDeparture.dateLocal,
+							opSchedGateArrival		: flightStatuses[i].operationalTimes.scheduledGateArrival.dateLocal,
+							opFlightPlanPlannedArrival	: flightStatuses[i].operationalTimes.flightPlanPlannedArrival,
+							opEstimatedRunwayArrival	: flightStatuses[i].operationalTimes.estimatedRunwayArriva
+							opFlightPlanPlannedArrival	: flightStatuses[i].operationalTimes.flightPlanPlannedArrival,
+							opEstimatedRunwayArrival	: flightStatuses[i].operationalTimes.estimatedRunwayArrival,
+							
+							flightEquipIATA			: flightStatuses[i].flightEquipment.iata,
+							flightEquipHardware		: flightStatuses[i].flightEquipment.name,
+							flightEquipTurboprop		: flightStatuses[i].flightEquipment.turboProp,
+							flightEquipJet			: flightStatuses[i].flightEquipment.jet,
+							flightEquipWidebody		: flightStatuses[i].flightEquipment.widebody,	
+							
+							status				: flightStatuses[i].status
+							
+							// TODO add info on codeshares
+								// flightStatuses[].codeshares[].carrier, .iata, .name, .phoneNumber
+								//		   		.flightNumber
+
+						}; // individualFlightStatus 
+
+
+						// we do not need track information for flights that have already landed, have not taken off, or have a status
+						// that indicates the plane isn't going anywhere
+
+						// flight track information for a specific flight that is departing from an airport we are tracking
+						// and is within the radius of the area we are tracking and is on our list of departures 
+						// (The MD80 I am riding is headed WSW at 350MPH at an altitude of 35000 feet, at specific lat/lon)
+						// a track is a line vector drawn between the most recent two reported positions on a map
+
+
+						var departingAirplaneStatus = {
+							.flightTracks[j].flightID,
+							.flightTracks[j].departureAirport.IATA,
+							.flightTracks[j].arrivalAirport.IATA,
+							.flightTracks[j].bearing,
+							.flightTracks[j].heading,
+
+							// first reported position
+							.flightTracks[j].positions[0].lon,
+							.flightTracks[j].positions[0].lat,
+							.flightTracks[j].positions[0].speedMPH,
+							.flightTracks[j].positions[0].altitudeFt,
+							.flightTracks[j].positions[0].source,
+							.flightTracks[j].positions[0].date,
+							
+							// second reported position
+							.flightTracks[j].positions[1].lon,
+							.flightTracks[j].positions[1].lat,
+							.flightTracks[j].positions[1].speedMPH,
+							.flightTracks[j].positions[1].altitudeFt,
+							.flightTracks[j].positions[0].source,
+							.flightTracks[j].positions[0].date
+
+
+						}; // aircraftStatus
+						
 						i++;
 
-						// make dynamic changes
-						if ( departureGate == null )
-						{
-							departureGateDisplay = " ";
-						} else {
-							departureGateDisplay = "<b>Gate " + departureGate + "</b>";
-						}      
+						// now we can make dynamic changes so we do not show blanks where we dont have data to show
 
-						if ( departureRemarks = "Boarding" )
-						{
-							departureRemarksTemp = "<span style='color:green;font-weight:bold'>" + departureRemarks + "</span>";
-							departureRemarks = departureRemarksTemp;
-						}
-					
-						if ( departureRemarks = "On-time" )
-						{
-							departureRemarksTemp = "<span style='color:green'>" + departureRemarks + "</span>";
-						}
-
-						document.getElementById("airports").innerHTML += "<p><img src=https://" + departureAirlineLogo.substring(7) + " alt='" + departureAirlineName + "' height=18 width=55>" + departureFlight + " to " + departureDestination + " at " + departureScheduledTime + " from " + departureGateDisplay + " " + departureRemarks + "</p>";
+						// and display some shit
+						// document.getElementById("airports").innerHTML += "<p><img src=https://" + departureAirlineLogo.substring(7) + " alt='" + departureAirlineName + "' height=18 width=55>" + departureFlight + " to " + departureDestination + " at " + departureScheduledTime + " from " + departureGateDisplay + " " + departureRemarks + "</p>";
 
 						} // while			
 					} // if
 
 
-					// arrivals
+					// arrivals are flights arriving or scheduled to arrive at this airport that we are tracking
 					var arrivingFlightsGet = new XMLHttpRequest();
-					var arrivingFlightsURL = "https://api.flightstats.com/flex/fids/rest/v1/json/" + airportIATA + "/arrivals?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&requestedFields=flightId%2CairlineLogoUrlPng%2CoperatingAirlineName%2Cflight%2Ccity%2CscheduledTime%2Cgate%2Cbaggage%2CremarksWithTime%2Cgate%2ClastUpdatedTime&sortFields=currentTime,city%2Cflight%2CscheduledTime&timeFormat=24&timeWindowBegin=30&timeWindowEnd=30&lateMinutes=15&boardingMinutes=45&useRunwayTimes=true&excludeCargoOnlyFlights=true"; 
+					var arrivingFlightsURL = "https://api.flightstats.com/flex/flightstatus/rest/v2/json/airport/status/" + airportIATA + "/arr/" + year + "/" + month + "/" + day + "/" + hour + "?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&utc=false&numHours=5&maxFlights=5&extendedOptions=useInlinedReferences";
 					var arrivingFlightsProcess="https://www.airmanopus.net/cgi-bin/arrivals.cgi?" + arrivingFlightsURL;
+
 					arrivingFlightsGet.open('GET', arrivingFlightsProcess, false);
 					arrivingFlightsGet.send();
 					var arrivingFlightsJSON = JSON.parse(arrivingFlightsGet.responseText);
