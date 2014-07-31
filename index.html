@@ -13,99 +13,99 @@
 <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.js'></script>
 <link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.css' rel='stylesheet' />
 <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-osm/v0.1.0/leaflet-osm.js'></script>
-
-<script type="text/javascript">
+<script type="text/javascript">  
 	// CSVToArray (c) ben nadel
-	// http://www.bennadel.com/blog/1504-ask-ben-parsing-csv-strings-with-javascript-exec-regular-expression-command.htm 
-	// 
-	// This will parse a delimited string into an array of
-	// arrays. The default delimiter is the comma, but this
-	// can be overriden in the second argument.
-	function CSVToArray( strData, strDelimiter ){
-	// Check to see if the delimiter is defined. If not,
-	// then default to comma.
-	strDelimiter = (strDelimiter || ",");
-	 
-	// Create a regular expression to parse the CSV values.
-	var objPattern = new RegExp(
-	(
-	// Delimiters.
-	"(\\" + strDelimiter + "|\\r?\\n|\\r|^)" +
-	 
-	// Quoted fields.
-	"(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
-	 
-	// Standard fields.
-	"([^\"\\" + strDelimiter + "\\r\\n]*))"
-	),
-	"gi"
-	);
-	 
-	 
-	// Create an array to hold our data. Give the array
-	// a default empty first row.
-	var arrData = [[]];
-	 
-	// Create an array to hold our individual pattern
-	// matching groups.
-	var arrMatches = null;
-	 
-	 
-	// Keep looping over the regular expression matches
-	// until we can no longer find a match.
-	while (arrMatches = objPattern.exec( strData )){
-	 
-	// Get the delimiter that was found.
-	var strMatchedDelimiter = arrMatches[ 1 ];
-	 
-	// Check to see if the given delimiter has a length
-	// (is not the start of string) and if it matches
-	// field delimiter. If id does not, then we know
-	// that this delimiter is a row delimiter.
-	if (
-	strMatchedDelimiter.length &&
-	(strMatchedDelimiter != strDelimiter)
-	){
-	 
-	// Since we have reached a new row of data,
-	// add an empty row to our data array.
-	arrData.push( [] );
-	 
-	}
-	 
-	 
-	// Now that we have our delimiter out of the way,
-	// let's check to see which kind of value we
-	// captured (quoted or unquoted).
-	if (arrMatches[ 2 ]){
-	 
-	// We found a quoted value. When we capture
-	// this value, unescape any double quotes.
-	var strMatchedValue = arrMatches[ 2 ].replace(
-	new RegExp( "\"\"", "g" ),
-	"\""
-	);
-	 
-	} else {
-	 
-	// We found a non-quoted value.
-	var strMatchedValue = arrMatches[ 3 ];
-	 
-	}
-	 
-	 
-	// Now that we have our value string, let's add
-	// it to the data array.
-	arrData[ arrData.length - 1 ].push( strMatchedValue );
-	}
-	 
-	// Return the parsed data.
-	return( arrData );
-	}
- 
-	// end of bens code
+        // http://www.bennadel.com/blog/1504-ask-ben-parsing-csv-strings-with-javascript-exec-regular-expression-command.htm
+        //
+        // This will parse a delimited string into an array of
+        // arrays. The default delimiter is the comma, but this
+        // can be overriden in the second argument.
+        function CSVToArray( strData, strDelimiter ){
+        // Check to see if the delimiter is defined. If not,
+        // then default to comma.
+        strDelimiter = (strDelimiter || ",");
 
-	// start of mine
+        // Create a regular expression to parse the CSV values.
+        var objPattern = new RegExp(
+        (
+        // Delimiters.
+        "(\\" + strDelimiter + "|\\r?\\n|\\r|^)" +
+
+        // Quoted fields.
+        "(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
+
+        // Standard fields.
+        "([^\"\\" + strDelimiter + "\\r\\n]*))"
+        ),
+        "gi"
+        );
+
+
+        // Create an array to hold our data. Give the array
+        // a default empty first row.
+        var arrData = [[]];
+
+        // Create an array to hold our individual pattern
+        // matching groups.
+        var arrMatches = null;
+
+
+        // Keep looping over the regular expression matches
+        // until we can no longer find a match.
+        while (arrMatches = objPattern.exec( strData )){
+
+        // Get the delimiter that was found.
+        var strMatchedDelimiter = arrMatches[ 1 ];
+
+        // Check to see if the given delimiter has a length
+        // (is not the start of string) and if it matches
+        // field delimiter. If id does not, then we know
+        // that this delimiter is a row delimiter.
+        if (
+        strMatchedDelimiter.length &&
+        (strMatchedDelimiter != strDelimiter)
+        ){
+
+        // Since we have reached a new row of data,
+        // add an empty row to our data array.
+        arrData.push( [] );
+
+        }
+
+
+        // Now that we have our delimiter out of the way,
+        // let's check to see which kind of value we
+        // captured (quoted or unquoted).
+
+   if (arrMatches[ 2 ]){
+
+        // We found a quoted value. When we capture
+        // this value, unescape any double quotes.
+        var strMatchedValue = arrMatches[ 2 ].replace(
+        new RegExp( "\"\"", "g" ),
+        "\""
+        );
+
+        } else {
+
+        // We found a non-quoted value.
+        var strMatchedValue = arrMatches[ 3 ];
+         // We found a non-quoted value.
+        var strMatchedValue = arrMatches[ 3 ];
+
+        }
+
+
+        // Now that we have our value string, let's add
+        // it to the data array.
+        arrData[ arrData.length - 1 ].push( strMatchedValue );
+        }
+
+        // Return the parsed data.
+        return( arrData );
+        }
+
+
 
 function geoError() {
         document.write("<span class='errorText'>Geolocation failed. You may need to enable location services on your device.</span>");
@@ -310,7 +310,6 @@ function updateAirports() {
 			 	}	
 
 
-				// use the date at this. moment. here.
 				var currentTime = new Date();
 				var hour = currentTime.getHours();
 				var day = currentTime.getDate();
@@ -319,21 +318,20 @@ function updateAirports() {
 
 				numHourstoInclude = 5;
 
-				// TODO see issue #3 arrivals and departures need to be changed to use the Flight Status & Track API rather than the FIDS API
-	
 				// departures
 
 				var departingFlightsGet = new XMLHttpRequest();
+				
 				var departingFlightsURL="https://api.flightstats.com/flex/flightstatus/rest/v2/json/airport/status/" + airportIATA + "/dep/" + year + "/" + month + "/" + day + "?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&utc=false&numHours=" + numHourstoInclude;
-t
+				
 				var departingFlightsProcess="https://www.airmanopus.net/cgi-bin/departures.cgi?" + departingFlightsURL;
+				
 				departingFlightsGet.open('GET', departingFlightsProcess, false);
+				
 				departingFlightsGet.send();
+				
 				var departingFlightsJSON = JSON.parse(departingFlightsGet.responseText);
 
-				// NOTE hey Opus -- departingFlightsJSON contains information about the airport including elevation YAY
-				
-				// skip display iffn there are no departures scheduled, this often occurs between 0000-0500 airport local time
 				if (departingFlightsJSON.flightStatuses.length > 0)
 				{
 					document.getElementById("airports").innerHTML += "Departures<br><br>";
@@ -357,10 +355,10 @@ t
 							departureAirportIATA		: flightStatuses[i].departureAirport.iata,
 							departureAirportName		: flightStatuses[i].departureAirport.name,
 							departureAirportCity		: flightStatuses[i].departureAirport.city,
-							departureAirportState		: flightStatuses[i].departureAirport.stateCode.
+							departureAirportState		: flightStatuses[i].departureAirport.stateCode,
 							departureAirportTZ		: flightStatuses[i].departureAirport.timeZoneRegionalName,
 							departureAirportLocalTime	: flightStatuses[i].departureAirport.localTime,
-							departureAirportElevation 	: flightStatuses[i].departureAirport.elevationFeet	
+							departureAirportElevation 	: flightStatuses[i].departureAirport.elevationFeet,	
 							departureDateLocal		: flightStatuses[i].departureDate.dateLocal,
 							departureGate			: flightStatuses[i].airportResources.departureGate,
 
@@ -376,12 +374,12 @@ t
 							arrivalGate			: flightStatuses[i].airportResources.arrivalGate,
 				
 							opPublishedDeparture		: flightStatuses[i].operationalTimes.publishedDeparture.dateLocal,
-							opPublishedArrival		: flightStatuses[i].operationalTimes.publishedArrival.dateLocal,									 opSchedGateDeparture		 : flightStatuses[i].operationalTimes.scheduledGateDeparture.dateLocal,
+							opPublishedArrival		: flightStatuses[i].operationalTimes.publishedArrival.dateLocal,								 opSchedGateDeparture		 : flightStatuses[i].operationalTimes.scheduledGateDeparture.dateLocal,
 							opFlightPlanDeparture		: flightStatuses[i].operationalTimes.flightPlanPlannedDeparture.dateLocal,	
 							opEstRunwayDeparture		: flightStatuses[i].operationalTimes.estimatedRunwayDeparture.dateLocal,
 							opSchedGateArrival		: flightStatuses[i].operationalTimes.scheduledGateArrival.dateLocal,
 							opFlightPlanPlannedArrival	: flightStatuses[i].operationalTimes.flightPlanPlannedArrival,
-							opEstimatedRunwayArrival	: flightStatuses[i].operationalTimes.estimatedRunwayArriva
+							opEstimatedRunwayArrival	: flightStatuses[i].operationalTimes.estimatedRunwayArrival,
 							opFlightPlanPlannedArrival	: flightStatuses[i].operationalTimes.flightPlanPlannedArrival,
 							opEstimatedRunwayArrival	: flightStatuses[i].operationalTimes.estimatedRunwayArrival,
 							
@@ -399,43 +397,44 @@ t
 
 						}; // departingFlightStatus 
 
-
-						// we do not need track information for flights that have already landed, have not taken off, or have a status
-						// that indicates the plane isn't going anywhere
-
 						// flight track information for a specific flight that is departing from an airport we are tracking
 						// and is within the radius of the area we are tracking and is on our list of departures 
 						// (The MD80 I am riding is headed WSW at 350MPH at an altitude of 35000 feet, at specific lat/lon)
 						// a track is a line vector drawn between the most recent two reported positions on a map
-						
-						var departingAirplaneStatus = {
-							.flightTracks[j].flightID,
-							.flightTracks[j].departureAirport.IATA,
-							.flightTracks[j].arrivalAirport.IATA,
-							.flightTracks[j].bearing,
-							.flightTracks[j].heading,
+					
+						var departingPlaneStatusGet = new XMLHttpRequest();
+                                		var departingPlaneStatusURL="https://api.flightstats.com/flex/flightstatus/rest/v2/json/airport/status/" + airportIATA + "/dep/" + year + "/" + month + "/" + day + "?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&utc=false&numHours=" + numHourstoInclude + "&exttendedOptions=useInlinedReferences";
+						var departingPlaneStatusProcess="https://www.airmanopus.net/cgi-bin/departures.cgi?" + departingPlaneStatusURL;
+						departingPlaneStatusGet.open('GET', departingFlightProcess, false);
+						departingPlaneStatusGet.send();
+						var departingPlaneStatusJSON = JSON.parse(departingPlaneStatusGet.responseText);
+	
+			/*			var departingAirplaneStatus = {
+							departingPlaneStatusJSON.flightTracks[j].flightID,
+							departingPlaneStatusJSON.flightTracks[j].departureAirport.IATA,
+							departingPlaneStatusJSON.flightTracks[j].arrivalAirport.IATA,
+							departingPlaneStatusJSON.flightTracks[j].bearing,
+							departingPlaneStatusJSON.flightTracks[j].heading,
 
-							// first reported position
-							.flightTracks[j].positions[0].lon,
-							.flightTracks[j].positions[0].lat,
-							.flightTracks[j].positions[0].speedMPH,
-							.flightTracks[j].positions[0].altitudeFt,
-							.flightTracks[j].positions[0].source,
-							.flightTracks[j].positions[0].date,
+							departingPlaneStatusJSON.flightTracks[j].positions[0].lon,
+							departingPlaneStatusJSON.flightTracks[j].positions[0].lat,
+							departingPlaneStatusJSON.flightTracks[j].positions[0].speedMPH,
+							departingPlaneStatusJSON.flightTracks[j].positions[0].altitudeFt,
+							departingPlaneStatusJSON.flightTracks[j].positions[0].source,
+							departingPlaneStatusJSON.flightTracks[j].positions[0].date,
 							
-							// second reported position
-							.flightTracks[j].positions[1].lon,
-							.flightTracks[j].positions[1].lat,
-							.flightTracks[j].positions[1].speedMPH,
-							.flightTracks[j].positions[1].altitudeFt,
-							.flightTracks[j].positions[0].source,
-							.flightTracks[j].positions[0].date
+							departingPlaneStatusJSON.flightTracks[j].positions[1].lon,
+							departingPlaneStatusJSON.flightTracks[j].positions[1].lat,
+							departingPlaneStatusJSON.flightTracks[j].positions[1].speedMPH,
+							departingPlaneStatusJSON.flightTracks[j].positions[1].altitudeFt,
+							departingPlaneStatusJSON.flightTracks[j].positions[0].source,
+							departingPlaneStatusJSON.flightTracks[j].positions[0].date
 
 
 						}; // departingAirplaneStatus
 						
 						i++;
-
+*/
 						// now we can make dynamic changes so we do not show blanks where we dont have data to show
 
 
@@ -477,10 +476,10 @@ t
                                                         departureAirportIATA            : flightStatuses[i].departureAirport.iata,
                                                         departureAirportName            : flightStatuses[i].departureAirport.name,
                                                         departureAirportCity            : flightStatuses[i].departureAirport.city,
-                                                        departureAirportState           : flightStatuses[i].departureAirport.stateCode.
+                                                        departureAirportState           : flightStatuses[i].departureAirport.stateCode,
                                                         departureAirportTZ              : flightStatuses[i].departureAirport.timeZoneRegionalName,
                                                         departureAirportLocalTime       : flightStatuses[i].departureAirport.localTime,
-                                                        departureAirportElevation       : flightStatuses[i].departureAirport.elevationFeet
+                                                        departureAirportElevation       : flightStatuses[i].departureAirport.elevationFeet,
                                                         departureDateLocal              : flightStatuses[i].departureDate.dateLocal,
                                                         departureGate                   : flightStatuses[i].airportResources.departureGate,
 
@@ -496,12 +495,12 @@ t
                                                         arrivalGate                     : flightStatuses[i].airportResources.arrivalGate,
 
                                                         opPublishedDeparture            : flightStatuses[i].operationalTimes.publishedDeparture.dateLocal,
-                                                        opPublishedArrival              : flightStatuses[i].operationalTimes.publishedArrival.dateLocal,                                                                         opSchedGateDeparture            : flightStatuses[i].operationalTimes.scheduledGateDeparture.dateLocal,
+                                                        opPublishedArrival              : flightStatuses[i].operationalTimes.publishedArrival.dateLocal,                                                                 opSchedGateDeparture    	 : flightStatuses[i].operationalTimes.scheduledGateDeparture.dateLocal,
                                                         opFlightPlanDeparture           : flightStatuses[i].operationalTimes.flightPlanPlannedDeparture.dateLocal,
                                                         opEstRunwayDeparture            : flightStatuses[i].operationalTimes.estimatedRunwayDeparture.dateLocal,
                                                         opSchedGateArrival              : flightStatuses[i].operationalTimes.scheduledGateArrival.dateLocal,
                                                         opFlightPlanPlannedArrival      : flightStatuses[i].operationalTimes.flightPlanPlannedArrival,
-                                                        opEstimatedRunwayArrival        : flightStatuses[i].operationalTimes.estimatedRunwayArriva
+                                                        opEstimatedRunwayArrival        : flightStatuses[i].operationalTimes.estimatedRunwayArrival,
                                                         opFlightPlanPlannedArrival      : flightStatuses[i].operationalTimes.flightPlanPlannedArrival,
                                                         opEstimatedRunwayArrival        : flightStatuses[i].operationalTimes.estimatedRunwayArrival,
 
@@ -518,7 +517,7 @@ t
                                                                 //                              .flightNumber
 
                                                 }; // arrivingFlightStatus 
-
+/*
  						var arrivingAirplaneStatus = {
                                                         .flightTracks[j].flightID,
                                                         .flightTracks[j].departureAirport.IATA,
@@ -544,7 +543,7 @@ t
 
 
                                                 }; // arrivingAirplaneStatus
-
+*/
 
 							// make dynamic changes
 
@@ -624,7 +623,7 @@ html, body, #map {
 </style>
 </head>
 <body onload="initialize()">
-<div id="top-title"><img src="drivinandflyin.png" alt="Drivin' and Flyin'"></div>
+<div id="top-title">drivinandflyin</div>
 <div id="map"></div>
 <div id="weather" class="weatherDisplay"></div>
 <div id="airports" class="Inconsolata"></div>
@@ -642,5 +641,4 @@ Remaining &copy; 2014 airmanopus
 
 
 </html>
-
 
