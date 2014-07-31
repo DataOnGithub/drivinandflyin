@@ -186,6 +186,8 @@ function updateWeatherAtAirport() {
 
 function updateAirports() {
 
+	// TODO we only want to read the airport list once when the page initially loads
+	//      rather than every time we update the status of airports we are tracking
 	var airportListURL = "https://www.airmanopus.net/cgi-bin/airportlist.csv";
 	var airportListGet = new XMLHttpRequest();
 	airportListGet.open('GET',airportListURL,false);
@@ -214,7 +216,7 @@ function updateAirports() {
 	document.getElementById("airports").innerHTML = "<br><i>Delay status for airports within " + viewportDistance + " mi</i><br>";
 	document.getElementById("airports").innerHTML += "<i>Flight information for airports within " + zoomedViewportDistance + " mi</i><br><br>";
 	
-	// we need to check all of the airports to see if they are within viewportDistance of us
+	// we need to check all of the possible US airports to see if they are within viewportDistance of us
 	for (var j = 0; j < numAirports; j++) {
 		var iataIdentifier = airports[j][0];			// 3 letter iata identifier
 		var myLat = lat;					// my latitude
@@ -395,7 +397,7 @@ t
 								// flightStatuses[].codeshares[].carrier, .iata, .name, .phoneNumber
 								//		   		.flightNumber
 
-						}; // individualFlightStatus 
+						}; // departingFlightStatus 
 
 
 						// we do not need track information for flights that have already landed, have not taken off, or have a status
@@ -405,8 +407,7 @@ t
 						// and is within the radius of the area we are tracking and is on our list of departures 
 						// (The MD80 I am riding is headed WSW at 350MPH at an altitude of 35000 feet, at specific lat/lon)
 						// a track is a line vector drawn between the most recent two reported positions on a map
-
-
+						
 						var departingAirplaneStatus = {
 							.flightTracks[j].flightID,
 							.flightTracks[j].departureAirport.IATA,
@@ -431,17 +432,19 @@ t
 							.flightTracks[j].positions[0].date
 
 
-						}; // aircraftStatus
+						}; // departingAirplaneStatus
 						
 						i++;
 
 						// now we can make dynamic changes so we do not show blanks where we dont have data to show
 
-						// and display some shit
-						// document.getElementById("airports").innerHTML += "<p><img src=https://" + departureAirlineLogo.substring(7) + " alt='" + departureAirlineName + "' height=18 width=55>" + departureFlight + " to " + departureDestination + " at " + departureScheduledTime + " from " + departureGateDisplay + " " + departureRemarks + "</p>";
 
 						} // while			
 					} // if
+
+// end departures
+
+// begin arrivals
 
 
 					// arrivals are flights arriving or scheduled to arrive at this airport that we are tracking
@@ -454,61 +457,99 @@ t
 					var arrivingFlightsJSON = JSON.parse(arrivingFlightsGet.responseText);
 
 					// skip display there are no arrivals scheduled                     
-					if (arrivingFlightsJSON.fidsData.length > 0)
+					if (arrivingFlightsJSON.flightStatuses.length > 0)
 					{
 
 						document.getElementById("airports").innerHTML += "<br>Arrivals<br>";
 						var i = 0;
 						while ( i < arrivingFlightsJSON.fidsData.length ) 
 						{
-							var arrivalAirlineLogo = arrivingFlightsJSON.fidsData[i].airlineLogoUrlPng; 
-							var arrivalAirlineName = arrivingFlightsJSON.fidsData[i].operatingAirlineName;
-							var arrivalFlight = arrivingFlightsJSON.fidsData[i].flight;
-							var arrivalCity = arrivingFlightsJSON.fidsData[i].city;
-							var arrivalScheduled = arrivingFlightsJSON.fidsData[i].scheduledTime;
-							var arrivalGate = arrivingFlightsJSON.fidsData[i].gate;
-							var arrivalBaggage = arrivingFlightsJSON.fidsData[i].baggage;
-							var arrivalRemarks = arrivingFlightsJSON.fidsData[i].remarksWithTime;
-							var arrivalFlightID = arrivingFlightsJSON.fidsData[i].flightId;
-							var arrivalBaggageDisplay;
-							var arrivalGateDisplay;
+							
+  						var arrivingFlightStatus = {
+                                                        carrierName                     : flightStatuses[i].carrier.Name,
+                                                        carrierPhone                    : flightStatuses[i].carrier.phoneNumber,
+                                                        flightNumber                    : flightStatuses[i].flightNumber,
+
+                                                        carrierIATA                     : flightStatuses[i].carrier.iata,
+                                                        carrierName                     : flightStatuses[i].carrier.name,
+                                                        carrierPhoneNumber              : flightStatuses[i].carrier.phoneNumber,
+
+                                                        departureAirportIATA            : flightStatuses[i].departureAirport.iata,
+                                                        departureAirportName            : flightStatuses[i].departureAirport.name,
+                                                        departureAirportCity            : flightStatuses[i].departureAirport.city,
+                                                        departureAirportState           : flightStatuses[i].departureAirport.stateCode.
+                                                        departureAirportTZ              : flightStatuses[i].departureAirport.timeZoneRegionalName,
+                                                        departureAirportLocalTime       : flightStatuses[i].departureAirport.localTime,
+                                                        departureAirportElevation       : flightStatuses[i].departureAirport.elevationFeet
+                                                        departureDateLocal              : flightStatuses[i].departureDate.dateLocal,
+                                                        departureGate                   : flightStatuses[i].airportResources.departureGate,
+
+                                                        arrivalAirportIATA              : flightStatuses[i].arrivalAirport.iata,
+                                                        arrivalAirportName              : flightStatuses[i].arrivalAirport.name,
+                                                        arrivalAirportCity              : flightStatuses[i].arrivalAirport.city,
+                                                        arrivalAirportState             : flightStatuses[i].arrivalAirport.stateCode,
+                                                        arrivalAirportTZ                : flightStatuses[i].arrivalAirport.timeZoneRegionalName,
+                                                        arrivalAirportLocalTime         : flightStatuses[i].arrivalAirport.localtime,
+                                                        arrivalAirportElevation         : flightStatuses[i].arrivalAirport.elevationFeet,
+                                                        arrivalDateLocal                : flightStatuses[i].arrivalDate.dateLocal,
+                                                        arrivalTerminal                 : flightStatuses[i].airportResources.arrivalTerminal,
+                                                        arrivalGate                     : flightStatuses[i].airportResources.arrivalGate,
+
+                                                        opPublishedDeparture            : flightStatuses[i].operationalTimes.publishedDeparture.dateLocal,
+                                                        opPublishedArrival              : flightStatuses[i].operationalTimes.publishedArrival.dateLocal,                                                                         opSchedGateDeparture            : flightStatuses[i].operationalTimes.scheduledGateDeparture.dateLocal,
+                                                        opFlightPlanDeparture           : flightStatuses[i].operationalTimes.flightPlanPlannedDeparture.dateLocal,
+                                                        opEstRunwayDeparture            : flightStatuses[i].operationalTimes.estimatedRunwayDeparture.dateLocal,
+                                                        opSchedGateArrival              : flightStatuses[i].operationalTimes.scheduledGateArrival.dateLocal,
+                                                        opFlightPlanPlannedArrival      : flightStatuses[i].operationalTimes.flightPlanPlannedArrival,
+                                                        opEstimatedRunwayArrival        : flightStatuses[i].operationalTimes.estimatedRunwayArriva
+                                                        opFlightPlanPlannedArrival      : flightStatuses[i].operationalTimes.flightPlanPlannedArrival,
+                                                        opEstimatedRunwayArrival        : flightStatuses[i].operationalTimes.estimatedRunwayArrival,
+
+                                                        flightEquipIATA                 : flightStatuses[i].flightEquipment.iata,
+                                                        flightEquipHardware             : flightStatuses[i].flightEquipment.name,
+                                                        flightEquipTurboprop            : flightStatuses[i].flightEquipment.turboProp,
+                                                        flightEquipJet                  : flightStatuses[i].flightEquipment.jet,
+                                                        flightEquipWidebody             : flightStatuses[i].flightEquipment.widebody,
+
+                                                        status                          : flightStatuses[i].status
+
+                                                        // TODO add info on codeshares
+                                                                // flightStatuses[].codeshares[].carrier, .iata, .name, .phoneNumber
+                                                                //                              .flightNumber
+
+                                                }; // arrivingFlightStatus 
+
+ 						var arrivingAirplaneStatus = {
+                                                        .flightTracks[j].flightID,
+                                                        .flightTracks[j].departureAirport.IATA,
+                                                        .flightTracks[j].arrivalAirport.IATA,
+                                                        .flightTracks[j].bearing,
+                                                        .flightTracks[j].heading,
+
+                                                        // first reported position
+                                                        .flightTracks[j].positions[0].lon,
+                                                        .flightTracks[j].positions[0].lat,
+                                                        .flightTracks[j].positions[0].speedMPH,
+                                                        .flightTracks[j].positions[0].altitudeFt,
+                                                        .flightTracks[j].positions[0].source,
+                                                        .flightTracks[j].positions[0].date,
+
+                                                        // second reported position
+                                                        .flightTracks[j].positions[1].lon,
+                                                        .flightTracks[j].positions[1].lat,
+                                                        .flightTracks[j].positions[1].speedMPH,
+                                                        .flightTracks[j].positions[1].altitudeFt,
+                                                        .flightTracks[j].positions[0].source,
+                                                        .flightTracks[j].positions[0].date
+
+
+                                                }; // arrivingAirplaneStatus
+
 
 							// make dynamic changes
 
-							if ( arrivalGate == null )
-							{
-								arrivalGateDisplay = " ";
-							} else {
-								arrivalGateDisplay = " <b>Gate " + arrivalGate + "</b>";
-							}
-
-							if ( arrivalBaggage == null )
-							{
-								arrivalBaggageDisplay = " ";
-							} else {
-								arrivalBaggageDisplay = "<b>Carousel " + arrivalBaggage + "</b>";
-							}
-			
-							if ( arrivalRemarks.indexOf("Estimated") != -1)
-							{				
-								arrivalRemarksTemp = "<span style='color:red'>" + arrivalRemarks + "</span>";
-								arrivalRemarks = arrivalRemarksTemp;
-							}
-							if ( arrivalRemarks.indexOf("Cancelled") != -1)
-							{                               
-								arrivalRemarksTemp = "<span style='color:red;font-weight:bold'>" + arrivalRemarks + "</span>";
-								arrivalRemarks = arrivalRemarksTemp;
-							}
-
-
-							if ( arrivalRemarks == "Arrived On-Time" )
-							{
-								arrivalRemarksTemp = "<span style='color:green;font-weight:bold'>" + arrivalRemarks + "</span>";
-								arrivalRemarks = arrivalRemarksTemp;
-							}
 
 							// display status info line fer this flight	
-							document.getElementById("airports").innerHTML += "<p class=airportFlights><img src=https://" + arrivalAirlineLogo.substring(7) + " alt='" + arrivalAirlineName + "' height=18 width=55> " +  arrivalFlight + " from " + arrivalCity + " " + arrivalScheduled + arrivalGateDisplay + " " + arrivalBaggageDisplay + " " + arrivalRemarks + "</p>";
 							
 							i++;
 
