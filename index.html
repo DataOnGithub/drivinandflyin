@@ -213,14 +213,14 @@ function updateAirports() {
 	var month = d.getMonth();		// current month
 	var day = d.getDay();			// current day
 
-var flightStatusCodes = {
-		'A' 	: 'active',
-		'C'  	: 'canceled',
-		'D' 	: 'diverted',
-		'L'	: 'landed',
-		'R'	: 'redirected',
-		'S'	: 'scheduled'
-};
+	var flightStatusCodes = {
+			'A' 	: 'active',
+			'C'  	: 'canceled',
+			'D' 	: 'diverted',
+			'L'	: 'landed',
+			'R'	: 'redirected',
+			'S'	: 'scheduled'
+	};
 
 	document.getElementById("airports").innerHTML = "<br><i>Delay status for airports within " + viewportDistance + " mi</i><br>";
 	document.getElementById("airports").innerHTML += "<i>Flight information for airports within " + zoomedViewportDistance + " mi</i><br><br>";
@@ -302,6 +302,8 @@ var flightStatusCodes = {
 			if ( distance <= zoomedViewportDistance )
 			{
 
+				var airportIATA;
+
 				// check traffic to get estimate on when will we get to the airport 
 				// we always display driving  ETA from our location to each airport
 				// TODO we also want to include directions slash routing information
@@ -318,24 +320,32 @@ var flightStatusCodes = {
 					document.getElementById("airports").innerHTML += "This airport is approx " + distance.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + ".<br><br>";
 			 	}	
 
-
+				// note: airportETA is the time we expect to reach this airport
 				var currentTime = new Date();
 				var hour = currentTime.getHours();
 				var day = currentTime.getDate();
 				var month = currentTime.getMonth() + 1;
 				var year = currentTime.getFullYear();
 
-				numHourstoInclude = 5; // get flight information for this many hours in the future (arrivals and departures)
+				var numHourstoInclude = 3;
+	
+				var numHourstoIncludeArrivals = 2; 	// airportETA + 2 hours
+				var displayTimeArrivalsStart = airportETA;
+				var displayTimeArrivalsEnd = airportETA + "02:00";	
+				
+				var numHourstoIncludeDepartures = 4; 	// (airportETA - 1 hour) to (airportETA + 3 hours)
+				var displayTimeDeparturesStart = airportETA - "01:00";
+				var displayTimeDeparturesEnd = airportETA + "03:00";
+
 
 				// departures
 
 				var departingFlightsGet = new XMLHttpRequest();
-				
-				var departingFlightsURL="https://www.airmanopus.net/cgi-bin/departures.cgi?https://api.flightstats.com/flex/flightstatus/rest/v2/json/airport/status/" + airportIATA + "/dep/" + year + "/" + month + "/" + day + "?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&utc=false&numHours=" + numHourstoInclude;
+
+				var departingFlightsURL="https://www.airmanopus.net/cgi-bin/departures.cgi?https://api.flightstats.com/flex/flightstatus/rest/v2/json/airport/status/" + airportIATA + "/dep/" + year + "/" + month + "/" + day + "/" + hour + "?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&utc=false&numHours=" + numHourstoInclude + "&extendedOptions=useInlinedReferences";
 				var departingFlightsGetVerify = true;
 				departingFlightsGet.open('GET', departingFlightsURL, false);
 				departingFlightsGet.send();
-				console.log(departingFlightsGet.responseText);
 				// flightstats.com returning not found means there are no departing flights
 				// often this will happen late at night or very early in the morning especially at
 				// smaller airports that dont have noncargo activity at night
@@ -348,6 +358,8 @@ var flightStatusCodes = {
 
 				catch(err) 
 				{
+					console.log(err);
+					console.log(departingFlightsGet.responseText);
 					document.getElementById("airports").innerHTML += "There are no flights scheduled to depart during the next " + numHourstoInclude + " hours.<br>";
 					departingFlightsGetVerify = false;
 				}
@@ -359,81 +371,80 @@ var flightStatusCodes = {
 						var i = 0;
 						while ( i < departingFlightsJSON.flightStatuses.length )
 						{ 
-
-							var departingFlightStatus = {
-								carrierName 			: flightStatuses[i].carrier.Name,
-								carrierPhone			: flightStatuses[i].carrier.phoneNumber,
-								flightNumber			: flightStatuses[i].flightNumber,
-					
-								carrierIATA			: flightStatuses[i].carrier.iata,
-								carrierName			: flightStatuses[i].carrier.name,
-								carrierPhoneNumber		: flightStatuses[i].carrier.phoneNumber,
-					
-								departureAirportIATA		: flightStatuses[i].departureAirport.iata,
-								departureAirportName		: flightStatuses[i].departureAirport.name,
-								departureAirportCity		: flightStatuses[i].departureAirport.city,
-								departureAirportState		: flightStatuses[i].departureAirport.stateCode,
-								departureAirportTZ		: flightStatuses[i].departureAirport.timeZoneRegionalName,
-								departureAirportLocalTime	: flightStatuses[i].departureAirport.localTime,
-								departureAirportElevation 	: flightStatuses[i].departureAirport.elevationFeet,	
-								departureDateLocal		: flightStatuses[i].departureDate.dateLocal,
-								departureGate			: flightStatuses[i].airportResources.departureGate,
-
-								arrivalAirportIATA		: flightStatuses[i].arrivalAirport.iata,
-								arrivalAirportName 		: flightStatuses[i].arrivalAirport.name,
-								arrivalAirportCity		: flightStatuses[i].arrivalAirport.city,
-								arrivalAirportState		: flightStatuses[i].arrivalAirport.stateCode,
-								arrivalAirportTZ		: flightStatuses[i].arrivalAirport.timeZoneRegionalName,
-								arrivalAirportLocalTime		: flightStatuses[i].arrivalAirport.localtime,
-								arrivalAirportElevation		: flightStatuses[i].arrivalAirport.elevationFeet,
-								arrivalDateLocal		: flightStatuses[i].arrivalDate.dateLocal,
-								arrivalTerminal			: flightStatuses[i].airportResources.arrivalTerminal,
-								arrivalGate			: flightStatuses[i].airportResources.arrivalGate,
+						
+						var departingFlightStatus = {
+							carrierIATA			: departingFlightsJSON.flightStatuses[i].carrier.iata,
+							carrierName			: departingFlightsJSON.flightStatuses[i].carrier.name,
+							carrierPhoneNumber		: departingFlightsJSON.flightStatuses[i].carrier.phoneNumber,
 				
-								opPublishedDeparture		: flightStatuses[i].operationalTimes.publishedDeparture.dateLocal,
-								opPublishedArrival		: flightStatuses[i].operationalTimes.publishedArrival.dateLocal,
-								opSchedGateDeparture		 : flightStatuses[i].operationalTimes.scheduledGateDeparture.dateLocal,
-								opFlightPlanDeparture		: flightStatuses[i].operationalTimes.flightPlanPlannedDeparture.dateLocal,	
-								opEstRunwayDeparture		: flightStatuses[i].operationalTimes.estimatedRunwayDeparture.dateLocal,
-								opSchedGateArrival		: flightStatuses[i].operationalTimes.scheduledGateArrival.dateLocal,
-								opFlightPlanPlannedArrival	: flightStatuses[i].operationalTimes.flightPlanPlannedArrival,
-								opEstimatedRunwayArrival	: flightStatuses[i].operationalTimes.estimatedRunwayArrival,
-								opFlightPlanPlannedArrival	: flightStatuses[i].operationalTimes.flightPlanPlannedArrival,
-								opEstimatedRunwayArrival	: flightStatuses[i].operationalTimes.estimatedRunwayArrival,
-								
-								flightEquipIATA			: flightStatuses[i].flightEquipment.iata,
-								flightEquipHardware		: flightStatuses[i].flightEquipment.name,
-								flightEquipTurboprop		: flightStatuses[i].flightEquipment.turboProp,
-								flightEquipJet			: flightStatuses[i].flightEquipment.jet,
-								flightEquipWidebody		: flightStatuses[i].flightEquipment.widebody,	
-								
-								status				: flightStatuses[i].status
-								
-								// TODO add info on codeshares
-									// flightStatuses[].codeshares[].carrier, .iata, .name, .phoneNumber
-									//		   		.flightNumber
+							departureAirportIATA		: departingFlightsJSON.flightStatuses[i].departureAirport.iata,
+							departureAirportName		: departingFlightsJSON.flightStatuses[i].departureAirport.name,
+							departureAirportCity		: departingFlightsJSON.flightStatuses[i].departureAirport.city,
+							departureAirportState		: departingFlightsJSON.flightStatuses[i].departureAirport.stateCode,
+							departureAirportTZ		: departingFlightsJSON.flightStatuses[i].departureAirport.timeZoneRegionalName,
+							departureAirportLocalTime	: departingFlightsJSON.flightStatuses[i].departureAirport.localTime,
+							departureAirportElevation 	: departingFlightsJSON.flightStatuses[i].departureAirport.elevationFeet,	
+							departureDateLocal		: departingFlightsJSON.flightStatuses[i].departureDate.dateLocal,
+							departureGate			: departingFlightsJSON.flightStatuses[i].airportResources.departureGate,
 
-								}; // departingFlightStatus
-
-
-			// TODO now we get to display information about the flight described by departingFlightStatus
-
-
-
-			// TODO end of displaying information about the flight described by departingFlightStatus 
-								
-								// flight track information for a specific flight that is departing from an airport we are tracking
-								// and is within the radius of the area we are tracking and is on our list of departures 
-								// (The MD80 I am riding is headed WSW at 350MPH at an altitude of 35000 feet, at specific lat/lon)
-								// a track is a line vector drawn between the most recent two reported positions on a map
-							
-								var departingPlaneStatusGet = new XMLHttpRequest();
-								var departingPlaneStatusURL="https://api.flightstats.com/flex/flightstatus/rest/v2/json/airport/status/" + airportIATA + "/dep/" + year + "/" + month + "/" + day + "?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&utc=false&numHours=" + numHourstoInclude + "&exttendedOptions=useInlinedReferences";
-								var departingPlaneStatusProcess = "https://www.airmanopus.net/cgi-bin/departures.cgi?" + departingPlaneStatusURL;
-								departingPlaneStatusGet.open('GET', departingFlightProcess, false);
-								departingPlaneStatusGet.send();
-								var departingPlaneStatusJSON = JSON.parse(departingPlaneStatusGet.responseText);
+							arrivalAirportIATA		: departingFlightsJSON.flightStatuses[i].arrivalAirport.iata,
+							arrivalAirportName 		: departingFlightsJSON.flightStatuses[i].arrivalAirport.name,
+							arrivalAirportCity		: departingFlightsJSON.flightStatuses[i].arrivalAirport.city,
+							arrivalAirportState		: departingFlightsJSON.flightStatuses[i].arrivalAirport.stateCode,
+							arrivalAirportTZ		: departingFlightsJSON.flightStatuses[i].arrivalAirport.timeZoneRegionalName,
+							arrivalAirportLocalTime		: departingFlightsJSON.flightStatuses[i].arrivalAirport.localtime,
+							arrivalAirportElevation		: departingFlightsJSON.flightStatuses[i].arrivalAirport.elevationFeet,
+							arrivalDateLocal		: departingFlightsJSON.flightStatuses[i].arrivalDate.dateLocal,
+							arrivalTerminal			: departingFlightsJSON.flightStatuses[i].airportResources.arrivalTerminal,
+							arrivalGate			: departingFlightsJSON.flightStatuses[i].airportResources.arrivalGate,
 			
+							opPublishedDeparture		: departingFlightsJSON.flightStatuses[i].operationalTimes.publishedDeparture.dateLocal,
+							opPublishedArrival		: departingFlightsJSON.flightStatuses[i].operationalTimes.publishedArrival.dateLocal,
+							opSchedGateDeparture		: departingFlightsJSON.flightStatuses[i].operationalTimes.scheduledGateDeparture.dateLocal,
+							opFlightPlanDeparture		: departingFlightsJSON.flightStatuses[i].operationalTimes.flightPlanPlannedDeparture.dateLocal,	
+							opEstRunwayDeparture		: departingFlightsJSON.flightStatuses[i].operationalTimes.estimatedRunwayDeparture.dateLocal,
+							opSchedGateArrival		: departingFlightsJSON.flightStatuses[i].operationalTimes.scheduledGateArrival.dateLocal,
+							opFlightPlanPlannedArrival	: departingFlightsJSON.flightStatuses[i].operationalTimes.flightPlanPlannedArrival,
+							opEstimatedRunwayArrival	: departingFlightsJSON.flightStatuses[i].operationalTimes.estimatedRunwayArrival,
+							opFlightPlanPlannedArrival	: departingFlightsJSON.flightStatuses[i].operationalTimes.flightPlanPlannedArrival,
+							opEstimatedRunwayArrival	: departingFlightsJSON.flightStatuses[i].operationalTimes.estimatedRunwayArrival,
+							
+							flightEquipIATA			: departingFlightsJSON.flightStatuses[i].flightEquipment.iata,
+							flightEquipHardware		: departingFlightsJSON.flightStatuses[i].flightEquipment.name,
+							flightEquipTurboprop		: departingFlightsJSON.flightStatuses[i].flightEquipment.turboProp,
+							flightEquipJet			: departingFlightsJSON.flightStatuses[i].flightEquipment.jet,
+							flightEquipWidebody		: departingFlightsJSON.flightStatuses[i].flightEquipment.widebody,	
+							
+							status				: departingFlightsJSON.flightStatuses[i].status
+							
+							// TODO add info on codeshares
+								// flightStatuses[].codeshares[].carrier, .iata, .name, .phoneNumber
+								//		   		.flightNumber
+
+							}; // departingFlightStatus
+
+
+							// TODO now we get to display information about the flight described by departingFlightStatus
+
+
+
+							// TODO end of displaying information about the flight described by departingFlightStatus 
+								
+							// flight track information for a specific flight that is departing from an airport we are tracking
+							// and is within the radius of the area we are tracking and is on our list of departures 
+							// (The MD80 I am riding is headed WSW at 350MPH at an altitude of 35000 feet, at specific lat/lon)
+							// a track is a line vector drawn between the most recent two reported positions on a map
+						
+							var departingPlaneStatusGet = new XMLHttpRequest();
+							var departingPlaneStatusURL="https://api.flightstats.com/flex/flightstatus/rest/v2/json/airport/tracks/" + airportIATA + "/arr?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&includeFlightPlan=false&maxPositions=2&maxPositionAgeMinutes=15&extendedOptions=useInlinedReferences";
+							var departingPlaneStatusProcess = "https://www.airmanopus.net/cgi-bin/departures.cgi?" + departingPlaneStatusURL;
+							departingPlaneStatusGet.open('GET', departingPlaneStatusProcess, false);
+							departingPlaneStatusGet.send();
+							var departingPlaneStatusJSON = JSON.parse(departingPlaneStatusGet.responseText);
+							console.log(departingPlaneStatusJSON);
+							var j = 0;
+    	                                                while ( j < departingPlaneStatusJSON.flightTracks.length )
+							{
 								var departingAirplaneStatus = {
 									departingFlightID 	: departingPlaneStatusJSON.flightTracks[j].flightID,
 									departingAirport 	: departingPlaneStatusJSON.flightTracks[j].departureAirport.iata,
@@ -453,14 +464,11 @@ var flightStatusCodes = {
 									departingAirplaneSpeed1 : departingPlaneStatusJSON.flightTracks[j].positions[1].speedMPH,
 									departingAirplaneAlt1   : departingPlaneStatusJSON.flightTracks[j].positions[1].altitudeFt,
 									departingAirplaneSource1 : departingPlaneStatusJSON.flightTracks[j].positions[1].source,
-									departingAirplaneDate1  : departingPlaneStatusJSON.flightTracks[j].positions[1].date,
+									departingAirplaneDate1  : departingPlaneStatusJSON.flightTracks[j].positions[1].date
 
 								}; // departingAirplaneStatus
-						
-							i++;
-							// now we can make dynamic changes so we do not show blanks where we dont have data to show
-						  } // while 	
-
+								j++;
+						  	} // while 	
 						} // if			
 					} // if
 
@@ -485,7 +493,6 @@ var flightStatusCodes = {
 					 try
 					 {      
 						 var arrivingFlightsJSON = JSON.parse(arrivingFlightsGet.responseText);
-						 console.log(arrivingFlightsJSON);
 					 }
 	 
 					 catch(err)
@@ -505,53 +512,53 @@ var flightStatusCodes = {
 						{
 							
 							var arrivingFlightStatus = {
-								carrierName         		: arrivingFlightsJSON.flightStatuses[i].carrier.Name,
-								carrierPhone            	: arrivingFlightsJSON.flightStatuses[i].carrier.phoneNumber,
-								flightNumber            	: arrivingFlightsJSON.flightStatuses[i].flightNumber,
-								carrierIATA             	: arrivingFlightsJSON.flightStatuses[i].carrier.iata,
-								carrierName             	: arrivingFlightsJSON.flightStatuses[i].carrier.name,
-								carrierPhoneNumber      	: arrivingFlightsJSON.flightStatuses[i].carrier.phoneNumber,
+							carrierName         		: arrivingFlightsJSON.flightStatuses[i].carrier.Name,
+							carrierPhone            	: arrivingFlightsJSON.flightStatuses[i].carrier.phoneNumber,
+							flightNumber            	: arrivingFlightsJSON.flightStatuses[i].flightNumber,
+							carrierIATA             	: arrivingFlightsJSON.flightStatuses[i].carrier.iata,
+							carrierName             	: arrivingFlightsJSON.flightStatuses[i].carrier.name,
+							carrierPhoneNumber      	: arrivingFlightsJSON.flightStatuses[i].carrier.phoneNumber,
 
-								departureAirportIATA            : arrivingFlightsJSON.flightStatuses[i].departureAirport.iata,
-								departureAirportName            : arrivingFlightsJSON.flightStatuses[i].departureAirport.name,
-								departureAirportCity            : arrivingFlightsJSON.flightStatuses[i].departureAirport.city,
-								departureAirportState           : arrivingFlightsJSON.flightStatuses[i].departureAirport.stateCode,
-								departureAirportTZ              : arrivingFlightsJSON.flightStatuses[i].departureAirport.timeZoneRegionalName,
-								departureAirportLocalTime       : arrivingFlightsJSON.flightStatuses[i].departureAirport.localTime,
-								departureAirportElevation       : arrivingFlightsJSON.flightStatuses[i].departureAirport.elevationFeet,
-								departureDateLocal              : arrivingFlightsJSON.flightStatuses[i].departureDate.dateLocal,
-								departureGate			: "",
-								departureTerminal		: "",	
-								
-								arrivalAirportIATA	    	: arrivingFlightsJSON.flightStatuses[i].arrivalAirport.iata,
-								arrivalAirportName    		: arrivingFlightsJSON.flightStatuses[i].arrivalAirport.name,
-								arrivalAirportCity    		: arrivingFlightsJSON.flightStatuses[i].arrivalAirport.city,
-								arrivalAirportState   		: arrivingFlightsJSON.flightStatuses[i].arrivalAirport.stateCode,
-								arrivalAirportTZ     	 	: arrivingFlightsJSON.flightStatuses[i].arrivalAirport.timeZoneRegionalName,
-								arrivalAirportLocalTime 	: arrivingFlightsJSON.flightStatuses[i].arrivalAirport.localTime,
-								arrivalAirportElevation 	: arrivingFlightsJSON.flightStatuses[i].arrivalAirport.elevationFeet,
-								arrivalDateLocal              	: arrivingFlightsJSON.flightStatuses[i].arrivalDate.dateLocal,
-								arrivalGate			: "",
-								arrivalTerminal			: "",
+							departureAirportIATA            : arrivingFlightsJSON.flightStatuses[i].departureAirport.iata,
+							departureAirportName            : arrivingFlightsJSON.flightStatuses[i].departureAirport.name,
+							departureAirportCity            : arrivingFlightsJSON.flightStatuses[i].departureAirport.city,
+							departureAirportState           : arrivingFlightsJSON.flightStatuses[i].departureAirport.stateCode,
+							departureAirportTZ              : arrivingFlightsJSON.flightStatuses[i].departureAirport.timeZoneRegionalName,
+							departureAirportLocalTime       : arrivingFlightsJSON.flightStatuses[i].departureAirport.localTime,
+							departureAirportElevation       : arrivingFlightsJSON.flightStatuses[i].departureAirport.elevationFeet,
+							departureDateLocal              : arrivingFlightsJSON.flightStatuses[i].departureDate.dateLocal,
+							departureGate			: "",
+							departureTerminal		: "",	
+							
+							arrivalAirportIATA	    	: arrivingFlightsJSON.flightStatuses[i].arrivalAirport.iata,
+							arrivalAirportName    		: arrivingFlightsJSON.flightStatuses[i].arrivalAirport.name,
+							arrivalAirportCity    		: arrivingFlightsJSON.flightStatuses[i].arrivalAirport.city,
+							arrivalAirportState   		: arrivingFlightsJSON.flightStatuses[i].arrivalAirport.stateCode,
+							arrivalAirportTZ     	 	: arrivingFlightsJSON.flightStatuses[i].arrivalAirport.timeZoneRegionalName,
+							arrivalAirportLocalTime 	: arrivingFlightsJSON.flightStatuses[i].arrivalAirport.localTime,
+							arrivalAirportElevation 	: arrivingFlightsJSON.flightStatuses[i].arrivalAirport.elevationFeet,
+							arrivalDateLocal              	: arrivingFlightsJSON.flightStatuses[i].arrivalDate.dateLocal,
+							arrivalGate			: "",
+							arrivalTerminal			: "",
 
-						//		opPublishedDeparture            : arrivingFlightsJSON.flightStatuses[i].operationalTimes.publishedDeparture.dateLocal,
-						//		opPublishedArrival              : arrivingFlightsJSON.flightStatuses[i].operationalTimes.publishedArrival.dateLocal,                                                                 
-					/*			opSchedGateDeparture    	: arrivingFlightsJSON.flightStatuses[i].operationalTimes.scheduledGateDeparture.dateLocal,
-								opFlightPlanDeparture           : arrivingFlightsJSON.flightStatuses[i].operationalTimes.flightPlanPlannedDeparture.dateLocal,
-								opEstRunwayDeparture            : arrivingFlightsJSON.flightStatuses[i].operationalTimes.estimatedRunwayDeparture.dateLocal,
-								opSchedGateArrival              : arrivingFlightsJSON.flightStatuses[i].operationalTimes.scheduledGateArrival.dateLocal,
-								opFlightPlanPlannedArrival      : arrivingFlightsJSON.flightStatuses[i].operationalTimes.flightPlanPlannedArrival,
-								opEstimatedRunwayArrival        : arrivingFlightsJSON.flightStatuses[i].operationalTimes.estimatedRunwayArrival,
-								opFlightPlanPlannedArrival      : arrivingFlightsJSON.flightStatuses[i].operationalTimes.flightPlanPlannedArrival,
-								opEstimatedRunwayArrival        : arrivingFlightsJSON.flightStatuses[i].operationalTimes.estimatedRunwayArrival,
-					*/
-				/*				flightEquipIATA                 : arrivingFlightsJSON.flightStatuses[i].flightEquipment.iata,
-								flightEquipHardware             : arrivingFlightsJSON.flightStatuses[i].flightEquipment.name,
-								flightEquipTurboprop            : arrivingFlightsJSON.flightStatuses[i].flightEquipment.turboProp,
-								flightEquipJet                  : arrivingFlightsJSON.flightStatuses[i].flightEquipment.jet,
-								flightEquipWidebody             : arrivingFlightsJSON.flightStatuses[i].flightEquipment.widebody,
+					//		opPublishedDeparture            : arrivingFlightsJSON.flightStatuses[i].operationalTimes.publishedDeparture.dateLocal,
+					//		opPublishedArrival              : arrivingFlightsJSON.flightStatuses[i].operationalTimes.publishedArrival.dateLocal,                                                                 
+				/*			opSchedGateDeparture    	: arrivingFlightsJSON.flightStatuses[i].operationalTimes.scheduledGateDeparture.dateLocal,
+							opFlightPlanDeparture           : arrivingFlightsJSON.flightStatuses[i].operationalTimes.flightPlanPlannedDeparture.dateLocal,
+							opEstRunwayDeparture            : arrivingFlightsJSON.flightStatuses[i].operationalTimes.estimatedRunwayDeparture.dateLocal,
+							opSchedGateArrival              : arrivingFlightsJSON.flightStatuses[i].operationalTimes.scheduledGateArrival.dateLocal,
+							opFlightPlanPlannedArrival      : arrivingFlightsJSON.flightStatuses[i].operationalTimes.flightPlanPlannedArrival,
+							opEstimatedRunwayArrival        : arrivingFlightsJSON.flightStatuses[i].operationalTimes.estimatedRunwayArrival,
+							opFlightPlanPlannedArrival      : arrivingFlightsJSON.flightStatuses[i].operationalTimes.flightPlanPlannedArrival,
+							opEstimatedRunwayArrival        : arrivingFlightsJSON.flightStatuses[i].operationalTimes.estimatedRunwayArrival,
 				*/
-								status                          : arrivingFlightsJSON.flightStatuses[i].status
+			/*				flightEquipIATA                 : arrivingFlightsJSON.flightStatuses[i].flightEquipment.iata,
+							flightEquipHardware             : arrivingFlightsJSON.flightStatuses[i].flightEquipment.name,
+							flightEquipTurboprop            : arrivingFlightsJSON.flightStatuses[i].flightEquipment.turboProp,
+							flightEquipJet                  : arrivingFlightsJSON.flightStatuses[i].flightEquipment.jet,
+							flightEquipWidebody             : arrivingFlightsJSON.flightStatuses[i].flightEquipment.widebody,
+			*/
+							status                          : arrivingFlightsJSON.flightStatuses[i].status
 
 							}; // arrivingFlightStatus 
 
@@ -571,7 +578,6 @@ var flightStatusCodes = {
 				//				arrivingFlightStatus.arrivalGate = arrivingFlightsJSON.flightStatuses[i].airportResources.arrivalGate;
 				//			}
 							
-							console.log(arrivingFlightStatus);
 
 				// TODO display each arriving flights information
 				document.getElementById("airports").innerHTML += arrivingFlightStatus.carrierName + " " + arrivingFlightStatus.flightNumber + " from " +  arrivingFlightStatus.departureAirportCity + " " + arrivingFlightStatus.departureAirportState + " " +  flightStatusCodes[arrivingFlightStatus.status] + "<br>"; 
@@ -684,7 +690,7 @@ html, body, #map {
 </style>
 </head>
 <body onload="initialize()">
-<div id="top-title">drivinandflyin</div>
+<div id="top-title"><img src="drivinandflyin.png" alt="Drivin' and Flyin'"></div>
 <div id="map"></div>
 <div id="weather" class="weatherDisplay"></div>
 <div id="airports" class="Inconsolata"></div>
