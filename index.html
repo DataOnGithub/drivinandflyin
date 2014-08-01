@@ -199,7 +199,7 @@ function updateAirports() {
 
         const numAirports = 533;		// number of airports we can check status on 			
 	var airportDelayString; 		// will be the contents of the airports div
-	const viewportDistance = 75;		// watch airports for delays within this many miles
+	const viewportDistance = 50;		// watch airports for delays within this many miles
 	const zoomedViewportDistance = 35; 	// within this many miles of an airport get detailed flight info
 	const pi = 3.14159265359;		// pi
 	const R = 3959; 			// approximate radius of earth in miles
@@ -212,6 +212,15 @@ function updateAirports() {
 	var year = d.getFullYear();		// current year
 	var month = d.getMonth();		// current month
 	var day = d.getDay();			// current day
+
+var flightStatusCodes = {
+		'A' 	: 'active',
+		'C'  	: 'canceled',
+		'D' 	: 'diverted',
+		'L'	: 'landed',
+		'R'	: 'redirected',
+		'S'	: 'scheduled'
+};
 
 	document.getElementById("airports").innerHTML = "<br><i>Delay status for airports within " + viewportDistance + " mi</i><br>";
 	document.getElementById("airports").innerHTML += "<i>Flight information for airports within " + zoomedViewportDistance + " mi</i><br><br>";
@@ -525,9 +534,9 @@ function updateAirports() {
 								arrivalGate			: "",
 								arrivalTerminal			: "",
 
-								opPublishedDeparture            : arrivingFlightsJSON.flightStatuses[i].operationalTimes.publishedDeparture.dateLocal,
-								opPublishedArrival              : arrivingFlightsJSON.flightStatuses[i].operationalTimes.publishedArrival.dateLocal,                                                                 
-								opSchedGateDeparture    	: arrivingFlightsJSON.flightStatuses[i].operationalTimes.scheduledGateDeparture.dateLocal,
+						//		opPublishedDeparture            : arrivingFlightsJSON.flightStatuses[i].operationalTimes.publishedDeparture.dateLocal,
+						//		opPublishedArrival              : arrivingFlightsJSON.flightStatuses[i].operationalTimes.publishedArrival.dateLocal,                                                                 
+					/*			opSchedGateDeparture    	: arrivingFlightsJSON.flightStatuses[i].operationalTimes.scheduledGateDeparture.dateLocal,
 								opFlightPlanDeparture           : arrivingFlightsJSON.flightStatuses[i].operationalTimes.flightPlanPlannedDeparture.dateLocal,
 								opEstRunwayDeparture            : arrivingFlightsJSON.flightStatuses[i].operationalTimes.estimatedRunwayDeparture.dateLocal,
 								opSchedGateArrival              : arrivingFlightsJSON.flightStatuses[i].operationalTimes.scheduledGateArrival.dateLocal,
@@ -535,35 +544,42 @@ function updateAirports() {
 								opEstimatedRunwayArrival        : arrivingFlightsJSON.flightStatuses[i].operationalTimes.estimatedRunwayArrival,
 								opFlightPlanPlannedArrival      : arrivingFlightsJSON.flightStatuses[i].operationalTimes.flightPlanPlannedArrival,
 								opEstimatedRunwayArrival        : arrivingFlightsJSON.flightStatuses[i].operationalTimes.estimatedRunwayArrival,
-
-								flightEquipIATA                 : arrivingFlightsJSON.flightStatuses[i].flightEquipment.iata,
+					*/
+				/*				flightEquipIATA                 : arrivingFlightsJSON.flightStatuses[i].flightEquipment.iata,
 								flightEquipHardware             : arrivingFlightsJSON.flightStatuses[i].flightEquipment.name,
 								flightEquipTurboprop            : arrivingFlightsJSON.flightStatuses[i].flightEquipment.turboProp,
 								flightEquipJet                  : arrivingFlightsJSON.flightStatuses[i].flightEquipment.jet,
 								flightEquipWidebody             : arrivingFlightsJSON.flightStatuses[i].flightEquipment.widebody,
-
+				*/
 								status                          : arrivingFlightsJSON.flightStatuses[i].status
 
 							}; // arrivingFlightStatus 
 
 							// the departureGate, departureTerminal, and arrivalGate are sometimes not included in the ajax response
 
-							if (typeof arrivingFlightsJSON.flightStatuses[i].airportresources.departureTerminal !== "undefined")
-							{
-								arrivingFlightStatus.departureTerminal =  arrivingFlightsJSON.flightStatuses[i].airportResources.departureTerminal;
-							}
-							if (typeof arrivingFlightsJSON.flightStatuses[i].airportResources.departureGate !== "undefined")
-							{
-								arrivingFlightStatus.departureGate = arrivingFlightsJSON.flightStatuses[i].airportResources.departureGate;
-							}
-						
-							if (typeof arrivingFlightsJSON.flightStatuses[i].airportResources.arrivalGate !== "undefined")
-							{
-								arrivingFlightStatus.arrivalGate = arrivingFlightsJSON.flightStatuses[i].airportResources.arrivalGate;
-							}
+				//			if (typeof arrivingFlightsJSON.flightStatuses[i].airportresources.departureTerminal !== "undefined")
+				//			{
+				//				arrivingFlightStatus.departureTerminal =  arrivingFlightsJSON.flightStatuses[i].airportResources.departureTerminal;
+				//			}
+				//			if (typeof arrivingFlightsJSON.flightStatuses[i].airportResources.departureGate !== "undefined")
+				//			{
+				//				arrivingFlightStatus.departureGate = arrivingFlightsJSON.flightStatuses[i].airportResources.departureGate;
+				//			}
+				//		
+				//			if (typeof arrivingFlightsJSON.flightStatuses[i].airportResources.arrivalGate !== "undefined")
+				//			{
+				//				arrivingFlightStatus.arrivalGate = arrivingFlightsJSON.flightStatuses[i].airportResources.arrivalGate;
+				//			}
 							
 							console.log(arrivingFlightStatus);
 
+				// TODO display each arriving flights information
+				document.getElementById("airports").innerHTML += arrivingFlightStatus.carrierName + " " + arrivingFlightStatus.flightNumber + " from " +  arrivingFlightStatus.departureAirportCity + " " + arrivingFlightStatus.departureAirportState + " " +  flightStatusCodes[arrivingFlightStatus.status] + "<br>"; 
+
+
+
+				// TODO still need to write the ajax call to airport tracks
+				/*
 							var arrivingAirplaneStatus = {
 								arrivingFlightID       : arrivingPlaneStatusJSON.flightTracks[j].flightID,
 								departingAirport        : arrivinglaneStatusJSON.flightTracks[j].departureAirport.iata,
@@ -587,7 +603,7 @@ function updateAirports() {
 
 							}; // arrivingAirplaneStatus
 
-
+				*/
 							// display status info line fer this flight	
 								
 							i++;
@@ -629,7 +645,7 @@ var map;
 					inertia: true,
 					watch: true,
 					enableHighAccuracy: true,
-					maximumAge: 6000,
+					maximumAge: 25000,
 					trackResize: true,
 					attributionControl : true,
 					setView : true,
