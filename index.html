@@ -174,13 +174,14 @@ function updateArrivals() {
     	var arrivalsday = q.getDate();                   // current day
     	var arrivalshour = q.getHours();
     	const numHourstoInclude = 3;
-
+	var arrivingFlightsGetVerify = true;
 	var arrivingFlightsGet = new XMLHttpRequest();
 	var arrivingFlightsURL = "https://api.flightstats.com/flex/flightstatus/rest/v2/json/airport/status/" + airportIATA + "/arr/" + arrivalsyear + "/" + arrivalsmonth + "/" + arrivalsday + "/" + arrivalshour + "?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&utc=false&numHours=5&maxFlights=5&extendedOptions=useInlinedReferences";
 	var arrivingFlightsProcess="https://www.airmanopus.net/cgi-bin/arrivals.cgi?" + arrivingFlightsURL;
 	arrivingFlightsGet.open('GET', arrivingFlightsProcess, false);
 	arrivingFlightsGet.send();
 	console.log("arriving flights",arrivingFlightsGet.statusText);
+
 	 try
 	 {      
 		 var arrivingFlightsJSON = JSON.parse(arrivingFlightsGet.responseText);
@@ -196,7 +197,7 @@ function updateArrivals() {
 	 {
 		if (arrivingFlightsJSON.flightStatuses.length > 0)
 		{
-
+		console.log(arrivingFlightsJSON);
 		document.getElementById("airportsArrivals").innerHTML += "<br>Arrivals<br>";
 		var i = 0;
 		while ( i < arrivingFlightsJSON.flightStatuses.length ) 
@@ -207,8 +208,6 @@ function updateArrivals() {
 			carrierPhone            	: arrivingFlightsJSON.flightStatuses[i].carrier.phoneNumber,
 			flightNumber            	: arrivingFlightsJSON.flightStatuses[i].flightNumber,
 			carrierIATA             	: arrivingFlightsJSON.flightStatuses[i].carrier.iata,
-			carrierName             	: arrivingFlightsJSON.flightStatuses[i].carrier.name,
-			carrierPhoneNumber      	: arrivingFlightsJSON.flightStatuses[i].carrier.phoneNumber,
 
 			departureAirportIATA            : arrivingFlightsJSON.flightStatuses[i].departureAirport.iata,
 			departureAirportName            : arrivingFlightsJSON.flightStatuses[i].departureAirport.name,
@@ -258,9 +257,10 @@ function updateArrivals() {
 	} // while
 } // if
 } // if			
-	console.log(arrivingFlightStatus);
-	// TODO display each arriving flights information
-	document.getElementById("airportsArrivals").innerHTML += arrivingFlightStatus.carrierName + " " + arrivingFlightStatus.flightNumber + " from " +  arrivingFlightStatus.departureAirportCity + " " + arrivingFlightStatus.departureAirportState + " " +  flightStatusCodes[arrivingFlightStatus.status] + "<br>"; 
+	
+
+// TODO display each arriving flights information
+//	document.getElementById("airportsArrivals").innerHTML += arrivingFlightStatus.carrierName + " " + arrivingFlightStatus.flightNumber + " from " +  arrivingFlightStatus.departureAirportCity + " " + arrivingFlightStatus.departureAirportState + " " +  flightStatusCodes[arrivingFlightStatus.status] + "<br>"; 
 
 
 	var arrivingPlanesGet = new XMLHttpRequest();
@@ -268,50 +268,44 @@ function updateArrivals() {
 	var arrivingPlanesProcess="https://www.airmanopus.net/cgi-bin/arrivals.cgi?" + arrivingPlanesURL;
 	arrivingPlanesGet.open('GET',arrivingPlanesProcess,false);
 	arrivingPlanesGet.send();
-	console.log("arrivingPlanes",arrivingPlanesGet.statusText);
-	try
-	{
-		var arrivingPlaneStatusJSON = JSON.parse(arrivingPlanesGet.responseText);
-		console.log(arrivingPlaneStatusJSON);
+	var arrivingPlaneStatusJSON = JSON.parse(arrivingPlanesGet.responseText);
+	console.log(arrivingPlaneStatusJSON.flightTracks);
+	
+	if (arrivingPlaneStatusJSON.flightTracks.length != 0)
+	{	
+		var i = 0;
+		while ( i < arrivingFlightsJSON.flightStatuses.length )
+		{
+			var arrivingAirplaneStatus = {
+				arrivingFlightID       : arrivingPlaneStatusJSON.flightTracks[i].flightID,
+				departingAirport        : arrivinglaneStatusJSON.flightTracks[i].departureAirport.iata,
+				arrivingairport         : arrivingPlaneStatusJSON.flightTracks[i].arrivalAirport.iata,
+				depAirplaneBearing      : arrivingPlaneStatusJSON.flightTracks[i].bearing,
+				depAirplaneHeading      : arrivingPlaneStatusJSON.flightTracks[i].heading,
+
+				arrivingAirplaneLon0   : arrivingPlaneStatusJSON.flightTracks[i].positions[0].lon,
+				arrivingAirplaneLat0   : arrivingPlaneStatusJSON.flightTracks[i].positions[0].lat,
+				arrivingAirplaneSpeed0 : arrivingPlaneStatusJSON.flightTracks[i].positions[0].speedMPH,
+				arrivingAirplaneAlt0   : arrivingPlaneStatusJSON.flightTracks[i].positions[0].altitudeFt,
+				arrivingAirplaneSource0 : arrivingPlaneStatusJSON.flightTracks[i].positions[0].source,
+				arrivingAirplaneDate0  : arrivingPlaneStatusJSON.flightTracks[i].positions[0].date,
+
+				arrivingAirplaneLon1   : arrivingPlaneStatusJSON.flightTracks[i].positions[1].lon,
+				arrivingAirplaneLat1   : arrivingPlaneStatusJSON.flightTracks[i].positions[1].lat,
+				arrivingAirplaneSpeed1 : arrivingPlaneStatusJSON.flightTracks[i].positions[1].speedMPH,
+				arrivingAirplaneAlt1   : arrivingPlaneStatusJSON.flightTracks[i].positions[1].altitudeFt,
+				arrivingAirplaneSource1 : arrivingPlaneStatusJSON.flightTracks[i].positions[1].source,
+				arrivingAirplaneDate1  : arrivingPlaneStatusJSON.flightTracks[i].positions[1].date
+			}; // arrivingAirplaneStatus
+
+		// display status info line fer this flight	here
+		//
+			
+		i++;
+		} // while
+	} else {
+		airportsArrivals.innerHTML += "No tracks available for arrivals.";	
 	}
-	catch(err)
-	{
-		console.log("shit. no arriving planes tracks to display.");
-	}
-		
-	var i = 0;
-	while ( i < arrivingFlightsJSON.flightStatuses.length )
-	{
-		var arrivingAirplaneStatus = {
-			arrivingFlightID       : arrivingPlaneStatusJSON.flightTracks[j].flightID,
-			departingAirport        : arrivinglaneStatusJSON.flightTracks[j].departureAirport.iata,
-			arrivingairport         : arrivingPlaneStatusJSON.flightTracks[j].arrivalAirport.iata,
-			depAirplaneBearing      : arrivingPlaneStatusJSON.flightTracks[j].bearing,
-			depAirplaneHeading      : arrivingPlaneStatusJSON.flightTracks[j].heading,
-
-			arrivingAirplaneLon0   : arrivingPlaneStatusJSON.flightTracks[j].positions[0].lon,
-			arrivingAirplaneLat0   : arrivingPlaneStatusJSON.flightTracks[j].positions[0].lat,
-			arrivingAirplaneSpeed0 : arrivingPlaneStatusJSON.flightTracks[j].positions[0].speedMPH,
-			arrivingAirplaneAlt0   : arrivingPlaneStatusJSON.flightTracks[j].positions[0].altitudeFt,
-			arrivingAirplaneSource0 : arrivingPlaneStatusJSON.flightTracks[j].positions[0].source,
-			arrivingAirplaneDate0  : arrivingPlaneStatusJSON.flightTracks[j].positions[0].date,
-
-			arrivingAirplaneLon1   : arrivingPlaneStatusJSON.flightTracks[j].positions[1].lon,
-			arrivingAirplaneLat1   : arrivingPlaneStatusJSON.flightTracks[j].positions[1].lat,
-			arrivingAirplaneSpeed1 : arrivingPlaneStatusJSON.flightTracks[j].positions[1].speedMPH,
-			arrivingAirplaneAlt1   : arrivingPlaneStatusJSON.flightTracks[j].positions[1].altitudeFt,
-			arrivingAirplaneSource1 : arrivingPlaneStatusJSON.flightTracks[j].positions[1].source,
-			arrivingAirplaneDate1  : arrivingPlaneStatusJSON.flightTracks[j].positions[1].date
-		}; // arrivingAirplaneStatus
-
-	// display status info line fer this flight	here
-	//
-		
-	i++;
-
-
-	} // while
-
 }	
 
 function updateTraffic()
@@ -574,7 +568,7 @@ function updateAirports() {
 
 
 
-	var flightStatusCodes = {
+	flightStatusCodes = {
 		'A' 	: 'active',
 		'C'  	: 'canceled',
 		'D' 	: 'diverted',
