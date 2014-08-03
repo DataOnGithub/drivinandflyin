@@ -189,7 +189,7 @@ function updateArrivals() {
 
 	 catch(err)
 	 {
-		 document.getElementById("airportsArrivals").innerHTML += "<br<Arrivals<br><br>";
+		 document.getElementById("airportsArrivals").innerHTML = "<br<Arrivals<br><br>";
 		 document.getElementById("airportsArrivals").innerHTML += "There are no flights scheduled to arrive during the next " + numHourstoInclude + " hours.<br>";
 		 arrivingFlightsGetVerify = false;
 	 }
@@ -198,7 +198,7 @@ function updateArrivals() {
 		if (arrivingFlightsJSON.flightStatuses.length > 0)
 		{
 		console.log(arrivingFlightsJSON);
-		document.getElementById("airportsArrivals").innerHTML += "<br>Arrivals<br>";
+		document.getElementById("airportsArrivals").innerHTML = "<br>Arrivals<br>";
 		var i = 0;
 		while ( i < arrivingFlightsJSON.flightStatuses.length ) 
 		{
@@ -331,7 +331,7 @@ function updateTraffic()
 	airportETA = airportETAParsed.route.summary.arrivalOverview.time;
 	if (airportIATA != null)
 	{
-		document.getElementById("airportsTraffic").innerHTML += "This airport is approx " + distance.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + ".<br><br>";
+		document.getElementById("airportsTraffic").innerHTML += airportIATA + " is approx " + distance.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + ".<br><br>";
 	}	
 
 	// note: airportETA is the time we expect to reach this airport
@@ -543,7 +543,10 @@ function updateDepartures()
 }
 
 function updateAirports() {
-	console.log("updateAirports");
+ 	var lat = arguments[0];
+	var lon = arguments[1];
+
+	console.log("update Airports");
 	// TODO we only want to read the airport list once when the page initially loads
 	//      rather than every time we update the status of airports we are tracking
 	var airportListURL = "https://www.airmanopus.net/cgi-bin/airportlist.csv";
@@ -646,6 +649,7 @@ function initialize() {
 					setView : true,
 				});
 				mapFirstDraw = false;
+				updateAirports(lat,lon);
 			} else {
 				// update map view to new location
 				lat = position.coords.latitude;
@@ -653,12 +657,9 @@ function initialize() {
 
 				// pan the map to current coordinates 
 				map.setView([lat, lon]);
-				console.log(lat, lon);
-
-				updateAirports();
             		}
 		
-
+		updateAirports(lat,lon);
 
 		}); 
 	} 
