@@ -187,14 +187,14 @@ function updateArrivals() {
 
 	 catch(err)
 	 {
-		 document.getElementById("airportsArrivals").innerHTML += "There are no flights scheduled to arrive during the next " + numHourstoInclude + " hours.<br>";
+		 document.getElementById("airportArrivals").innerHTML += "There are no flights scheduled to arrive during the next " + numHourstoInclude + " hours.<br>";
 		 arrivingFlightsGetVerify = false;
 	 }
 	 if (arrivingFlightsGetVerify == true)
 	 {
 		if (arrivingFlightsJSON.flightStatuses.length > 0)
 		{
-		document.getElementById("airportsArrivals").innerHTML = "<br>Arrivals<br>";
+		document.getElementById("airportArrivals").innerHTML = "<br>Arrivals<br>";
 		var i = 0;
 		while ( i < arrivingFlightsJSON.flightStatuses.length ) 
 		{
@@ -246,15 +246,22 @@ function updateArrivals() {
 			status                          : arrivingFlightsJSON.flightStatuses[i].status
 
 			}; // arrivingFlightStatus 
+
+			// display arrivals here
+			document.getElementById("airportArrivals").innerHTML += arrivingFlightStatus[i].carrierName + arrivingFlightsStatus[i].flightNumber;
+
+			//
 			i++;
-			// the departureGate, departureTerminal, and arrivalGate are sometimes not included in the ajax response
 
 	} // while
 } // if
-} // if			
+} 
 	
 // TODO display each arriving flights information
 
+
+function updateArrivalsTracks()
+{
 // now display the tracks for each flight we are tracking
 // if there were no arriving flights listed we should skip looking for tracks once this is all working
 
@@ -304,7 +311,7 @@ function updateArrivals() {
 		i++;
 		} // while
 	} else {
-		airportsArrivals.innerHTML += "No tracks available for arrivals.";	
+		document.getElementById("airportArrivalsTracks").innerHTML += "<p>No tracks available for arrivals at " + airportIATA + ".</p>";	
 	}
 }	
 
@@ -333,7 +340,7 @@ function updateTraffic()
 	var distanceMiles = distanceMeters * MILES_PER_METER;
 	if (airportIATA != null)
 	{
-		document.getElementById("airportsTraffic").innerHTML += airportIATA + " is approx " + distanceMiles.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + ".<br><br>";
+		document.getElementById("traffic").innerHTML += "<br>" + airportIATA + " is approx " + distanceMiles.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + ".<br>";
 	}	
 
 	// note: airportETA is the time we expect to reach this airport
@@ -386,14 +393,13 @@ function updateDelays()
 		//L.marker([airportLat, airportLon]).addTo(map);
 
 		// name and IATA always display if within viewPortdistance 	
-		document.getElementById("airportsDelays").innerHTML += "<span class='airportTitle'>";
-		document.getElementById("airportsDelays").innerHTML += airportName + " (" + airportIATA + ")<br>";
-		document.getElementById("airportsDelays").innerHTML += airportDelayReason + "<br>";
-		document.getElementById("airportsDelays").innerHTML += "</span>";
+		document.getElementById("airportDelays").innerHTML = "";
+		document.getElementById("airportDelays").innerHTML = "<br>" + airportName + " (" + airportIATA + ")<br>";
+		document.getElementById("airportDelays").innerHTML += airportDelayReason + "<br>";
 		// display closure info only if airport is closed 
 		if ( airportClosureBegin != "")
 		{
-			 document.getElementById("airportsDelays").innerHTML +=  "<br>Closed from " + airportClosureBegin + " to " + airportClosureEnd;
+			 document.getElementById("airportsDelaysText").innerHTML +=  "<br>" + airportName + "(" + airportIATA + ")" + " closed from " + airportClosureBegin + " to " + airportClosureEnd;
 		} 
 
 		// display delay reason only when there is a delay
@@ -482,7 +488,7 @@ function updateDepartures()
 					//			flightEquipJet			: departingFlightsJSON.flightStatuses[k].flightEquipment.jet,
 					//			flightEquipWidebody		: departingFlightsJSON.flightStatuses[k].flightEquipment.widebody,	
 					
-					status				: departingFlightsJSON.flightStatuses[k].status,
+					status				: departingFlightsJSON.flightStatuses[k].status
 					
 					//				departureGate			: departingFlightsJSON.flightStatuses[k].airportResources.departureGate,
 					//				arrivalTerminal			: departingFlightsJSON.flightStatuses[k].airportResources.arrivalTerminal,
@@ -494,10 +500,15 @@ function updateDepartures()
 			
 			// TODO now we get to display information about the flight described by departingFlightStatus
 			// fields (for now)
-//			document.getElementByID("airportsDepartures").innerHTML += "Flight ____ " + departingFlightStatus.carrierName + " " + " " +  departingFlightStatus.departureAirportCity + " " +  departingFlightStatus.departureAirportState + "(Elev. " +  departingFlightStatus.arrivalAirportElevation + ")<br>" + flightStatusCodes[status] + " Departs " +  departingFlightStatus.departureGate + " Arrives " +  departingFlightStatus.arrivalTerminal + " Gate " +  departingFlightStatus.arrivalGate;
+			document.getElementByID("airportsDepartures").innerHTML += "Flight ____ " + departingFlightStatus.carrierName + " " + " " +  departingFlightStatus.departureAirportCity + " " +  departingFlightStatus.departureAirportState + "(Elev. " +  departingFlightStatus.arrivalAirportElevation + ")<br>" + flightStatusCodes[status] + " Departs " +  departingFlightStatus.departureGate + " Arrives " +  departingFlightStatus.arrivalTerminal + " Gate " +  departingFlightStatus.arrivalGate;
 
 			// TODO end of displaying information about the flight described by departingFlightStatus 
-				
+		} // if
+	} // if
+}
+
+function updateDeparturesTracks()
+{				
 			// flight track information for a specific flight that is departing from an airport we are tracking
 			// and is within the radius of the area we are tracking and is on our list of departures 
 			// (The MD80 I am riding is headed WSW at 350MPH at an altitude of 35000 feet, at specific lat/lon)
@@ -535,8 +546,6 @@ function updateDepartures()
 				}; // departingAirplaneStatus
 				j++;
 			} // while j
-		} // if
-	} // if
 }
 
 function updateAirports() {
@@ -555,8 +564,8 @@ function updateAirports() {
 
         const numAirports = 533;		// number of airports we can check status on 			
 	var airportDelayString; 		// will be the contents of the airports div
-	const viewportDistance = 50;		// watch airports for delays within this many miles
-	const zoomedViewportDistance = 35; 	// within this many miles of an airport get detailed flight info
+	const viewportDistance = 40;		// watch airports for delays within this many miles
+	const zoomedViewportDistance = 20; 	// within this many miles of an airport get detailed flight info
 	const pi = 3.14159265359;		// pi
 	const R = 3959; 			// approximate radius of earth in miles
 
@@ -575,8 +584,8 @@ function updateAirports() {
 		'S'	: 'scheduled'
 	};
 
-	document.getElementById("airportsDelays").innerHTML = "<br><i>Delay status for airports within " + viewportDistance + " mi</i><br>";
-	document.getElementById("airportsDelays").innerHTML += "<i>Flight information for airports within " + zoomedViewportDistance + " mi</i><br><br>";
+	//document.getElementById("airportsDelaysHeader").innerHTML = "<br><i>Delay status for airports within " + viewportDistance + " mi</i><br>";
+	//document.getElementById("airportsDelaysHeader").innerHTML += "<i>Flight information for airports within " + zoomedViewportDistance + " mi</i><br><br>";
 	
 	// we need to check all of the possible US airports to see if they are within viewportDistance of us
 	for (var j = 0; j < numAirports; j++)
@@ -602,16 +611,17 @@ function updateAirports() {
 		// we ignore all airports outside viewportDistance
 		if ( distance <= viewportDistance ) 
 		{
-			updateWeather(lat,lon)
+			// we always want to update traffic to airports within viewportDistance
+			updateTraffic(lat,lon,airportLat,airportLon,iataIdentifier,distance);
 
-
-			// if we are within zoomedViewportDistance mi of an airport we want to see its incoming and outgoing flights
+			// if we are within zoomedViewportDistance we also want to see delays and incoming and outgoing flights
 			if ( distance <= zoomedViewportDistance )
 			{
-				updateTraffic(lat,lon,airportLat,airportLon,iataIdentifier,distance);
 				updateDelays(iataIdentifier);
-				updateDepartures(iataIdentifier);
 				updateArrivals(iataIdentifier);
+				
+				updateDepartures(iataIdentifier);
+
 			} 
 		}
 	} 
@@ -643,6 +653,8 @@ function initialize() {
 					setView : true,
 				});
 				mapFirstDraw = false;
+				updateWeather(lat,lon);
+				updateAirports(lat,lon);
 			} else {
 				// update map view to new location
 				lat = position.coords.latitude;
@@ -650,9 +662,9 @@ function initialize() {
 
 				// pan the map to current coordinates 
 				map.setView([lat, lon]);
+				updateWeather(lat,lon);		
+				updateAirports(lat,lon);
             		}
-		
-		updateAirports(lat,lon);
 
 		}); 
 	} 
@@ -670,15 +682,18 @@ html, body, #map {
 <body onload="initialize()">
 <div id="top-title"><img src="drivinandflyin.png" alt="Drivin' and Flyin'"></div>
 <div id="map"></div>
+
 <div id="localWeather" class="weatherDisplay"></div>
+<div id="traffic" class="Inconsolata"></div>
+<div id="airportDelays" class="Inconsolata">
+<div id="airportDelaysHeader" class="Inconsolata"></div>
+<div id="airportDelaysText"></div>
+</div>
+<div id="airportArrivals" class="Inconsolata"></div>
+<div id="airportArrivalsTracks" class="Inconsolata"></div>
+<div id="airportDepartures" class ="Inconsolata"></div>
 
-<div id="airportsDelays" class="Inconsolata"></div>
-<div id="airportsWeather" class="Inconsolata"></div>
-<div id="airportsTraffic" class="Inconsolata"></div>
-<div id="airportsDepartures" class="Inconsolata"></div>
-<div id="airportsArrivals" class="Inconsolata"></div>
-
-<div id="footer" class="weatherDisplay">
+<div id="footer">
 <pre>
 Weather powered by: <a href="https://www.worldweatheronline.com" target="_blank">World Weather Online</a>
 Flight data &copy; <a href="https://developer.flightstats.com/" target="_blank">Flightstats</a>
