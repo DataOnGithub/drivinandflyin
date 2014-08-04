@@ -199,7 +199,10 @@ function updateArrivals() {
 		while ( i < arrivingFlightsJSON.flightStatuses.length ) 
 		{
 			
-			var arrivingFlightStatus = {
+		// some of these fields are only sometimes populated
+		
+		
+		var arrivingFlightStatus = {
 			carrierName         		: arrivingFlightsJSON.flightStatuses[i].carrier.name,
 			carrierPhone            	: arrivingFlightsJSON.flightStatuses[i].carrier.phoneNumber,
 			flightNumber            	: arrivingFlightsJSON.flightStatuses[i].flightNumber,
@@ -213,8 +216,8 @@ function updateArrivals() {
 			departureAirportLocalTime       : arrivingFlightsJSON.flightStatuses[i].departureAirport.localTime,
 			departureAirportElevation       : arrivingFlightsJSON.flightStatuses[i].departureAirport.elevationFeet,
 			departureDateLocal              : arrivingFlightsJSON.flightStatuses[i].departureDate.dateLocal,
-			departureGate			: "",
-			departureTerminal		: "",	
+		//	departureGate			: arrivingFlightsJSON.flightStatuses[i].airportResources.departureGate,
+		//	departureTerminal		: arrivingFlightsJSON.flightStatuses[i].airportResources.departureTerminal,
 			
 			arrivalAirportIATA	    	: arrivingFlightsJSON.flightStatuses[i].arrivalAirport.iata,
 			arrivalAirportName    		: arrivingFlightsJSON.flightStatuses[i].arrivalAirport.name,
@@ -224,25 +227,21 @@ function updateArrivals() {
 			arrivalAirportLocalTime 	: arrivingFlightsJSON.flightStatuses[i].arrivalAirport.localTime,
 			arrivalAirportElevation 	: arrivingFlightsJSON.flightStatuses[i].arrivalAirport.elevationFeet,
 			arrivalDateLocal              	: arrivingFlightsJSON.flightStatuses[i].arrivalDate.dateLocal,
-			arrivalGate			: "",
-			arrivalTerminal			: "",
+		//	arrivalGate			: "",
+		//	arrivalTerminal			: "",
 
-			opPublishedDeparture            : arrivingFlightsJSON.flightStatuses[i].operationalTimes.publishedDeparture.dateLocal,
-			opPublishedArrival              : arrivingFlightsJSON.flightStatuses[i].operationalTimes.publishedArrival.dateLocal,                                                                 
-			opSchedGateDeparture    	: arrivingFlightsJSON.flightStatuses[i].operationalTimes.scheduledGateDeparture.dateLocal,
-			opFlightPlanDeparture           : arrivingFlightsJSON.flightStatuses[i].operationalTimes.flightPlanPlannedDeparture.dateLocal,
-			opEstRunwayDeparture            : arrivingFlightsJSON.flightStatuses[i].operationalTimes.estimatedRunwayDeparture.dateLocal,
-			opSchedGateArrival              : arrivingFlightsJSON.flightStatuses[i].operationalTimes.scheduledGateArrival.dateLocal,
-			opFlightPlanPlannedArrival      : arrivingFlightsJSON.flightStatuses[i].operationalTimes.flightPlanPlannedArrival,
-			opEstimatedRunwayArrival        : arrivingFlightsJSON.flightStatuses[i].operationalTimes.estimatedRunwayArrival,
-			opFlightPlanPlannedArrival      : arrivingFlightsJSON.flightStatuses[i].operationalTimes.flightPlanPlannedArrival,
-			opEstimatedRunwayArrival        : arrivingFlightsJSON.flightStatuses[i].operationalTimes.estimatedRunwayArrival,
+		//	actualGateArrival		: arrivingFlightsJSON.flightStatuses[i].actualGateArrival.dateLocal,
+		//	actualGateDeparture		: arrivingFlightsJSON.flightStatuses[i].actualGateDeparture.dateLocal,
+		//	estimatedGateArrival		: arrivingFlightsJSON.flightStatuses[i].estimatedGateArrival.dateLocal,
+		//	estimagedGateDeparture		: arrivingFlightsJSON.flightStatuses[i].estimatedGateDeparture.dateLocal,
+		//	scheduledGateArrival		: arrivingFlightsJSON.flightStatuses[i].scheduledGateArrival.dateLocal,
+		//	scheduledGateDeparture		: arrivingFlightsJSON.flightStatuses[i].scheduledGateDeparture.dateLocal,
 
-			flightEquipIATA                 : arrivingFlightsJSON.flightStatuses[i].flightEquipment.iata,
-			flightEquipHardware             : arrivingFlightsJSON.flightStatuses[i].flightEquipment.name,
-			flightEquipTurboprop            : arrivingFlightsJSON.flightStatuses[i].flightEquipment.turboProp,
-			flightEquipJet                  : arrivingFlightsJSON.flightStatuses[i].flightEquipment.jet,
-			flightEquipWidebody             : arrivingFlightsJSON.flightStatuses[i].flightEquipment.widebody,
+		//	flightEquipIATA                 : arrivingFlightsJSON.flightStatuses[i].flightEquipment.iata,
+		//	flightEquipHardware             : arrivingFlightsJSON.flightStatuses[i].flightEquipment.name,
+		//	flightEquipTurboprop            : arrivingFlightsJSON.flightStatuses[i].flightEquipment.turboProp,
+		//	flightEquipJet                  : arrivingFlightsJSON.flightStatuses[i].flightEquipment.jet,
+		//	flightEquipWidebody             : arrivingFlightsJSON.flightStatuses[i].flightEquipment.widebody,
 
 			status                          : arrivingFlightsJSON.flightStatuses[i].status
 
@@ -255,7 +254,6 @@ function updateArrivals() {
 } // if			
 	
 // TODO display each arriving flights information
-	document.getElementById("airportsArrivals").innerHTML += arrivingFlightStatus.carrierName + " " + arrivingFlightStatus.flightNumber + " from " +  arrivingFlightStatus.departureAirportCity + " " + arrivingFlightStatus.departureAirportState + " " +  flightStatusCodes[arrivingFlightStatus.status] + "<br>"; 
 
 // now display the tracks for each flight we are tracking
 // if there were no arriving flights listed we should skip looking for tracks once this is all working
@@ -330,7 +328,6 @@ function updateTraffic()
 	airportETAGet.open('GET', airportETAProcess, false);
 	airportETAGet.send();
 	var airportRoute=JSON.parse(airportETAGet.responseText);
-	console.log(airportRoute);
 	var airportETA = airportRoute.route.summary.arrivalOverview.time;
 	var distanceMeters = airportRoute.route.summary.totalDistanceMeters; 
 	var distanceMiles = distanceMeters * MILES_PER_METER;
@@ -497,7 +494,7 @@ function updateDepartures()
 			
 			// TODO now we get to display information about the flight described by departingFlightStatus
 			// fields (for now)
-			document.getElementByID("airportsDepartures").innerHTML += "Flight ____ " + departingFlightStatus.carrierName + " " + " " +  departingFlightStatus.departureAirportCity + " " +  departingFlightStatus.departureAirportState + "(Elev. " +  departingFlightStatus.arrivalAirportElevation + ")<br>" + flightStatusCodes[status] + " Departs " +  departingFlightStatus.departureGate + " Arrives " +  departingFlightStatus.arrivalTerminal + " Gate " +  departingFlightStatus.arrivalGate;
+//			document.getElementByID("airportsDepartures").innerHTML += "Flight ____ " + departingFlightStatus.carrierName + " " + " " +  departingFlightStatus.departureAirportCity + " " +  departingFlightStatus.departureAirportState + "(Elev. " +  departingFlightStatus.arrivalAirportElevation + ")<br>" + flightStatusCodes[status] + " Departs " +  departingFlightStatus.departureGate + " Arrives " +  departingFlightStatus.arrivalTerminal + " Gate " +  departingFlightStatus.arrivalGate;
 
 			// TODO end of displaying information about the flight described by departingFlightStatus 
 				
@@ -605,14 +602,12 @@ function updateAirports() {
 		// we ignore all airports outside viewportDistance
 		if ( distance <= viewportDistance ) 
 		{
-			console.log(iataIdentifier + " is within " + viewportDistance + " miles");
 			updateWeather(lat,lon)
 
 
 			// if we are within zoomedViewportDistance mi of an airport we want to see its incoming and outgoing flights
 			if ( distance <= zoomedViewportDistance )
 			{
-				console.log(iataIdentifier + " is within " + zoomedViewportDistance + " miles");
 				updateTraffic(lat,lon,airportLat,airportLon,iataIdentifier,distance);
 				updateDelays(iataIdentifier);
 				updateDepartures(iataIdentifier);
@@ -635,7 +630,6 @@ function initialize() {
 				// init and draw the initial map
 				lat = position.coords.latitude;
 				lon = position.coords.longitude;
-				console.log("Initial position " + lat + "," + lon);		
 				// the map
 				map = L.mapbox.map('map', 'airmanopus.hm9c0o4f', {
 					center: [lat, lon],
@@ -677,11 +671,13 @@ html, body, #map {
 <div id="top-title"><img src="drivinandflyin.png" alt="Drivin' and Flyin'"></div>
 <div id="map"></div>
 <div id="localWeather" class="weatherDisplay"></div>
+
 <div id="airportsDelays" class="Inconsolata"></div>
 <div id="airportsWeather" class="Inconsolata"></div>
 <div id="airportsTraffic" class="Inconsolata"></div>
 <div id="airportsDepartures" class="Inconsolata"></div>
 <div id="airportsArrivals" class="Inconsolata"></div>
+
 <div id="footer" class="weatherDisplay">
 <pre>
 Weather powered by: <a href="https://www.worldweatheronline.com" target="_blank">World Weather Online</a>
