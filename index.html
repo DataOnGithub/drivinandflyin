@@ -308,7 +308,7 @@ function updateArrivalsTracks()
 			// TODO make these markers on the map
 		}
 	} else {
-		document.getElementById("airportArrivalsTracks").innerHTML += "<p>No tracks available for arrivals at " + airportIATA + ".</p>";	
+		document.getElementById("airportArrivalsTracks").innerHTML = "<p>No tracks available for arrivals at " + airportIATA + ".</p>";	
 	}
 }	
 
@@ -337,7 +337,7 @@ function updateTraffic()
 	var distanceMiles = distanceMeters * MILES_PER_METER;
 	if (airportIATA != null)
 	{
-		document.getElementById("traffic").innerHTML += "<br>" + airportIATA + " is approx " + distanceMiles.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + ".<br>";
+		document.getElementById("traffic").innerHTML = "<br>" + airportIATA + " is approx " + distanceMiles.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + ".<br>";
 	}	
 
 }
@@ -414,7 +414,7 @@ function updateDepartures()
 	{
 		// display message indicating no departing flights and carry on
 		console.log(departingFlightsGet.responseText);
-		document.getElementById("airportsDepartures").innerHTML += "There are no flights scheduled to depart during the next " + numHourstoInclude + " hours.<br>";
+		document.getElementById("airportDepartures").innerHTML = "There are no flights scheduled to depart during the next " + numHourstoInclude + " hours.<br>";
 		departingFlightsGetVerify = false;
 	}
 	
@@ -423,7 +423,7 @@ function updateDepartures()
 		// display information for each departing flight from this particular airport
 		if (departingFlightsJSON.flightStatuses.length > 0)
 		{
-			document.getElementById("airportsDepartures").innerHTML += "Departures<br><br>";
+			document.getElementById("airportDepartures").innerHTML += "Departures<br><br>";
 			for ( k = 0; k < departingFlightsJSON.flightStatuses.length; k++ )
 			{ 
 				var departingFlightStatus = {
@@ -475,7 +475,7 @@ function updateDepartures()
 			} // k
 			
 			// TODO now we get to display information about the flight described by departingFlightStatus
-			document.getElementByID("airportsDepartures").innerHTML += "Flight ____ " + departingFlightStatus.carrierName + " " + " " +  departingFlightStatus.departureAirportCity + " " +  departingFlightStatus.departureAirportState + "(Elev. " +  departingFlightStatus.arrivalAirportElevation + ")<br>" + flightStatusCodes[status] + " Departs " +  departingFlightStatus.departureGate + " Arrives " +  departingFlightStatus.arrivalTerminal + " Gate " +  departingFlightStatus.arrivalGate;
+			document.getElementByID("airportDepartures").innerHTML += "Flight ____ " + departingFlightStatus.carrierName + " " + " " +  departingFlightStatus.departureAirportCity + " " +  departingFlightStatus.departureAirportState + "(Elev. " +  departingFlightStatus.arrivalAirportElevation + ")<br>" + flightStatusCodes[status] + " Departs " +  departingFlightStatus.departureGate + " Arrives " +  departingFlightStatus.arrivalTerminal + " Gate " +  departingFlightStatus.arrivalGate;
 
 		} // if
 	} // if
@@ -549,11 +549,12 @@ function updateAirports() {
 		'S' : 'scheduled'
 	};
 
-	document.getElementById("airportsDelaysHeader").innerHTML = "<br><i>Delay status for airports within " + viewportDistance + " mi</i><br>";
-	document.getElementById("airportsDelaysHeader").innerHTML += "<i>Flight information for airports within " + zoomedViewportDistance + " mi</i><br><br>";
+
 	
-	const VIEWPORT_DISTANCE = 40;		// watch airports for delays within this many miles
+	const VIEWPORT_DISTANCE = 60;		// watch airports for delays within this many miles
 	const ZOOMED_VIEWPORT_DISTANCE = 30; 	// within this many miles of an airport get detailed flight info
+	document.getElementById("airportDelays").innerHTML = "<br><i>Delay status for airports within " + VIEWPORT_DISTANCE + " mi</i><br>"
+	document.getElementById("airportDelays").innerHTML += "<i>Flight information for airports within " + ZOOMED_VIEWPORT_DISTANCE + " mi</i><br><br>";
 	
 	// we need to check all of the possible US airports to see if they are within viewportDistance of us
 	for (var j = 0; j < numAirports; j++)
@@ -655,14 +656,11 @@ html, body, #map {
 
 <div id="localWeather" class="weatherDisplay"></div>
 <div id="traffic" class="Inconsolata"></div>
-<div id="airportDelays" class="Inconsolata">
-<div id="airportDelaysHeader" class="Inconsolata"></div>
-<div id="airportDelaysText"></div>
-</div>
+<div id="airportDelays" class="Inconsolata"></div>
 <div id="airportArrivals" class="Inconsolata"></div>
 <div id="airportArrivalsTracks" class="Inconsolata"></div>
 <div id="airportDepartures" class ="Inconsolata"></div>
-
+<div id="airportDeparturesTracks" class="Inconsolata"></div>
 <div id="footer">
 <pre>
 Weather powered by: <a href="https://www.worldweatheronline.com" target="_blank">World Weather Online</a>
