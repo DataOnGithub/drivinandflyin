@@ -164,8 +164,16 @@ function updateWeather() {
 
 }
 
+function formatDate()
+{
+	var incomingDate = arguments[0];
+	// we get 2014-08-05T13:03:00.000, we want 13:03
+	var shortDate = incomingDate.substring(12,16);
+	return shortDate;
+}
 
-function updateArrivals() {
+function updateArrivals()
+{
 	console.log("updateArrivals");
 	var airportIATA = arguments[0];
 	var q = new Date();              	// current date to use for requesting flight data for an airport
@@ -203,6 +211,7 @@ function updateArrivals() {
 			document.getElementById("airportArrivals").innerHTML = "<br>Arrivals<br><br>";
 			for (var i=0; i < arrivingFlightsJSON.flightStatuses.length;i++) 
 			{
+				console.log(i);
 				// we are only interested in scheduled passenger (normal service) flights
 				try 
 				{
@@ -249,6 +258,9 @@ function updateArrivals() {
 						arrivalAirportElevation 	: arrivingFlightsJSON.flightStatuses[i].arrivalAirport.elevationFeet,
 						arrivalDateLocal              	: arrivingFlightsJSON.flightStatuses[i].arrivalDate.dateLocal,
 						arrivalGate			: arrivingFlightsJSON.flightStatuses[i].airportResources.arrivalGate,
+						arrivalTerminal			: arrivingFlightsJSON.flightStatuses[i].airportResources.arrivalTerminal,
+						arrivalBaggage			: arrivingFlightsJSON.flightStatuses[i].airportResources.baggage,
+					//	arrivalDelay			: arrivingFlightsJSON.flightStatuses[i].delays.arrivalGateDelayMinutes,
 
 					//	actualGateArrival		: arrivingFlightsJSON.flightStatuses[i].actualGateArrival.dateLocal,
 					//	actualGateDeparture		: arrivingFlightsJSON.flightStatuses[i].actualGateDeparture.dateLocal,
@@ -266,16 +278,26 @@ function updateArrivals() {
 						status                          : arrivingFlightsJSON.flightStatuses[i].status
 
 					}; // arrivingFlightStatus 
-
 					// display arrivals here
-					document.getElementById("airportArrivals").innerHTML += arrivingFlightStatus.carrierName + " " 
-												+ arrivingFlightStatus.flightNumber 
-												+ " from " + arrivingFlightStatus.departureAirportName + " ("
-												+ arrivingFlightStatus.departureAirportIATA + ")<br>" 
-												+ "arriving at " + arrivingFlightStatus.arrivalAirportName  
-												+ " (" + arrivingFlightStatus.arrivalAirportIATA + ")<br>"; 
-				} 	
-                                // we dont do anything with a flight that is not a passenger flight
+					document.getElementById("airportArrivals").innerHTML +=
+					"<b>" + arrivingFlightStatus.carrierName + " " + arrivingFlightStatus.flightNumber + "</b> departed " 
+									 + formatDate(arrivingFlightsJSON.flightStatuses[i].departureDate.dateLocal) 
+									 + " from " + arrivingFlightStatus.departureAirportCity  
+									 + " (" + arrivingFlightStatus.departureAirportIATA + ")" 
+                                                                         + " arriving at " + arrivingFlightStatus.arrivalAirportCity
+									 + " (" + arrivingFlightsJSON.flightStatuses[i].arrivalAirport.iata
+									 + ") at " + formatDate(arrivingFlightsJSON.flightStatuses[i].arrivalDate.dateLocal)
+									 + "<br>";
+//									 + "Gate " + arrivalGate + " Terminal " + arrivalTerminal + " Baggage "
+//									 + arrivalBaggage + "<br>";
+					//if (arrivalDelay != 0)
+					//{
+					// document.getElementById("airportArrivals").innerHTML += "Gate arrival delayed " + arrivalDelay + "min"; 	
+					//}	
+                                                                                             
+
+
+				} // if we dont do anything with a flight that is not a passenger flight
 			} 
 		} // if
 	} // if 
