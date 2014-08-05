@@ -173,7 +173,7 @@ function formatDate()
 
 function updateArrivals()
 {
-	console.log("updateArrivals");
+	console.log("entering updateArrivals");
 	var airportIATA = arguments[0];
 	var q = new Date();              	// current date to use for requesting flight data for an airport
     	var arrivalsyear = q.getFullYear();     // current year
@@ -197,11 +197,9 @@ function updateArrivals()
 
 	 catch(err)
 	 {
-		 console.log(arrivingFlightsGet.responseText);
 		 document.getElementById("airportArrivals").innerHTML += "There are no flights scheduled to arrive during the next " + numHourstoInclude + " hours.<br>";
 		 arrivingFlightsGetVerify = false;
 	 }
-	 console.log(arrivingFlightsJSON);
 	 if (arrivingFlightsGetVerify == true)
 	 {
 		if (arrivingFlightsJSON.flightStatuses.length > 0)
@@ -210,7 +208,6 @@ function updateArrivals()
 			document.getElementById("airportArrivals").innerHTML = "<br>Arrivals<br><br>";
 			for (var i=0; i < arrivingFlightsJSON.flightStatuses.length;i++) 
 			{
-				console.log(i);
 				// we are only interested in scheduled passenger (normal service) flights
 				try 
 				{
@@ -276,10 +273,11 @@ function updateArrivals()
 
 						status                          : arrivingFlightsJSON.flightStatuses[i].status
 
-					}; // arrivingFlightStatus 
+					}; // arrivingFlightStatus
+					//console.log(arrivingFlightsJSON);
 					// display arrivals here
-					document.getElementById("airportArrivals").innerHTML +=
-					"<b>" + arrivingFlightStatus.carrierName + " " + arrivingFlightStatus.flightNumber + "</b> departed " 
+					document.getElementById("airportArrivals").innerHTML =
+					"<br><br><b>" + arrivingFlightStatus.carrierName + " " + arrivingFlightStatus.flightNumber + "</b> departed " 
 									 + formatDate(arrivingFlightsJSON.flightStatuses[i].departureDate.dateLocal) 
 									 + " from " + arrivingFlightStatus.departureAirportCity  
 									 + " (" + arrivingFlightStatus.departureAirportIATA + ")" 
@@ -287,15 +285,24 @@ function updateArrivals()
 									 + " (" + arrivingFlightsJSON.flightStatuses[i].arrivalAirport.iata
 									 + ") at " + formatDate(arrivingFlightsJSON.flightStatuses[i].arrivalDate.dateLocal)
 									 + "<br>";
-//									 + "Gate " + arrivalGate + " Terminal " + arrivalTerminal + " Baggage "
-//									 + arrivalBaggage + "<br>";
-					//if (arrivalDelay != 0)
-					//{
-					// document.getElementById("airportArrivals").innerHTML += "Gate arrival delayed " + arrivalDelay + "min"; 	
-					//}	
-                                                                                             
-
-
+					try 
+					{
+						document.getElementById("airportArrivals").innerHTML +=  "Gate " + arrivingFlightsJSON.flightStatuses[i].airportResources.arrivalGate;
+						 
+						if (arrivingFlightsJSON.flightStatuses[i].airportResources.arrivalTerminal != undefined)
+						{	
+							document.getElementById("airportArrivals").innerHTML +=  " Terminal " +  arrivingFlightsJSON.flightStatuses[i].airportResources.arrivalTerminal;
+						}
+						if (arrivingFlightsJSON.flightStatuses[i].airportResources.baggage != undefined)
+						{
+							document.getElementById("airportArrivals").innerHTML +=	" Baggage " + arrivingFlightsJSON.flightStatuses[i].airportResources.baggage + "<br>";
+						}
+					}
+					catch(err)
+					{
+						document.getElementById("airportArrivals").innerHTML += "No gate/terminal info available. Check screens at airport.";
+					}
+				
 				} // if we dont do anything with a flight that is not a passenger flight
 			} 
 		} // if
@@ -435,7 +442,7 @@ function updateDelays()
 
 function updateDepartures()
 {
-	console.log("updateDepartures");
+	console.log("entering updateDepartures");
 	var airportIATA = arguments[0];
 	var d = new Date();			// current date to use for requesting flight data for an airport
 	var year = d.getFullYear();		// current year
@@ -457,7 +464,6 @@ function updateDepartures()
 	catch(err) 
 	{
 		// display message indicating no departing flights and carry on
-		console.log(departingFlightsGet.responseText);
 		document.getElementById("airportDepartures").innerHTML = "There are no flights scheduled to depart during the next " + numHourstoInclude + " hours.<br>";
 		departingFlightsGetVerify = false;
 	}
@@ -465,7 +471,6 @@ function updateDepartures()
 	if (departingFlightsGetVerify == true)
 	{
 
-		console.log(departingFlightsJSON);
 		var departuresDisplayed = false;
 		// display information for each departing flight from this particular airport
 		if (departingFlightsJSON.flightStatuses.length > 0)
@@ -522,7 +527,22 @@ function updateDepartures()
 					}; // departingFlightStatus
 
 					// display departures information here
-
+					document.getByElementId("airportDepartures").innerHTML +=  "<b>" + departingFlightsJSON.departingFlightStatuses[k].carrier.name + " "
+									      + departingFlightsJSON.departingFlightStatuses[k].flightNumber + "</b> "
+		                                  			      + " departs at " + formatDate(departingFlightsJSON.departingFlightStatuses[k].departureDate.dateLocal) 
+									      + " from gate " + departingFlightsJSON.departingFlightStatuses[k].airportResources.departureGate 
+									      + " to " + departingFlightsJSON.departingFlightStatuses[k].arrivalAirport.city
+									      + " (" + departingFlightsJSON.departingFlightStatuses[k].arrivalAirport.iata + ")"
+									      + "<br>";
+									      
+									      console.log("<b>" + departingFlightsJSON.departingFlightStatuses[k].carrier.name + " "
+									      + departingFlightsJSON.departingFlightStatuses[k].flightNumber + "</b> "
+		                                  + " departs at " + formatDate(departingFlightsJSON.departingFlightStatuses[k].departureDate.dateLocal) 
+									      + " from gate " + departingFlightsJSON.departingFlightStatuses[k].airportResources.departureGate 
+									      + " to " + departingFlightsJSON.departingFlightStatuses[k].arrivalAirport.city
+									      + " (" + departingFlightsJSON.departingFlightStatuses[k].arrivalAirport.iata + ")"
+									      + "<br>");				
+							
 					//			
 
 			  	} // if not a passenger flight we ignore it	
@@ -571,7 +591,9 @@ function updateDeparturesTracks()
 			} 
 }
 
-function updateAirports() {
+function updateAirports() 
+{
+	console.log("entering updateAirports");
  	var lat = arguments[0];
 	var lon = arguments[1];
 
@@ -587,7 +609,7 @@ function updateAirports() {
 	const PI = 3.14159265359;		// pi
 	const R = 3959;			 	// approximate radius of earth in miles
 	const METERS_TO_MILES = 1609.344;	// meters in one mile
-	const NUM_HOURS_FLIGHTS = 5;		// get arr and dep flights for this many hours from now
+	const NUM_HOURS_FLIGHTS = 5;		// get arr and dep flights fer this many hours from now
 
 
 
@@ -602,7 +624,7 @@ function updateAirports() {
 
 
 	
-	const VIEWPORT_DISTANCE = 60;		// watch airports for delays within this many miles
+	const VIEWPORT_DISTANCE = 60;		// watch airports fer delays within this many miles
 	const ZOOMED_VIEWPORT_DISTANCE = 30; 	// within this many miles of an airport get detailed flight info
 	document.getElementById("airportDelays").innerHTML = "<br><i>Delay status for airports within " + VIEWPORT_DISTANCE + " mi</i><br>"
 	document.getElementById("airportDelays").innerHTML += "<i>Flight information for airports within " + ZOOMED_VIEWPORT_DISTANCE + " mi</i><br><br>";
