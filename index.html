@@ -536,10 +536,10 @@ function updateAirports()
 		'S' : 'scheduled'
 	};
 	
-	const VIEWPORT_DISTANCE = 50;		// watch airports fer delays within this many miles
-	const ZOOMED_VIEWPORT_DISTANCE = 30; 	// within this many miles of an airport get detailed flight info
-	document.getElementById("airportDelays").innerHTML = "<br><i>Delay status for airports within " + VIEWPORT_DISTANCE + " mi</i><br>"
-	document.getElementById("airportDelays").innerHTML += "<i>Flight information for airports within " + ZOOMED_VIEWPORT_DISTANCE + " mi</i><br><br>";
+	var viewportDistance = 50;		// watch airports fer delays within this many miles
+	var zoomedViewportDistance = 30; 	// within this many miles of an airport get detailed flight info
+	document.getElementById("airportDelays").innerHTML = "<br><i>Delay status for airports within " + viewportDistance + " mi</i><br>"
+	document.getElementById("airportDelays").innerHTML += "<i>Flight information for airports within " + zoomedViewportDistance + " mi</i><br><br>";
 	
 	// we might be anywhere in the us so
 	// we need to check all of the possible
@@ -564,13 +564,15 @@ function updateAirports()
 		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
 		var distance = R * c;					// distance to airport as the crow flies
 
-		if (distance < VIEWPORT_DISTANCE)
+		console.log(iataIdentifier, airportLat, airportLon, distance);
+
+		if (distance < viewportDistance)
 		{       // we dont know which airport is your destination yet
 			// so we just give you traffic info to airports you might be headed towards
 			updateTraffic(lat,lon,airportLat,airportLon,iataIdentifier);	
 		}
 		
-		if ( distance < ZOOMED_VIEWPORT_DISTANCE )
+		if (distance < zoomedViewportDistance)
 		{
 				/* you are probably heading to one of the airports within this range
 				   so we start telling you about delays at nearby airports and start
