@@ -414,7 +414,6 @@ function updateDepartures()
 	{
         	// if this doesnt work we did not get valid departures data
 		var departingFlightsJSON = JSON.parse(departingFlightsGet.responseText);
-		console.log(departingFlightsJSON);	
 	}
 	catch(err)
 	{
@@ -563,8 +562,6 @@ function updateAirports()
 		Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(myLat) * Math.cos(airportLatRad); 
 		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
 		var distance = R * c;					// distance to airport as the crow flies
-
-		console.log(iataIdentifier, airportLat, airportLon, distance);
 
 		if (distance < viewportDistance)
 		{       // we dont know which airport is your destination yet
