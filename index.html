@@ -259,12 +259,12 @@ function updateArrivalsFids()
 		}
 	
 		// if the flight is on time, display green. any other status display red
-		var isOnTime = departuresFidsGetJSON.fidsData[x].remarksWithTime.search("On-Time");
+		var isOnTime = arrivalsFidsGetJSON.fidsData[x].remarksWithTime.search("On-Time");
 		if (isOnTime == -1)
 	        { 
-				document.getElementById("departuresFids").innerHTML += " <span style='background-color:red;color:white;'>" + departuresFidsGetJSON.fidsData[x].remarksWithTime + "</span>";
+				document.getElementById("arrivalsFids").innerHTML += " <span style='background-color:red;color:white;'>" + departuresFidsGetJSON.fidsData[x].remarksWithTime + "</span>";
 		} else {
-				 document.getElementById("departuresFids").innerHTML += " <span style='background-color:green;color:white;'>" + departuresFidsGetJSON.fidsData[x].remarksWithTime + "</span>";
+				 document.getElementById("arrivalsFids").innerHTML += " <span style='background-color:green;color:white;'>" + departuresFidsGetJSON.fidsData[x].remarksWithTime + "</span>";
 		}
 		document.getElementById("arrivalsFids").innerHTML += "</p>";
 	}
@@ -434,6 +434,7 @@ function updateTraffic()
 	airportETAGet.open('GET', airportETAProcess, false);
 	airportETAGet.send();
 	var airportRoute=JSON.parse(airportETAGet.responseText);
+	console.log(airportRoute);
 	var airportETA = airportRoute.route.summary.arrivalOverview.time;
 	var distanceMeters = airportRoute.route.summary.totalDistanceMeters; 
 	var distanceMiles = distanceMeters * MILES_PER_METER;
