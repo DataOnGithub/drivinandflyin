@@ -184,31 +184,70 @@ function updateDeparturesFids()
         var departuresFidsGet = new XMLHttpRequest();
         departuresFidsGet.open('GET',departuresFidsGetURL,false);
         departuresFidsGet.send();
-		document.getElementById("departuresFids").innerHTML = "<span class=fidsDisplay>Departures</span><br><br>";
-		var departuresFidsGetJSON = JSON.parse(departuresFidsGet.responseText);
-		console.log(departuresFidsGetJSON);
-		for (x = 0; x < departuresFidsGet.responseText.length; x++)
+	document.getElementById("departuresFids").innerHTML = "<span class='fidsDisplay'>Departures</span><br><br>";
+	var departuresFidsGetJSON = JSON.parse(departuresFidsGet.responseText);
+	for (x = 0; x < departuresFidsGetJSON.fidsData.length; x++)
+	{
+		document.getElementById("departuresFids").innerHTML += "<p class='fidsDisplay'>";
+		// make sure we are getting the https version of the airline logo
+		var airlineLogoURLPngInsecure = departuresFidsGetJSON.fidsData[x].airlineLogoUrlPng;
+		var airlineLogoURLPngSecure = airlineLogoURLPngInsecure.replace("http","https");
+		document.getElementById("departuresFids").innerHTML += "<img src='" + airlineLogoURLPngSecure + "' width=50 height=15 alt='" + departuresFidsGetJSON.fidsData[x].airlineName +"'> " ;
+		document.getElementById("departuresFids").innerHTML += " " + departuresFidsGetJSON.fidsData[x].airlineName;
+		document.getElementById("departuresFids").innerHTML += " " + departuresFidsGetJSON.fidsData[x].airlineCode + " " + departuresFidsGetJSON.fidsData[x].flightNumber;
+		document.getElementById("departuresFids").innerHTML += " leaving for " + departuresFidsGetJSON.fidsData[x].city + " (" + departuresFidsGetJSON.fidsData[x].weather + " " +  departuresFidsGetJSON.fidsData[x].temperatureF + "\xB0/" +  departuresFidsGetJSON.fidsData[x].temperatureC + "\xB0)";
+		if (departuresFidsGetJSON.fidsData[x].gate != undefined) 
 		{
-			console.log("do we ever get here?");
-			document.getElementById("departuresFids").innerHTML += "<p class='fidsDisplay'>";
-			document.getElementById("departuresFids").innerHTML += "<img src='" + departuresFidsGetJSON.fidsData[x].airlineLogoUrlPng + "' width=50 height=15 alt='" + departuresFidsGetJSON.fidsData[x].airlineName +"'> " +  departuresFidsGetJSON.fidsData[x].airlineName;
-			document.getElementById("departuresFids").innerHTML += " " + departuresFidsGetJSON.fidsData[x].airlineCode + " " + departuresFidsGetJSON.fidsData[x].flightNumber;
-			document.getElementById("departuresFids").innerHTML += "leaving for " + departuresFidsGetJSON.fidsData[x].city + "(" + departuresFidsGetJSON.fidsData[x].weather + " " +  departuresFidsGetJSON.fidsData[x].temperatureF + "\xB0/" +  departuresFidsGetJSON.fidsData[x].temperatureC + "\xB0)";
-			if (departuresFidsGetJSON.fidsData[x].gate != undefined) 
-			{
-				document.getElementById("departuresFids").innerHTML += " Gate " + departuresFidsGetJSON.fidsData[x].gate + " ";
-			}
-			if (departuresFidsGetJSON.fidsData[x].terminal != undefined)
-			{
-				document.getElementById("departuresFids").innerHTML += " Terminal " + departuresFidsGetJSON.fidsData[x].terminal + " ";
-			}
-			document.getElementById("departuresFids").innerHTML += departuresFidsGetJSON.fidsData[x].currentTime + " " + departuresFidsGetJSON.fidsData[x].remarksWithTime;
-			document.getElementById("departuresFids").innerHTML += "</p>";
+			document.getElementById("departuresFids").innerHTML += " from Gate " + departuresFidsGetJSON.fidsData[x].gate + " ";
 		}
-
-	console.log("leaving updateDeparturesFids");
+		if (departuresFidsGetJSON.fidsData[x].terminal != undefined)
+		{
+			document.getElementById("departuresFids").innerHTML += " Terminal " + departuresFidsGetJSON.fidsData[x].terminal + " ";
+		}
+		document.getElementById("departuresFids").innerHTML += " at " + departuresFidsGetJSON.fidsData[x].currentTime + " " + departuresFidsGetJSON.fidsData[x].remarksWithTime;
+		document.getElementById("departuresFids").innerHTML += "</p>";
+	}
+console.log("leaving updateDeparturesFids");
 	
 }
+
+function updateArrivalsFids()
+{
+        // display data from Flight Information Data System(FIDS) API
+        // see https://developer.flightstats.com/api-docs/fids/v1/fidsResponse
+        console.log("entering updateArrivalsFids");
+        var airportIATA = arguments[0];
+        var arrivalsFidsGetURL = "https://www.airmanopus.net/cgi-bin/flightStats.cgi?https://api.flightstats.com/flex/fids/rest/v1/json/" + airportIATA + "/arrivals?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&requestedFields=airlineLogoUrlPng%2CairlineName%2CairlineCode%2CflightNumber%2Ccity%2CcurrentTime%2Cgate%2Cterminal%2CstatusCode%2CremarksCode%2CremarksWithTime%2Cweather%2CtemperatureC%2CtemperatureF&sortFields=currentTime&includeCodeshares=true&timeFormat=24&timeWindowEnd=240&lateMinutes=15&boardingMinutes=30&useRunwayTimes=true&excludeCargoOnlyFlights=true";
+        var arrivalsFidsGet = new XMLHttpRequest();
+        arrivalsFidsGet.open('GET',arrivalsFidsGetURL,false);
+        arrivalsFidsGet.send();
+	document.getElementById("arrivalsFids").innerHTML = "<span class='fidsDisplay'>Arrivals</span><br><br>";
+	var arrivalsFidsGetJSON = JSON.parse(arrivalsFidsGet.responseText);
+	for (x = 0; x < arrivalsFidsGetJSON.fidsData.length; x++)
+	{
+		// make sure we are getting the https version of the airline logo
+                var airlineLogoURLPngInsecure = arrivalsFidsGetJSON.fidsData[x].airlineLogoUrlPng;
+                var airlineLogoURLPngSecure = airlineLogoURLPngInsecure.replace("http","https");
+		document.getElementById("arrivalsFids").innerHTML += "<p class='fidsDisplay'>";
+		document.getElementById("arrivalsFids").innerHTML += "<img src='" + airlineLogoURLPngSecure + "' width=50 height=15 alt='" + arrivalsFidsGetJSON.fidsData[x].airlineName +"'> " +  arrivalsFidsGetJSON.fidsData[x].airlineName;
+		document.getElementById("arrivalsFids").innerHTML += " " + arrivalsFidsGetJSON.fidsData[x].airlineCode + " " + arrivalsFidsGetJSON.fidsData[x].flightNumber;
+		document.getElementById("arrivalsFids").innerHTML += " arriving from " + arrivalsFidsGetJSON.fidsData[x].city + " (" + arrivalsFidsGetJSON.fidsData[x].weather + " " +  arrivalsFidsGetJSON.fidsData[x].temperatureF + "\xB0/" +  arrivalsFidsGetJSON.fidsData[x].temperatureC + "\xB0)";
+		if (arrivalsFidsGetJSON.fidsData[x].gate != undefined) 
+		{
+			document.getElementById("arrivalsFids").innerHTML += " Gate " + arrivalsFidsGetJSON.fidsData[x].gate + " ";
+		}
+		if (arrivalsFidsGetJSON.fidsData[x].terminal != undefined)
+		{
+			document.getElementById("arrivalsFids").innerHTML += " Terminal " + arrivalsFidsGetJSON.fidsData[x].terminal + " ";
+		}
+		document.getElementById("arrivalsFids").innerHTML += " " + arrivalsFidsGetJSON.fidsData[x].currentTime + " " + arrivalsFidsGetJSON.fidsData[x].remarksWithTime;
+		document.getElementById("departuresFids").innerHTML += "</p>";
+	}
+
+console.log("leaving updateArrivalsFids");
+
+}
+
 
 function updateArrivals()
 {
@@ -613,6 +652,7 @@ function updateAirports()
 				*/
 				updateDelays(iataIdentifier,distance);
 				updateDeparturesFids(iataIdentifier);
+				updateArrivalsFids(iataIdentifier);
 				//updateArrivals(iataIdentifier);
 				//updateDepartures(iataIdentifier);
 		} 
@@ -698,6 +738,7 @@ html, body, #map {
 <div id="airportDelays" class="Inconsolata"></div>
 <div id="airportArrivals" class="Inconsolata"></div>
 <!-- <div id="airportArrivalsTracks" class="Inconsolata"></div> -->
+<div id="arrivalsFids"></div>
 <div id="departuresFids"></div>
 <div id="airportDepartures" class ="Inconsolata"></div>
 <!-- <div id="airportDeparturesTracks" class="Inconsolata"></div> -->
