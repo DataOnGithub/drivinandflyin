@@ -204,8 +204,18 @@ function updateDeparturesFids()
 		{
 			document.getElementById("departuresFids").innerHTML += " Terminal " + departuresFidsGetJSON.fidsData[x].terminal + " ";
 		}
-		document.getElementById("departuresFids").innerHTML += " at " + departuresFidsGetJSON.fidsData[x].currentTime + " " + departuresFidsGetJSON.fidsData[x].remarksWithTime;
+		document.getElementById("departuresFids").innerHTML += " at " + departuresFidsGetJSON.fidsData[x].currentTime;
+
+		// if the flight is on time, display green. any other status display red
+		var isOnTime = departuresFidsGetJSON.fidsData[x].remarksWithTime.search("On-Time");
+		if (isOnTime == -1)
+		{ 
+			document.getElementById("departuresFids").innerHTML += " <span style='background-color:red;color:white;'>" + departuresFidsGetJSON.fidsData[x].remarksWithTime + "</span>";
+		} else {
+			 document.getElementById("departuresFids").innerHTML += " <span style='background-color:green;color:white;'>" + departuresFidsGetJSON.fidsData[x].remarksWithTime + "</span>";
+		}
 		document.getElementById("departuresFids").innerHTML += "</p>";
+
 	}
 console.log("leaving updateDeparturesFids");
 	
@@ -217,7 +227,7 @@ function updateArrivalsFids()
         // see https://developer.flightstats.com/api-docs/fids/v1/fidsResponse
         console.log("entering updateArrivalsFids");
         var airportIATA = arguments[0];
-        var arrivalsFidsGetURL = "https://www.airmanopus.net/cgi-bin/flightStats.cgi?https://api.flightstats.com/flex/fids/rest/v1/json/" + airportIATA + "/arrivals?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&requestedFields=airlineLogoUrlPng%2CairlineName%2CairlineCode%2CflightNumber%2Ccity%2CcurrentTime%2Cgate%2Cterminal%2CstatusCode%2CremarksCode%2CremarksWithTime%2Cweather%2CtemperatureC%2CtemperatureF&sortFields=currentTime&includeCodeshares=true&timeFormat=24&timeWindowEnd=240&lateMinutes=15&boardingMinutes=30&useRunwayTimes=true&excludeCargoOnlyFlights=true";
+        var arrivalsFidsGetURL = "https://www.airmanopus.net/cgi-bin/flightStats.cgi?https://api.flightstats.com/flex/fids/rest/v1/json/" + airportIATA + "/arrivals?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&requestedFields=airlineLogoUrlPng%2CairlineName%2CairlineCode%2CflightNumber%2Ccity%2CcurrentTime%2Cgate%2Cterminal%2CstatusCode%2CremarksCode%2CremarksWithTime%2Cweather%2CtemperatureC%2CtemperatureF%2Cbaggage&sortFields=currentTime&includeCodeshares=true&timeFormat=24&timeWindowEnd=240&lateMinutes=15&boardingMinutes=30&useRunwayTimes=true&excludeCargoOnlyFlights=true";
         var arrivalsFidsGet = new XMLHttpRequest();
         arrivalsFidsGet.open('GET',arrivalsFidsGetURL,false);
         arrivalsFidsGet.send();
@@ -228,10 +238,13 @@ function updateArrivalsFids()
 		// make sure we are getting the https version of the airline logo
                 var airlineLogoURLPngInsecure = arrivalsFidsGetJSON.fidsData[x].airlineLogoUrlPng;
                 var airlineLogoURLPngSecure = airlineLogoURLPngInsecure.replace("http","https");
+
 		document.getElementById("arrivalsFids").innerHTML += "<p class='fidsDisplay'>";
 		document.getElementById("arrivalsFids").innerHTML += "<img src='" + airlineLogoURLPngSecure + "' width=50 height=15 alt='" + arrivalsFidsGetJSON.fidsData[x].airlineName +"'> " +  arrivalsFidsGetJSON.fidsData[x].airlineName;
 		document.getElementById("arrivalsFids").innerHTML += " " + arrivalsFidsGetJSON.fidsData[x].airlineCode + " " + arrivalsFidsGetJSON.fidsData[x].flightNumber;
 		document.getElementById("arrivalsFids").innerHTML += " arriving from " + arrivalsFidsGetJSON.fidsData[x].city + " (" + arrivalsFidsGetJSON.fidsData[x].weather + " " +  arrivalsFidsGetJSON.fidsData[x].temperatureF + "\xB0/" +  arrivalsFidsGetJSON.fidsData[x].temperatureC + "\xB0)";
+
+		// only display these fields if they actually have values
 		if (arrivalsFidsGetJSON.fidsData[x].gate != undefined) 
 		{
 			document.getElementById("arrivalsFids").innerHTML += " Gate " + arrivalsFidsGetJSON.fidsData[x].gate + " ";
@@ -240,8 +253,20 @@ function updateArrivalsFids()
 		{
 			document.getElementById("arrivalsFids").innerHTML += " Terminal " + arrivalsFidsGetJSON.fidsData[x].terminal + " ";
 		}
-		document.getElementById("arrivalsFids").innerHTML += " " + arrivalsFidsGetJSON.fidsData[x].currentTime + " " + arrivalsFidsGetJSON.fidsData[x].remarksWithTime;
-		document.getElementById("departuresFids").innerHTML += "</p>";
+		if (arrivalsFidsGetJSON.fidsData[x].baggage != undefined)
+                {
+                        document.getElementById("arrivalsFids").innerHTML += " Baggage Carousel  " + arrivalsFidsGetJSON.fidsData[x].baggage + " ";
+		}
+	
+		// if the flight is on time, display green. any other status display red
+		var isOnTime = departuresFidsGetJSON.fidsData[x].remarksWithTime.search("On-Time");
+		if (isOnTime == -1)
+	        { 
+				document.getElementById("departuresFids").innerHTML += " <span style='background-color:red;color:white;'>" + departuresFidsGetJSON.fidsData[x].remarksWithTime + "</span>";
+		} else {
+				 document.getElementById("departuresFids").innerHTML += " <span style='background-color:green;color:white;'>" + departuresFidsGetJSON.fidsData[x].remarksWithTime + "</span>";
+		}
+		document.getElementById("arrivalsFids").innerHTML += "</p>";
 	}
 
 console.log("leaving updateArrivalsFids");
