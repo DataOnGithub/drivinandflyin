@@ -13,6 +13,12 @@
 				font-size: medium;
 			}
 
+			.fidsDisplay {
+				font-family: 'Arimo',sans-serif;
+	                        font-size: x-small;
+
+			}
+
 			.airportTitle {
 				font-family: 'Inconsolata',sans-serif;
 				font-size: medium;
