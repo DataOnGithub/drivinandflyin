@@ -415,6 +415,32 @@ function updateArrivalsTracks()
 	}
 }	
 
+
+
+
+
+function metersToMiles()
+{
+	var meters = arguments[0];
+	miles = (meters * .000621371).toFixed(2);
+	return miles;
+}
+
+function secToMin()
+{
+	var seconds = arguments[0];
+	var minutes = seconds / 60;
+	return minutes;
+}
+
+function minToHours()
+{
+	var minutes = arguments[0];
+	var hours = minutes / 60;
+	return hours;
+}
+
+
 function updateTraffic()
 {
 
@@ -426,7 +452,7 @@ function updateTraffic()
 	// check traffic to get estimate on when will we get to the airport 
 	// we always display driving  ETA from our location to each airport
 	// TODO we also want to include directions slash routing information
-	const MILES_PER_METER = .000621371;
+	var MILES_PER_METER = .000621371;
 
 	var airportETAGet = new XMLHttpRequest();
 	var airportETAURL="https://api.tomtom.com/lbs/services/route/3/" + lat + "," + lon + ":" + airportLat + "," + airportLon + "/Quickest/json?avoidTraffic=true&includeTraffic=true&day=today&iqRoutes=2&includeInstructions=true&key=knpmsu5p59rxdud2rmghsxd7"
@@ -434,7 +460,6 @@ function updateTraffic()
 	airportETAGet.open('GET', airportETAProcess, false);
 	airportETAGet.send();
 	var airportRoute=JSON.parse(airportETAGet.responseText);
-	console.log(airportRoute);
 	var airportETA = airportRoute.route.summary.arrivalOverview.time;
 	var distanceMeters = airportRoute.route.summary.totalDistanceMeters; 
 	var distanceMiles = distanceMeters * MILES_PER_METER;
@@ -442,6 +467,29 @@ function updateTraffic()
 	{
 		document.getElementById("traffic").innerHTML += "<br>" + airportIATA + " is approx " + distanceMiles.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + ".<br>";
 	}	
+	// display driving directions to a chosen airport
+	for (var p=0; p < airportRoute.route.instructions.instruction.length; p++)
+        {
+             	// each p is one instruction 
+
+		var iconURL = "https://www.airmanopus.net/drivinandflyin/tomtom/RoutingIcons/" + airportRoute.route.instructions.instruction[p].iconPath;
+                document.getElementById("traffic").innerHTML += "<img src='" + iconURL + "' alt='" + airportRoute.route.instructions.instruction[p].text + "'>";
+		document.getElementById("traffic").innerHTML += airportRoute.route.instructions.instruction[p].text + " " + airportRoute.route.instructions.instruction[p].roadName;
+		document.getElementById("traffic").innerHTML += " Distance " + metersToMiles(airportRoute.route.instructions.instruction[p].distanceMeters) + "mi.";
+		var travelTimeSeconds = airportRoute.route.instructions.instruction[p].travelTimeSeconds;
+		var travelTimeMinutes = secToMin(travelTimeSeconds);
+		var travelTimeHours = minToHours(travelTimeMinutes);
+		if (travelTimeHours > 1)
+		{
+			document.getElementById("traffic").innerHTML += " Travel time " + travelTimeHours.toFixed(2) + " hours<br>";
+		} else if (travelTimeMinutes > 1) {
+			 document.getElementById("traffic").innerHTML += " Travel time " + travelTimeMinutes.toFixed(2) + " minutes<br>";
+		} else {
+			document.getElementById("traffic").innerHTML += " Travel time " + travelTimeSeconds.toFixed(2) + " seconds<br>";
+
+		}
+
+	}
 }
 
 function updateDelays()
