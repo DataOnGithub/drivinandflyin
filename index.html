@@ -8,7 +8,7 @@
 <link href='https://fonts.googleapis.com/css?family=Arimo:400,700,400italic|Oxygen' rel='stylesheet' type='text/css'>
 <link href='https://fonts.googleapis.com/css?family=Inconsolata:400,700' rel='stylesheet' type='text/css'>
 <link rel="apple-touch-icon-precomposed" href="somepath/image.png" />
-<link rel="StyleSheet" href="https://www.airmanopus.net/weathercheck/iphone.css" type="text/css">
+<link rel="StyleSheet" href="https://www.airmanopus.net/drivinandflyin/iphone.css" type="text/css">
 
 <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.js'></script>
 <link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.css' rel='stylesheet' />
@@ -172,6 +172,42 @@ function formatDate()
 	// we get 2014-08-05T13:03:00.000, we want 13:03
 	var shortDate = incomingDate.substring(12,16);
 	return shortDate;
+}
+
+function updateDeparturesFids()
+{
+	// display data from Flight Information Data System(FIDS) API
+	// see https://developer.flightstats.com/api-docs/fids/v1/fidsResponse
+	console.log("entering updateDeparturesFids");
+	var airportIATA = arguments[0];
+	var departuresFidsGetURL = "https://www.airmanopus.net/cgi-bin/flightStats.cgi?https://api.flightstats.com/flex/fids/rest/v1/json/" + airportIATA + "/departures?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&requestedFields=airlineLogoUrlPng%2CairlineName%2CairlineCode%2CflightNumber%2Ccity%2CcurrentTime%2Cgate%2Cterminal%2CstatusCode%2CremarksCode%2CremarksWithTime%2Cweather%2CtemperatureC%2CtemperatureF&sortFields=currentTime&includeCodeshares=true&timeFormat=24&lateMinutes=15&boardingMinutes=30&useRunwayTimes=true&excludeCargoOnlyFlights=true&timeWindowEnd=240"
+        var departuresFidsGet = new XMLHttpRequest();
+        departuresFidsGet.open('GET',departuresFidsGetURL,false);
+        departuresFidsGet.send();
+		document.getElementById("departuresFids").innerHTML = "<span class=fidsDisplay>Departures</span><br><br>";
+		var departuresFidsGetJSON = JSON.parse(departuresFidsGet.responseText);
+		console.log(departuresFidsGetJSON);
+		for (x = 0; x < departuresFidsGet.responseText.length; x++)
+		{
+			console.log("do we ever get here?");
+			document.getElementById("departuresFids").innerHTML += "<p class='fidsDisplay'>";
+			document.getElementById("departuresFids").innerHTML += "<img src='" + departuresFidsGetJSON.fidsData[x].airlineLogoUrlPng + "' width=50 height=15 alt='" + departuresFidsGetJSON.fidsData[x].airlineName +"'> " +  departuresFidsGetJSON.fidsData[x].airlineName;
+			document.getElementById("departuresFids").innerHTML += " " + departuresFidsGetJSON.fidsData[x].airlineCode + " " + departuresFidsGetJSON.fidsData[x].flightNumber;
+			document.getElementById("departuresFids").innerHTML += "leaving for " + departuresFidsGetJSON.fidsData[x].city + "(" + departuresFidsGetJSON.fidsData[x].weather + " " +  departuresFidsGetJSON.fidsData[x].temperatureF + "\xB0/" +  departuresFidsGetJSON.fidsData[x].temperatureC + "\xB0)";
+			if (departuresFidsGetJSON.fidsData[x].gate != undefined) 
+			{
+				document.getElementById("departuresFids").innerHTML += " Gate " + departuresFidsGetJSON.fidsData[x].gate + " ";
+			}
+			if (departuresFidsGetJSON.fidsData[x].terminal != undefined)
+			{
+				document.getElementById("departuresFids").innerHTML += " Terminal " + departuresFidsGetJSON.fidsData[x].terminal + " ";
+			}
+			document.getElementById("departuresFids").innerHTML += departuresFidsGetJSON.fidsData[x].currentTime + " " + departuresFidsGetJSON.fidsData[x].remarksWithTime;
+			document.getElementById("departuresFids").innerHTML += "</p>";
+		}
+
+	console.log("leaving updateDeparturesFids");
+	
 }
 
 function updateArrivals()
@@ -576,6 +612,7 @@ function updateAirports()
 				   start seeing updates as soon as you are in range
 				*/
 				updateDelays(iataIdentifier,distance);
+				updateDeparturesFids(iataIdentifier);
 				//updateArrivals(iataIdentifier);
 				//updateDepartures(iataIdentifier);
 		} 
@@ -662,6 +699,7 @@ html, body, #map {
 <div id="airportDelays" class="Inconsolata"></div>
 <div id="airportArrivals" class="Inconsolata"></div>
 <!-- <div id="airportArrivalsTracks" class="Inconsolata"></div> -->
+<div id="departuresFids"></div>
 <div id="airportDepartures" class ="Inconsolata"></div>
 <!-- <div id="airportDeparturesTracks" class="Inconsolata"></div> -->
 <div id="footer">
