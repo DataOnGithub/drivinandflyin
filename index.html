@@ -419,7 +419,7 @@ function updateTraffic()
 {
 
 	var lat = arguments[0];
-    var lon = arguments[1];
+    	var lon = arguments[1];
 	var airportLat = arguments[2];
 	var airportLon = arguments[3];
 	var airportIATA = arguments[4];
@@ -441,11 +441,6 @@ function updateTraffic()
 	{
 		document.getElementById("traffic").innerHTML += "<br>" + airportIATA + " is approx " + distanceMiles.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + ".<br>";
 	}	
-	if (distanceMiles > 5)
-	{
-		// if you are less than five miles from an airport you can probably find it on your own
-		
-	}
 }
 
 function updateDelays()
