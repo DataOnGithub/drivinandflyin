@@ -650,14 +650,6 @@ function updateDeparturesTracks()
 			} 
 }
 
-function airportNameToIATA()
-{
-	// TODO
-	console.log("entering airportNameToIATA");
-	var airportName = arguments[0];
-
-	console.log("leaving airportNameToIATA");
-}
 
 
 function updateAirports() 
@@ -686,33 +678,57 @@ function updateAirports()
 	var nearbyAirportsGet = new XMLHttpRequest();
         var nearbyAirportsURL = "https://api.tomtom.com/places/search/1/place?format=json&lat=" + lat + "&lng=" + lon + "&what=airport&distance=" + viewportDistance + "&results=3&sort=distance&key=tbgsdr6fz7af2b6ghshk4tr3";
         var nearbyAirportsProcess = "https://www.airmanopus.net/cgi-bin/departures.cgi?" + nearbyAirportsURL;
-        var nearbyAirportsGet.open('GET', nearbyAirportsProcess, false);
-        var nearbyAirportsGet.send();
+        nearbyAirportsGet.open('GET',nearbyAirportsProcess,false);
+        nearbyAirportsGet.send();
         var nearbyAirportsJSON = JSON.parse(nearbyAirportsGet.responseText);
-
-	for (var j = 0; j < nearbyAirportsJSON.length; j++)
+	console.log(nearbyAirportsJSON);
+	for (var j = 0; j <  nearbyAirportsJSON.response.data.main.numberOfResults; j++)
     	{
-		var airportName = nearbyAirportsJSON.data.places.place[j].name;
-		var airportDistance = nearbyAirportsJSON.data.places.place[j].distance;
-		var airportCity = nearbyAirportsJSON.data.places.place[j].city;
-		var airportPhone = nearbyAirportsJSON.data.places.place[j].phone;
-		var airportWebsite = nearbyAirportsJSON.data.places.place[j].website;
-		var airportAddress = nearbyAirportsJSON.data.places.place[j].formattedAddress;
-		var airportZIP = nearbyAirportsJSON.data.places.place[j].zipcode;
-		var airportLat = nearbyAirportsJSON.data.places.place[j].latitude;
-		var airportLon = nearbyAirportsJSON.data.places.place[j].longitude;
-
+		console.log(j);
+		var airportName = nearbyAirportsJSON.response.data.places.place[j].name.$;
+		var airportDistance = nearbyAirportsJSON.response.data.places.place[j].distance.$;
+		var airportCity = nearbyAirportsJSON.response.data.places.place[j].city.$;
+		var airportAddress = nearbyAirportsJSON.response.data.places.place[j].formattedAddress;
+		var airportZIP = nearbyAirportsJSON.response.data.places.place[j].zipcode.$;
+		var airportLat = nearbyAirportsJSON.response.data.places.place[j].latitude;
+		var airportLon = nearbyAirportsJSON.response.data.places.place[j].longitude;
 		
+		console.log(airportName,airportDistance,airportCity,airportAddress,airportLat,airportLon);
 		// TODO given an airport name we need its IATA code
+		// IATA, State abbrev, state full, county, city, name
+		var airportListURL = "https://www.airmanopus.net/cgi-bin/airportlist.csv";
+		var airportListGet = new XMLHttpRequest();
+		airportListGet.open('GET',airportListURL,false);
+		airportListGet.send();
+		var airportList = (airportListGet.responseText);
+		var airports = CSVToArray(airportList);	
+		var numAirports = airports.length;
+
+		// we need to match airportName to exactly one of the records in the array airports
+		// airports does not, however, contain the word airport in any of the names
+		var airportNameUpperCase = airportName.toUpperCase().replace("AIRPORT","");
 		
-		// km
-		if (distance < viewportDistance)
-		{       // we dont know which airport is your destination yet
-			// so we just give you traffic info to airports you might be headed towards
-			updateTraffic(lat,lon,airportLat,airportLon,iataIdentifier);	
+		for (var k = 0; k < numAirports; k++)
+		{
+			// try for an exact match first
+			if (airportNameUpperCase == airports[k][6])
+			{ 
+				//var airportIATA = airports[k][0];
+				console.log(airportNameUpperCase);
+				console.log(airports[k]);
+				
+			}
+
 		}
 		
-		if (distance < zoomedViewportDistance)
+		// km
+		if (airportDistance < viewportDistance)
+		{       // we dont know which airport is your destination yet
+			// so we just give you traffic info to airports you might be headed towards
+			//updateTraffic(lat,lon,airportLat,airportLon,iataIdentifier);	
+		}
+		
+		if (airportDistance < zoomedViewportDistance)
 		{
 				/* you are probably heading to one of the airports within this range
 				   so we start telling you about delays at nearby airports and start
@@ -720,9 +736,9 @@ function updateAirports()
 				   if you are going to an airport that isn't in range yet you'l
 				   start seeing updates as soon as you are in range
 				*/
-				updateDelays(iataIdentifier,distance);
-				updateDeparturesFids(iataIdentifier);
-				updateArrivalsFids(iataIdentifier);
+				//updateDelays(iataIdentifier,distance);
+				//updateDeparturesFids(iataIdentifier);
+				//updateArrivalsFids(iataIdentifier);
 				//updateArrivals(iataIdentifier);
 				//updateDepartures(iataIdentifier);
 		} 
