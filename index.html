@@ -194,11 +194,11 @@ function updateDeparturesFids()
 		var airlineLogoURLPngSecure = airlineLogoURLPngInsecure.replace("http","https");
 		document.getElementById("departuresFids").innerHTML += "<img src='" + airlineLogoURLPngSecure + "' width=50 height=15 alt='" + departuresFidsGetJSON.fidsData[x].airlineName +"'> " ;
 		document.getElementById("departuresFids").innerHTML += " " + departuresFidsGetJSON.fidsData[x].airlineName;
-		document.getElementById("departuresFids").innerHTML += " " + departuresFidsGetJSON.fidsData[x].airlineCode + " " + departuresFidsGetJSON.fidsData[x].flightNumber;
+		document.getElementById("departuresFids").innerHTML += " " + departuresFidsGetJSON.fidsData[x].airlineCode + " " + departuresFidsGetJSON.fidsData[x].flightNumber + "<br>";
 		document.getElementById("departuresFids").innerHTML += " leaving for " + departuresFidsGetJSON.fidsData[x].city + " (" + departuresFidsGetJSON.fidsData[x].weather + " " +  departuresFidsGetJSON.fidsData[x].temperatureF + "\xB0/" +  departuresFidsGetJSON.fidsData[x].temperatureC + "\xB0)";
 		if (departuresFidsGetJSON.fidsData[x].gate != undefined) 
 		{
-			document.getElementById("departuresFids").innerHTML += " from Gate " + departuresFidsGetJSON.fidsData[x].gate + " ";
+			document.getElementById("departuresFids").innerHTML += "Departs from Gate " + departuresFidsGetJSON.fidsData[x].gate + " ";
 		}
 		if (departuresFidsGetJSON.fidsData[x].terminal != undefined)
 		{
@@ -241,8 +241,8 @@ function updateArrivalsFids()
 
 		document.getElementById("arrivalsFids").innerHTML += "<p class='fidsDisplay'>";
 		document.getElementById("arrivalsFids").innerHTML += "<img src='" + airlineLogoURLPngSecure + "' width=50 height=15 alt='" + arrivalsFidsGetJSON.fidsData[x].airlineName +"'> " +  arrivalsFidsGetJSON.fidsData[x].airlineName;
-		document.getElementById("arrivalsFids").innerHTML += " " + arrivalsFidsGetJSON.fidsData[x].airlineCode + " " + arrivalsFidsGetJSON.fidsData[x].flightNumber;
-		document.getElementById("arrivalsFids").innerHTML += " arriving from " + arrivalsFidsGetJSON.fidsData[x].city + " (" + arrivalsFidsGetJSON.fidsData[x].weather + " " +  arrivalsFidsGetJSON.fidsData[x].temperatureF + "\xB0/" +  arrivalsFidsGetJSON.fidsData[x].temperatureC + "\xB0)";
+		document.getElementById("arrivalsFids").innerHTML += " " + arrivalsFidsGetJSON.fidsData[x].airlineCode + " " + arrivalsFidsGetJSON.fidsData[x].flightNumber + "<br>";
+		document.getElementById("arrivalsFids").innerHTML += "Arriving from " + arrivalsFidsGetJSON.fidsData[x].city + " (" + arrivalsFidsGetJSON.fidsData[x].weather + " " +  arrivalsFidsGetJSON.fidsData[x].temperatureF + "\xB0/" +  arrivalsFidsGetJSON.fidsData[x].temperatureC + "\xB0)" + "<br>";
 
 		// only display these fields if they actually have values
 		if (arrivalsFidsGetJSON.fidsData[x].gate != undefined) 
@@ -262,9 +262,9 @@ function updateArrivalsFids()
 		var isOnTime = arrivalsFidsGetJSON.fidsData[x].remarksWithTime.search("On-Time");
 		if (isOnTime == -1)
 	        { 
-				document.getElementById("arrivalsFids").innerHTML += " <span style='background-color:red;color:white;'>" + departuresFidsGetJSON.fidsData[x].remarksWithTime + "</span>";
+				document.getElementById("arrivalsFids").innerHTML += " <span style='background-color:red;color:white;'>" + arrivalsFidsGetJSON.fidsData[x].remarksWithTime + "</span>";
 		} else {
-				 document.getElementById("arrivalsFids").innerHTML += " <span style='background-color:green;color:white;'>" + departuresFidsGetJSON.fidsData[x].remarksWithTime + "</span>";
+				 document.getElementById("arrivalsFids").innerHTML += " <span style='background-color:green;color:white;'>" + arrivalsFidsGetJSON.fidsData[x].remarksWithTime + "</span>";
 		}
 		document.getElementById("arrivalsFids").innerHTML += "</p>";
 	}
@@ -443,7 +443,6 @@ function minToHours()
 
 function updateTraffic()
 {
-
 	var lat = arguments[0];
     	var lon = arguments[1];
 	var airportLat = arguments[2];
@@ -460,21 +459,23 @@ function updateTraffic()
 	airportETAGet.open('GET', airportETAProcess, false);
 	airportETAGet.send();
 	var airportRoute=JSON.parse(airportETAGet.responseText);
+	// how far and how long to this airport
 	var airportETA = airportRoute.route.summary.arrivalOverview.time;
 	var distanceMeters = airportRoute.route.summary.totalDistanceMeters; 
 	var distanceMiles = distanceMeters * MILES_PER_METER;
 	if (airportIATA != null)
 	{
 		document.getElementById("traffic").innerHTML += "<br>" + airportIATA + " is approx " + distanceMiles.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + ".<br>";
+		updateDelays(airportIATA);
 	}	
-	// display driving directions to a chosen airport
+	// cool now how do we get there -- display driving directions to a chosen airport
 	for (var p=0; p < airportRoute.route.instructions.instruction.length; p++)
         {
-             	// each p is one instruction 
+             	// each p is one turn by turn instruction 
 
 		var iconURL = "https://www.airmanopus.net/drivinandflyin/tomtom/RoutingIcons/" + airportRoute.route.instructions.instruction[p].iconPath;
                 document.getElementById("traffic").innerHTML += "<img src='" + iconURL + "' alt='" + airportRoute.route.instructions.instruction[p].text + "'>";
-		document.getElementById("traffic").innerHTML += airportRoute.route.instructions.instruction[p].text + " " + airportRoute.route.instructions.instruction[p].roadName;
+		document.getElementById("traffic").innerHTML += airportRoute.route.instructions.instruction[p].text + " " + airportRoute.route.instructions.instruction[p].roadName + "<br>";
 		document.getElementById("traffic").innerHTML += " Distance " + metersToMiles(airportRoute.route.instructions.instruction[p].distanceMeters) + "mi.";
 		var travelTimeSeconds = airportRoute.route.instructions.instruction[p].travelTimeSeconds;
 		var travelTimeMinutes = secToMin(travelTimeSeconds);
@@ -719,7 +720,7 @@ function updateAirports()
 				   if you are going to an airport that isn't in range yet you'l
 				   start seeing updates as soon as you are in range
 				*/
-				updateDelays(iataIdentifier,distance);
+				//updateDelays(iataIdentifier,distance);
 				updateDeparturesFids(iataIdentifier);
 				updateArrivalsFids(iataIdentifier);
 				//updateArrivals(iataIdentifier);
@@ -803,8 +804,8 @@ html, body, #map {
 <div id="map"></div>
 <div id="motd" class="weatherDisplay">This is (barely) alpha software for now. Use at your own risk. A grue might eat you.<p></div>
 <div id="localWeather" class="weatherDisplay"></div>
-<div id="traffic" class="Inconsolata"></div>
 <div id="airportDelays" class="Inconsolata"></div>
+<div id="traffic" class="Inconsolata"></div>
 <div id="airportArrivals" class="Inconsolata"></div>
 <!-- <div id="airportArrivalsTracks" class="Inconsolata"></div> -->
 <div id="arrivalsFids"></div>
