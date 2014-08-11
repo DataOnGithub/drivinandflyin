@@ -682,19 +682,25 @@ function updateAirports()
         nearbyAirportsGet.send();
         var nearbyAirportsJSON = JSON.parse(nearbyAirportsGet.responseText);
 	console.log(nearbyAirportsJSON);
+
+	var iataIdentifier = "";
+	var airportsListIata = 0;
+	var airportsListState = 2;
+	var airportsListCity = 4;
+	var airportsListName = 5;
 	for (var j = 0; j <  nearbyAirportsJSON.response.data.main.numberOfResults; j++)
     	{
 		console.log(j);
 		var airportName = nearbyAirportsJSON.response.data.places.place[j].name.$;
 		var airportDistance = nearbyAirportsJSON.response.data.places.place[j].distance.$;
 		var airportCity = nearbyAirportsJSON.response.data.places.place[j].city.$;
+		var airportState = nearbyAirportsJSON.response.data.places.place[j].province.$
 		var airportAddress = nearbyAirportsJSON.response.data.places.place[j].formattedAddress;
 		var airportZIP = nearbyAirportsJSON.response.data.places.place[j].zipcode.$;
 		var airportLat = nearbyAirportsJSON.response.data.places.place[j].latitude;
 		var airportLon = nearbyAirportsJSON.response.data.places.place[j].longitude;
 		
-		console.log(airportName,airportDistance,airportCity,airportAddress,airportLat,airportLon);
-		// TODO given an airport name we need its IATA code
+		// given an airport name we need its IATA code
 		// IATA, State abbrev, state full, county, city, name
 		var airportListURL = "https://www.airmanopus.net/cgi-bin/airportlist.csv";
 		var airportListGet = new XMLHttpRequest();
@@ -704,43 +710,71 @@ function updateAirports()
 		var airports = CSVToArray(airportList);	
 		var numAirports = airports.length;
 
+		iataIdentifier = "";
 		// we need to match airportName to exactly one of the records in the array airports
 		// airports does not, however, contain the word airport in any of the names
-		var airportNameUpperCase = airportName.toUpperCase().replace("AIRPORT","");
-		
 		for (var k = 0; k < numAirports; k++)
 		{
-			// try for an exact match first
-			if (airportNameUpperCase == airports[k][6])
-			{ 
-				//var airportIATA = airports[k][0];
-				console.log(airportNameUpperCase);
-				console.log(airports[k]);
-				
+			// airports have name variations especially at the end of the name so we start matching from the start ex:
+		 	// Dane County Regional Airport  DANE COUNTY REGIONAL-TRUAX FIELD
+			// city and state have to match exactly
+			if (airportCity.toUpperCase() == airports[k][4])
+			{
+				if (airportState.toUpperCase() == airports[k][2])
+				{
+					// need to make sure that at least part of the airport name matches up
+					// we use the number of characters of the shorter of the two airport names
+					if (airportName.length == airports[k][5].length)
+					{
+						var charsToCheck = airportName.length;
+					} else if (airportName.length > airports[k][5].length)
+						{
+						var charsToCheck = airports[k][5].length;
+					} else {
+						var charsToCheck = airportName.length;
+					}
+					var matchScore = 0; 
+					for (var m=0; m < charsToCheck; m++)
+					{
+						if (airportName.toUpperCase().charAt(m) == airports[k][5].charAt(m))
+						{
+							matchScore++
+						}
+					}
+					// this value might need to be adjusted
+					if (matchScore >= 4)
+					{
+						iataIdentifier = airports[k][0];
+					}
+				 }
 			}
+		}
 
-		}
-		
-		// km
-		if (airportDistance < viewportDistance)
-		{       // we dont know which airport is your destination yet
-			// so we just give you traffic info to airports you might be headed towards
-			//updateTraffic(lat,lon,airportLat,airportLon,iataIdentifier);	
-		}
-		
-		if (airportDistance < zoomedViewportDistance)
+		console.log(airportName,iataIdentifier);		
+		// if iataIdentifier is empty it is a local airport that we're not worried about		
+		if (iataIdentifier != "")
 		{
-				/* you are probably heading to one of the airports within this range
-				   so we start telling you about delays at nearby airports and start
-				   showing you flight information for departing and arriving flights
-				   if you are going to an airport that isn't in range yet you'l
-				   start seeing updates as soon as you are in range
-				*/
-				//updateDelays(iataIdentifier,distance);
-				//updateDeparturesFids(iataIdentifier);
-				//updateArrivalsFids(iataIdentifier);
-				//updateArrivals(iataIdentifier);
-				//updateDepartures(iataIdentifier);
+
+			if (airportDistance < viewportDistance)
+			{       // we dont know which airport is your destination yet
+				// so we just give you traffic info to airports you might be headed towards
+				updateTraffic(lat,lon,airportLat,airportLon,iataIdentifier);	
+			}
+			
+			if (airportDistance < zoomedViewportDistance)
+			{
+					/* you are probably heading to one of the airports within this range
+					   so we start telling you about delays at nearby airports and start
+					   showing you flight information for departing and arriving flights
+					   if you are going to an airport that isn't in range yet you'l
+					   start seeing updates as soon as you are in range
+					*/
+					//updateDelays(iataIdentifier,distance);
+					//updateDeparturesFids(iataIdentifier);
+					//updateArrivalsFids(iataIdentifier);
+					//updateArrivals(iataIdentifier);
+					//updateDepartures(iataIdentifier);
+			}
 		} 
 	
 	
