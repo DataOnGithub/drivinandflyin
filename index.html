@@ -443,7 +443,7 @@ function minToHours()
 
 function updateTraffic()
 {
-
+	// lat,lon is the coordinates of the passenger terminal
 	var lat = arguments[0];
     	var lon = arguments[1];
 	var airportLat = arguments[2];
@@ -451,7 +451,7 @@ function updateTraffic()
 	var airportIATA = arguments[4];
 	// check traffic to get estimate on when will we get to the airport 
 	// we always display driving  ETA from our location to each airport
-	// TODO we also want to include directions slash routing information
+
 	var MILES_PER_METER = .000621371;
 
 	var airportETAGet = new XMLHttpRequest();
@@ -650,21 +650,22 @@ function updateDeparturesTracks()
 			} 
 }
 
+function airportNameToIATA()
+{
+	// TODO
+	console.log("entering airportNameToIATA");
+	var airportName = arguments[0];
+
+	console.log("leaving airportNameToIATA");
+}
+
+
 function updateAirports() 
 {
 	console.log("entering updateAirports");
  	var lat = arguments[0];
 	var lon = arguments[1];
 
-	var airportListURL = "https://www.airmanopus.net/cgi-bin/airportlist.csv";
-	var airportListGet = new XMLHttpRequest();
-	airportListGet.open('GET',airportListURL,false);
-	airportListGet.send();
-
-	var airportList = (airportListGet.responseText);
-	var airports = CSVToArray(airportList);	// array of airport IATA identifiers and corresponding coordinates
-
-    	const NUM_AIRPORTS = 533;		// number of airports we can check status on 			
 	const PI = 3.14159265359;		// pi
 	const R = 3959;			 	// approximate radius of earth in miles
 	const METERS_TO_MILES = 1609.344;	// meters in one mile
@@ -679,32 +680,32 @@ function updateAirports()
 		'S' : 'scheduled'
 	};
 	
-	var viewportDistance = 50;		// watch airports fer delays within this many miles
-	var zoomedViewportDistance = 30; 	// within this many miles of an airport get detailed flight info
+	var viewportDistance = 81;		// watch airports fer delays within this many km (50 mi)
+	var zoomedViewportDistance = 48; 	// within this many km of an airport get detailed flight info (30 mi)
 	
-	// we might be anywhere in the us so
-	// we need to check all of the possible
-	// US airports to see if they are within 
-	// VIEWPORT_DISTANCE and or ZOOMED_VIEWPORT_DISTANCE
-	for (var j = 0; j < NUM_AIRPORTS; j++)
+	var nearbyAirportsGet = new XMLHttpRequest();
+        var nearbyAirportsURL = "https://api.tomtom.com/places/search/1/place?format=json&lat=" + lat + "&lng=" + lon + "&what=airport&distance=" + viewportDistance + "&results=3&sort=distance&key=tbgsdr6fz7af2b6ghshk4tr3";
+        var nearbyAirportsProcess = "https://www.airmanopus.net/cgi-bin/departures.cgi?" + nearbyAirportsURL;
+        var nearbyAirportsGet.open('GET', nearbyAirportsProcess, false);
+        var nearbyAirportsGet.send();
+        var nearbyAirportsJSON = JSON.parse(nearbyAirportsGet.responseText);
+
+	for (var j = 0; j < nearbyAirportsJSON.length; j++)
     	{
-		var iataIdentifier = airports[j][0];	// 3 letter iata identifier
-		var myLat = lat;			// my latitude
-		var myLon = lon;			// my longitude
-		var airportLat = airports[j][1];	// airport latitude
-		var airportLon	= airports[j][2];	// airport longitude
+		var airportName = nearbyAirportsJSON.data.places.place[j].name;
+		var airportDistance = nearbyAirportsJSON.data.places.place[j].distance;
+		var airportCity = nearbyAirportsJSON.data.places.place[j].city;
+		var airportPhone = nearbyAirportsJSON.data.places.place[j].phone;
+		var airportWebsite = nearbyAirportsJSON.data.places.place[j].website;
+		var airportAddress = nearbyAirportsJSON.data.places.place[j].formattedAddress;
+		var airportZIP = nearbyAirportsJSON.data.places.place[j].zipcode;
+		var airportLat = nearbyAirportsJSON.data.places.place[j].latitude;
+		var airportLon = nearbyAirportsJSON.data.places.place[j].longitude;
 
-		// how far away are we from the airport
-		var dLat = ((airportLat-myLat) * (PI/180));
-		var dLon = ((airportLon-myLon) * (PI/180));
-		var myLat = (lat * (PI/180));
-		var airportLatRad = (airportLat * (PI/180));
-
-		var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-		Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(myLat) * Math.cos(airportLatRad); 
-		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-		var distance = R * c;					// distance to airport as the crow flies
-
+		
+		// TODO given an airport name we need its IATA code
+		
+		// km
 		if (distance < viewportDistance)
 		{       // we dont know which airport is your destination yet
 			// so we just give you traffic info to airports you might be headed towards
