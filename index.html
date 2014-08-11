@@ -681,7 +681,6 @@ function updateAirports()
         nearbyAirportsGet.open('GET',nearbyAirportsProcess,false);
         nearbyAirportsGet.send();
         var nearbyAirportsJSON = JSON.parse(nearbyAirportsGet.responseText);
-	console.log(nearbyAirportsJSON);
 
 	var iataIdentifier = "";
 	var airportsListIata = 0;
@@ -690,7 +689,6 @@ function updateAirports()
 	var airportsListName = 5;
 	for (var j = 0; j <  nearbyAirportsJSON.response.data.main.numberOfResults; j++)
     	{
-		console.log(j);
 		var airportName = nearbyAirportsJSON.response.data.places.place[j].name.$;
 		var airportDistance = nearbyAirportsJSON.response.data.places.place[j].distance.$;
 		var airportCity = nearbyAirportsJSON.response.data.places.place[j].city.$;
@@ -750,7 +748,6 @@ function updateAirports()
 			}
 		}
 
-		console.log(airportName,iataIdentifier);		
 		// if iataIdentifier is empty it is a local airport that we're not worried about		
 		if (iataIdentifier != "")
 		{
