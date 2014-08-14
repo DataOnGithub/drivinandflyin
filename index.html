@@ -144,17 +144,14 @@ function updateWeather()
         var heatIndex = Math.round(-42.379 + (2.04901523 * temp_F) + (10.14333127 * humidity) - (0.22475541 * temp_F * humidity) - ( .00683783 * tempSquared) - (.05481717 * relHSquared) + ( .00122874 * tempSquared * humidity) + (.00085282 * temp_F * relHSquared) - (.00000199 * tempSquared * relHSquared));
         var windChill = Math.round(35.74 + (0.6215 * temp_F) - (35.75 * Math.pow(windSpeed,0.16)) + (0.4275 * temp_F * Math.pow(windSpeed,0.16)));
 
-        // TODO re add one line short term forecast 
-        
         var weatherIconURL = weatherResponse.data.weather[0].weatherIconURL;
         var weatherInfoURL = weatherResponse.data.weather[0].weatherURL;
         
         localWeather.innerHTML = ""; // clear last observation data
-        localWeather.innerHTML += city + ", " + state + "<br>";
-        localWeather.innerHTML += lat.toPrecision(9) + "," + lon.toPrecision(9) + "<br>";
-        localWeather.innerHTML += weatherDesc + " and " + temp_F + "\xB0" + "F<br>";
-		localWeather.innerHTML += "Humidity " + humidity + "% Visibility " + visibility + " mi<br>";
-        localWeather.innerHTML += "Wind " + windDir + " at " + windSpeed + "mph<br>";
+        localWeather.innerHTML += city + ", " + state + " (" + lat.toPrecision(6) + "," + lon.toPrecision(6) + ")<br>";
+        localWeather.innerHTML += weatherDesc + " and " + temp_F + "\xB0" + "F <br>";
+	localWeather.innerHTML += "Humidity " + humidity + "% Visibility " + visibility + " mi<br>";
+        localWeather.innerHTML += "Wind " + windDir + " at " + windSpeed + "mph ";
         if (temp_F < 45)
         {
                 getElementById("localWeather").innerHTML += "Wind Chill " + windChill + "\xB0" + "F<br>";
@@ -264,9 +261,9 @@ function updateArrivalsFids()
 		var isOnTime = arrivalsFidsGetJSON.fidsData[x].remarksWithTime.search("On-Time");
 		if (isOnTime == -1)
 	        { 
-				document.getElementById("arrivalsFids").innerHTML += " <span style='background-color:red;color:white;'>" + departuresFidsGetJSON.fidsData[x].remarksWithTime + "</span>";
+				document.getElementById("arrivalsFids").innerHTML += " <span style='background-color:red;color:white;'>" + arrivalsFidsGetJSON.fidsData[x].remarksWithTime + "</span>";
 		} else {
-				 document.getElementById("arrivalsFids").innerHTML += " <span style='background-color:green;color:white;'>" + departuresFidsGetJSON.fidsData[x].remarksWithTime + "</span>";
+				 document.getElementById("arrivalsFids").innerHTML += " <span style='background-color:green;color:white;'>" + arrivalsFidsGetJSON.fidsData[x].remarksWithTime + "</span>";
 		}
 		document.getElementById("arrivalsFids").innerHTML += "</p>";
 	}
@@ -445,6 +442,7 @@ function minToHours()
 
 function updateTraffic()
 {
+	// update traffic and routing/directions to one airport
 	// lat,lon is the coordinates of the passenger terminal
 	var lat = arguments[0];
     	var lon = arguments[1];
@@ -469,10 +467,10 @@ function updateTraffic()
 	{
 		document.getElementById("traffic").innerHTML += "<br>" + airportIATA + " is approx " + distanceMiles.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + ".<br>";
 	}	
-	// display driving directions to a chosen airport
+	// display driving directions to an airport
 	for (var p=0; p < airportRoute.route.instructions.instruction.length; p++)
         {
-             	// each p is one instruction 
+             	// each p is one step in the driving instructions 
 
 		var iconURL = "https://www.airmanopus.net/drivinandflyin/images/RoutingIcons/" + airportRoute.route.instructions.instruction[p].iconPath;
                 document.getElementById("traffic").innerHTML += "<img src='" + iconURL + "' alt='" + airportRoute.route.instructions.instruction[p].text + "'>";
@@ -492,6 +490,8 @@ function updateTraffic()
 		}
 
 	}
+	// add the current route we have directions for to the map
+	map.displayRoute([[lat,lon],[airportLat,airportLon]]);
 }
 
 function updateDelays()
@@ -793,10 +793,11 @@ function clearEverything()
 }
 
 
-
+var map;
+var marker;
 
 function initialize() {
-	var map;
+
          if (navigator.geolocation) {
 		var mapFirstDraw = true; // true until initial map is drawn, false thereafter
                 navigator.geolocation.watchPosition(function(position){
@@ -810,15 +811,15 @@ function initialize() {
 					domNode: "map", 
 					apiKey: "q3dh8pqnwmbdrvwctrgvm6nu",
 					center: [lat, lon],
-					zoom: 12,
+					zoom: 13,
 					zoomControl: true,
 					enableHighAccuracy: true,
 					watch: true,
 					maximumAge: 15000,
 					displayTraffic: true
 				});
-				var markerMyLocation = new tomtom.Marker([lat,lon]);
-				map.addLayer(markerMyLocation);
+				marker = new tomtom.Marker([lat,lon]);
+				map.addLayer(marker);
 				mapFirstDraw = false;
 				updateWeather(lat,lon);
 				updateAirports(lat,lon);
@@ -829,7 +830,7 @@ function initialize() {
 
 				console.log(lat, lon);
 				map.setView([lat, lon]);
-				markerMyLocation.setLatLng([lat,lon]);
+				marker.setLatLng([lat,lon]);
 				clearEverything();
 				updateWeather(lat,lon);		
 				updateAirports(lat,lon);
@@ -844,8 +845,8 @@ function initialize() {
 </script>
 <style>
 html, body, #map {
-	width: 100%;
-	height: 65%;
+	width: 100;
+	height: 75%;
 	padding: 0;
 	margin: 0;
 }
@@ -854,7 +855,7 @@ html, body, #map {
 <body onload="initialize()">
 <div id="top-title"><img src="drivinandflyin.png" alt="Drivin' and Flyin'"></div>
 <div id="map"></div>
-<div id="motd" class="weatherDisplay">This is (barely) alpha software for now. Use at your own risk. A grue might eat you.<p></div>
+<div id="motd" class="weatherDisplay">This is an alpha version, so use at your own risk. You might get lost and a grue might eat you.<p></div>
 <div id="localWeather" class="weatherDisplay"></div>
 <div id="traffic" class="Inconsolata"></div>
 <div id="airportDelays" class="Inconsolata"></div>
