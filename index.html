@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link href='https://fonts.googleapis.com/css?family=Arimo:400,700,400italic|Oxygen' rel='stylesheet' type='text/css'>
 <link href='https://fonts.googleapis.com/css?family=Inconsolata:400,700' rel='stylesheet' type='text/css'>
-<link rel="apple-touch-icon-precomposed" href="somepath/image.png" />
+<link rel="apple-touch-icon-precomposed" href=images/icon.png" />
 <link rel="StyleSheet" href="https://www.airmanopus.net/drivinandflyin/iphone.css" type="text/css">
 
 <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.js'></script>
@@ -474,7 +474,7 @@ function updateTraffic()
         {
              	// each p is one instruction 
 
-		var iconURL = "https://www.airmanopus.net/drivinandflyin/tomtom/RoutingIcons/" + airportRoute.route.instructions.instruction[p].iconPath;
+		var iconURL = "https://www.airmanopus.net/drivinandflyin/images/RoutingIcons/" + airportRoute.route.instructions.instruction[p].iconPath;
                 document.getElementById("traffic").innerHTML += "<img src='" + iconURL + "' alt='" + airportRoute.route.instructions.instruction[p].text + "'>";
 		document.getElementById("traffic").innerHTML += airportRoute.route.instructions.instruction[p].text + " " + airportRoute.route.instructions.instruction[p].roadName;
 		document.getElementById("traffic").innerHTML += " Distance " + metersToMiles(airportRoute.route.instructions.instruction[p].distanceMeters) + "mi.";
@@ -807,16 +807,18 @@ function initialize() {
 				lon = position.coords.longitude;
 
 				map = new tomtom.Map({ 
-				domNode: "map", 
-				apiKey: "q3dh8pqnwmbdrvwctrgvm6nu",
-				center: [lat, lon],
-				zoom: 13,
-				zoomControl: true,
-				enableHighAccuracy: true,
-				watch: true,
-				maximumAge: 15000,
-				displayTraffic: true
+					domNode: "map", 
+					apiKey: "q3dh8pqnwmbdrvwctrgvm6nu",
+					center: [lat, lon],
+					zoom: 12,
+					zoomControl: true,
+					enableHighAccuracy: true,
+					watch: true,
+					maximumAge: 15000,
+					displayTraffic: true
 				});
+				var markerMyLocation = new tomtom.Marker([lat,lon]);
+				map.addLayer(markerMyLocation);
 				mapFirstDraw = false;
 				updateWeather(lat,lon);
 				updateAirports(lat,lon);
@@ -827,6 +829,7 @@ function initialize() {
 
 				console.log(lat, lon);
 				map.setView([lat, lon]);
+				markerMyLocation.setLatLng([lat,lon]);
 				clearEverything();
 				updateWeather(lat,lon);		
 				updateAirports(lat,lon);
