@@ -149,18 +149,17 @@ function updateWeather()
         
         localWeather.innerHTML = ""; // clear last observation data
         localWeather.innerHTML += city + ", " + state + " (" + lat.toPrecision(6) + "," + lon.toPrecision(6) + ")<br>";
-        localWeather.innerHTML += weatherDesc + " and " + temp_F + "\xB0" + "F <br>";
-	localWeather.innerHTML += "Humidity " + humidity + "% Visibility " + visibility + " mi<br>";
-        localWeather.innerHTML += "Wind " + windDir + " at " + windSpeed + "mph ";
+        localWeather.innerHTML += weatherDesc + " and " + temp_F + "\xB0" + "F ";
         if (temp_F < 45)
         {
-                getElementById("localWeather").innerHTML += "Wind Chill " + windChill + "\xB0" + "F<br>";
+                getElementById("localWeather").innerHTML += "(Wind Chill " + windChill + "\xB0" + "F)<br>";
         }
         if (temp_F > 70)
         {
-                localWeather.innerHTML += "Heat Index " + heatIndex + "\xB0" + "F<br>";
+                localWeather.innerHTML += "(Heat Index " + heatIndex + "\xB0" + "F)<br>";
         }
-        localWeather.innerHTML += (precipMM>0.0)?"Precip (mm) "+ precipMM + "<br>":"Precip none<br>";
+        localWeather.innerHTML += "Wind " + windDir + " at " + windSpeed + "mph ";
+        localWeather.innerHTML += (precipMM>0.0)?"Precip (mm) "+ precipMM + "<br>":"<br>";
         localWeather.innerHTML += "Observation time " + obsTime + "<br>";
 
 }
@@ -471,11 +470,11 @@ function updateTraffic()
 	for (var p=0; p < airportRoute.route.instructions.instruction.length; p++)
         {
              	// each p is one step in the driving instructions 
-
 		var iconURL = "https://www.airmanopus.net/drivinandflyin/images/RoutingIcons/" + airportRoute.route.instructions.instruction[p].iconPath;
                 document.getElementById("traffic").innerHTML += "<img src='" + iconURL + "' alt='" + airportRoute.route.instructions.instruction[p].text + "'>";
-		document.getElementById("traffic").innerHTML += airportRoute.route.instructions.instruction[p].text + " " + airportRoute.route.instructions.instruction[p].roadName;
-		document.getElementById("traffic").innerHTML += " Distance " + metersToMiles(airportRoute.route.instructions.instruction[p].distanceMeters) + "mi.";
+		document.getElementById("traffic").innerHTML += "<b>" + airportRoute.route.instructions.instruction[p].text + " " + airportRoute.route.instructions.instruction[p].roadName + "<b><br>";
+		if ((p+1) < airportRoute.route.instructions.instruction.length)
+		document.getElementById("traffic").innerHTML += "Travel " + metersToMiles(airportRoute.route.instructions.instruction[p+1].distanceMeters - airportRoute.route.instructions.instruction[p].distanceMeters) + " miles.<br>";
 		var travelTimeSeconds = airportRoute.route.instructions.instruction[p].travelTimeSeconds;
 		var travelTimeMinutes = secToMin(travelTimeSeconds);
 		var travelTimeHours = minToHours(travelTimeMinutes);
@@ -678,12 +677,15 @@ function updateAirports()
 	var zoomedViewportDistance = 48; 	// within this many km of an airport get detailed flight info (30 mi)
 	
 	var nearbyAirportsGet = new XMLHttpRequest();
-        var nearbyAirportsURL = "https://api.tomtom.com/places/search/1/place?format=json&lat=" + lat + "&lng=" + lon + "&what=airport&distance=" + viewportDistance + "&results=3&sort=distance&key=tbgsdr6fz7af2b6ghshk4tr3";
+        var nearbyAirportsURL = "https://api.tomtom.com/places/search/1/place?format=json&lat=" + lat + "&lng=" + lon + "&what=airport&distance=" + viewportDistance + "&results=3&sort=relevance&key=tbgsdr6fz7af2b6ghshk4tr3";
         var nearbyAirportsProcess = "https://www.airmanopus.net/cgi-bin/departures.cgi?" + nearbyAirportsURL;
         nearbyAirportsGet.open('GET',nearbyAirportsProcess,false);
         nearbyAirportsGet.send();
         var nearbyAirportsJSON = JSON.parse(nearbyAirportsGet.responseText);
 
+	// we need to make sure that the response does not include any duplicated airports
+	
+	console.log(nearbyAirportsJSON);
 	var iataIdentifier = "";
 	var airportsListIata = 0;
 	var airportsListState = 2;
@@ -691,8 +693,9 @@ function updateAirports()
 	var airportsListName = 5;
 	for (var j = 0; j <  nearbyAirportsJSON.response.data.main.numberOfResults; j++)
     	{
-		var airportName = nearbyAirportsJSON.response.data.places.place[j].name.$;
+		// each j is a single airport found by tomtom
 		var airportDistance = nearbyAirportsJSON.response.data.places.place[j].distance.$;
+		var airportName = nearbyAirportsJSON.response.data.places.place[j].name.$;
 		var airportCity = nearbyAirportsJSON.response.data.places.place[j].city.$;
 		var airportState = nearbyAirportsJSON.response.data.places.place[j].province.$
 		var airportAddress = nearbyAirportsJSON.response.data.places.place[j].formattedAddress;
@@ -711,12 +714,14 @@ function updateAirports()
 		var numAirports = airports.length;
 
 		iataIdentifier = "";
-		// we need to match airportName to exactly one of the records in the array airports
-		// airports does not, however, contain the word airport in any of the names
+		// we need to match airportName to exactly one of the IATA records in the array airports
 		for (var k = 0; k < numAirports; k++)
 		{
+			// each k is an airport from airportList
+
 			// airports have name variations especially at the end of the name so we start matching from the start ex:
 		 	// Dane County Regional Airport  DANE COUNTY REGIONAL-TRUAX FIELD
+			
 			// city and state have to match exactly
 			if (airportCity.toUpperCase() == airports[k][4])
 			{
@@ -738,44 +743,41 @@ function updateAirports()
 					{
 						if (airportName.toUpperCase().charAt(m) == airports[k][5].charAt(m))
 						{
-							matchScore++
+							matchScore++;
 						}
 					}
-					// this value might need to be adjusted
-					if (matchScore >= 4)
+					 
+					if (matchScore >= charsToCheck)
 					{
 						iataIdentifier = airports[k][0];
-					}
-				 }
+					} 
+				}
 			}
-		}
+		}		
 
 		// if iataIdentifier is empty it is a local airport that we're not worried about		
 		if (iataIdentifier != "")
 		{
-
+			console.log(airportName,iataIdentifier);
 			if (airportDistance < viewportDistance)
 			{       // we dont know which airport is your destination yet
 				// so we just give you traffic info to airports you might be headed towards
+				// once that airport is within the viewport
 				updateTraffic(lat,lon,airportLat,airportLon,iataIdentifier);	
 			}
 			
 			if (airportDistance < zoomedViewportDistance)
 			{
-					/* you are probably heading to one of the airports within this range
-					   so we start telling you about delays at nearby airports and start
-					   showing you flight information for departing and arriving flights
-					   if you are going to an airport that isn't in range yet you'l
-					   start seeing updates as soon as you are in range
-					*/
-					updateDelays(iataIdentifier);
-					updateDeparturesFids(iataIdentifier);
-					updateArrivalsFids(iataIdentifier);
-					//updateArrivals(iataIdentifier);
-					//updateDepartures(iataIdentifier);
+				// as you get physically closer to your destination airport you get more concerned
+				// with flight information, so we start displaying arrivals and departures
+				updateDelays(iataIdentifier);
+				//updateDeparturesFids(iataIdentifier);
+				//updateArrivalsFids(iataIdentifier);
+				//updateArrivals(iataIdentifier);
+				//updateDepartures(iataIdentifier);
 			}
 		} 
-	
+			
 	
 	}
 	console.log("leaving updateAirports"); 
@@ -811,12 +813,15 @@ function initialize() {
 					domNode: "map", 
 					apiKey: "q3dh8pqnwmbdrvwctrgvm6nu",
 					center: [lat, lon],
-					zoom: 13,
+					zoom: 18,
 					zoomControl: true,
+					scale: true,
+					dragging: true,
+					intertia: true,
 					enableHighAccuracy: true,
 					watch: true,
 					maximumAge: 15000,
-					displayTraffic: false
+					displayTraffic: true
 				});
 				marker = new tomtom.Marker([lat,lon]);
 				map.addLayer(marker);
