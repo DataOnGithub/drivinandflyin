@@ -15,7 +15,7 @@
 <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-osm/v0.1.0/leaflet-osm.js'></script>
 <script type="text/javascript" src="js/tomtom.map.js"></script>
 
-<script type="text/javascript">  
+<script>  
 
 function CSVToArray( strData, strDelimiter )
 {
@@ -490,6 +490,7 @@ function updateTraffic()
 
 	}
 	// add the current route we have directions for to the map
+	
 	map.displayRoute([[lat,lon],[airportLat,airportLon]]);
 }
 
@@ -673,7 +674,7 @@ function updateAirports()
 		'S' : 'scheduled'
 	};
 	
-	var viewportDistance = 81;		// watch airports fer delays within this many km (50 mi)
+	var viewportDistance = 80;		// watch airports fer delays within this many km (50 mi)
 	var zoomedViewportDistance = 48; 	// within this many km of an airport get detailed flight info (30 mi)
 	
 	var nearbyAirportsGet = new XMLHttpRequest();
@@ -683,9 +684,6 @@ function updateAirports()
         nearbyAirportsGet.send();
         var nearbyAirportsJSON = JSON.parse(nearbyAirportsGet.responseText);
 
-	// we need to make sure that the response does not include any duplicated airports
-	
-	console.log(nearbyAirportsJSON);
 	var iataIdentifier = "";
 	var airportsListIata = 0;
 	var airportsListState = 2;
@@ -747,7 +745,7 @@ function updateAirports()
 						}
 					}
 					 
-					if (matchScore >= charsToCheck)
+					if (matchScore > 5)
 					{
 						iataIdentifier = airports[k][0];
 					} 
@@ -771,11 +769,13 @@ function updateAirports()
 				// as you get physically closer to your destination airport you get more concerned
 				// with flight information, so we start displaying arrivals and departures
 				updateDelays(iataIdentifier);
-				//updateDeparturesFids(iataIdentifier);
-				//updateArrivalsFids(iataIdentifier);
+				updateDeparturesFids(iataIdentifier);
+				updateArrivalsFids(iataIdentifier);
 				//updateArrivals(iataIdentifier);
 				//updateDepartures(iataIdentifier);
 			}
+		} else {
+			console.log("IATA is blank");
 		} 
 			
 	
