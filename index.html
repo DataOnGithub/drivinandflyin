@@ -178,7 +178,7 @@ function updateDeparturesFids()
 	// see https://developer.flightstats.com/api-docs/fids/v1/fidsResponse
 	console.log("entering updateDeparturesFids");
 	var airportIATA = arguments[0];
-	var departuresFidsGetURL = "https://www.airmanopus.net/cgi-bin/flightStats.cgi?https://api.flightstats.com/flex/fids/rest/v1/json/" + airportIATA + "/departures?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&requestedFields=airlineLogoUrlPng%2CairlineName%2CairlineCode%2CflightNumber%2Ccity%2CcurrentTime%2Cgate%2Cterminal%2CstatusCode%2CremarksCode%2CremarksWithTime%2Cweather%2CtemperatureC%2CtemperatureF&sortFields=currentTime&includeCodeshares=true&timeFormat=24&lateMinutes=15&boardingMinutes=30&useRunwayTimes=true&excludeCargoOnlyFlights=true&timeWindowEnd=240"
+	var departuresFidsGetURL = "https://www.airmanopus.net/cgi-bin/flightStats.cgi?https://api.flightstats.com/flex/fids/rest/v1/json/" + airportIATA + "/departures?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&requestedFields=airlineLogoUrlPng%2CairlineName%2CairlineCode%2CflightNumber%2Ccity%2CcurrentTime%2Cgate%2Cterminal%2CstatusCode%2CremarksCode%2CremarksWithTime%2Cweather%2CtemperatureC%2CtemperatureF&sortFields=currentTime&includeCodeshares=false&timeFormat=24&lateMinutes=15&boardingMinutes=30&useRunwayTimes=true&excludeCargoOnlyFlights=true&timeWindowEnd=240"
         var departuresFidsGet = new XMLHttpRequest();
         departuresFidsGet.open('GET',departuresFidsGetURL,false);
         departuresFidsGet.send();
@@ -212,6 +212,8 @@ function updateDeparturesFids()
 		} else {
 			 document.getElementById("departuresFids").innerHTML += " <span style='background-color:green;color:white;'>" + departuresFidsGetJSON.fidsData[x].remarksWithTime + "</span>";
 		}
+
+
 		document.getElementById("departuresFids").innerHTML += "</p>";
 
 	}
@@ -225,7 +227,7 @@ function updateArrivalsFids()
         // see https://developer.flightstats.com/api-docs/fids/v1/fidsResponse
         console.log("entering updateArrivalsFids");
         var airportIATA = arguments[0];
-        var arrivalsFidsGetURL = "https://www.airmanopus.net/cgi-bin/flightStats.cgi?https://api.flightstats.com/flex/fids/rest/v1/json/" + airportIATA + "/arrivals?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&requestedFields=airlineLogoUrlPng%2CairlineName%2CairlineCode%2CflightNumber%2Ccity%2CcurrentTime%2Cgate%2Cterminal%2CstatusCode%2CremarksCode%2CremarksWithTime%2Cweather%2CtemperatureC%2CtemperatureF%2Cbaggage&sortFields=currentTime&includeCodeshares=true&timeFormat=24&timeWindowEnd=240&lateMinutes=15&boardingMinutes=30&useRunwayTimes=true&excludeCargoOnlyFlights=true";
+        var arrivalsFidsGetURL = "https://www.airmanopus.net/cgi-bin/flightStats.cgi?https://api.flightstats.com/flex/fids/rest/v1/json/" + airportIATA + "/arrivals?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&requestedFields=airlineLogoUrlPng%2CairlineName%2CairlineCode%2CflightNumber%2Ccity%2CcurrentTime%2Cgate%2Cterminal%2CstatusCode%2CremarksCode%2CremarksWithTime%2Cweather%2CtemperatureC%2CtemperatureF%2Cbaggage&sortFields=currentTime&includeCodeshares=false&timeFormat=24&timeWindowEnd=240&lateMinutes=15&boardingMinutes=30&useRunwayTimes=true&excludeCargoOnlyFlights=true";
         var arrivalsFidsGet = new XMLHttpRequest();
         arrivalsFidsGet.open('GET',arrivalsFidsGetURL,false);
         arrivalsFidsGet.send();
@@ -769,8 +771,8 @@ function updateAirports()
 				// as you get physically closer to your destination airport you get more concerned
 				// with flight information, so we start displaying arrivals and departures
 				updateDelays(iataIdentifier);
-				//updateDeparturesFids(iataIdentifier);
-				//updateArrivalsFids(iataIdentifier);
+				updateDeparturesFids(iataIdentifier);
+				updateArrivalsFids(iataIdentifier);
 				//updateArrivals(iataIdentifier);
 				//updateDepartures(iataIdentifier);
 			}
