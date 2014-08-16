@@ -1,29 +1,48 @@
+			
+
 			.toptitle-text {
 				background-color: blue;
 				color: white;
-				font-family:'Helvetica','sans-serif';
-				font-size: medium;
+				font-family: 'Cinzel',sans-serif;
+				font-size: small;
 			}
 	
-			.map-initial {
-				height: 215px;
+			.weatherDisplay {
 
-			}                       	
-			.airports-text {
-				visibility: hidden;
+				font-family: 'Arimo',sans-serif;
+				font-size: medium;
 			}
 
-			.alerts-text {
-				font-family:'Helvetica','sans-serif';
+			.fidsDisplay {
+				font-family: 'Arimo',sans-serif;
+	                        font-size: x-small;
+
+			}
+
+			.airportTitle {
+				font-family: 'Inconsolata',sans-serif;
 				font-size: medium;
 			}
 			
 
-			.footertext {
-				font-family:'Helvetica','sans-serif';
-				font-size: small;
+			.airportFlights {
+				font-family: 'Inconsolata',sans-serif;
+				font-size: x-small;
 			}
 
+			.whiteongreen {
+				color: white;
+				background-color: green;
+				background-image: none;
+
+			}
+
+			.errorText {
+				font-family 'Inconsolata','sans-serif';
+				font-size: medium;
+				color: red;
+			}
+			
 
 
 
