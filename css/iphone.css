@@ -30,11 +30,21 @@
 				font-size: x-small;
 			}
 
+			.airportTracks {
+				font-family: 'Inconsolata',sans-serif;
+				fonnt-size: x-small;
+
 			.whiteongreen {
 				color: white;
 				background-color: green;
 				background-image: none;
 
+			}
+
+			.whiteonred {
+				color: white;
+				background-color: red;
+				background-image: none;
 			}
 
 			.errorText {
@@ -43,6 +53,18 @@
 				color: red;
 			}
 			
+			.footerText {
+				font-family 'Inconsolata','sans-serif';
+                                font-size: small;
+                                color: black;
+			}
+
+			.trafficDisplay {
+				font-family 'Inconsolata','sans-serif';
+                                font-size: medium;
+                                color: black;
+			}
+
 
 
 
