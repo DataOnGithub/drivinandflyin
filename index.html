@@ -439,6 +439,16 @@ function minToHours()
 	return hours;
 }
 
+function sayOneInstruction()
+{
+	var instruction = arguments[0];
+	var speechObject = new SpeechSynthesisUtterance(instruction);
+	speechObject.volume = 1.0;
+	speechObject.rate = 1.5;
+	speechObject.pitch = 1.7;
+	speechObject.lang= "en-US";
+}
+
 
 function updateTraffic()
 {
@@ -691,6 +701,8 @@ function updateAirports()
 	var airportsListState = 2;
 	var airportsListCity = 4;
 	var airportsListName = 5;
+
+	sayOneInstruction("Hold on while I look for nearby airports.");
 	for (var j = 0; j <  nearbyAirportsJSON.response.data.main.numberOfResults; j++)
     	{
 		// each j is a single airport found by tomtom
@@ -797,6 +809,17 @@ function clearEverything()
 }
 
 
+function toggle_visibility(id)
+{
+	var e = document.getElementById(id);
+	if (e.style.display == 'block')
+	{
+		e.style.display = 'none';
+	} else {
+e.style.display = 'block';
+	}
+}
+
 var map;
 var marker;
 
@@ -853,18 +876,17 @@ function initialize() {
 <style>
 html, body, #map {
 	width: 100;
-	height: 75%;
-	padding: 0;
-	margin: 0;
+	height: 50%;
+	padding: 1;
+	margin: 1;
 }
 </style>
 </head>
 <body onload="initialize()">
 <div id="top-title"><img src="drivinandflyin.png" alt="Drivin' and Flyin'"></div>
-<div id="motd" class="weatherDisplay">This is an alpha version, so use at your own risk.<br>You might get lost and a grue might eat you.<p></div>
 <div id="map"></div>
 <div id="localWeather" class="weatherDisplay"></div>
-<div id="traffic" class="trafficDisplay"></div>
+<div id="traffic" class="trafficDisplay"></div></a>
 <div id="airportDelays" class="airportFlights"></div>
 <div id="airportArrivals" class="airportFlights"></div>
 <div id="airportArrivalsTracks" class="airportTracks"></div>
