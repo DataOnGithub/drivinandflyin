@@ -184,7 +184,7 @@ function updateDeparturesFids()
         departuresFidsGet.send();
 	document.getElementById("departuresFids").innerHTML = "<span class='fidsDisplay'>Departures</span><br><br>";
 	var departuresFidsGetJSON = JSON.parse(departuresFidsGet.responseText);
-	document.getElementById("departuresFids").innerHTML += "<table border='0' class='fidsDisplay' cellspacing='1' cellpadding=1>" ;
+	document.getElementById("departuresFids").innerHTML += "<table border='0' class='departuresFidsTable' summary='Departing flights from " + airportIATA + "'>" ;
 	for (x = 0; x < departuresFidsGetJSON.fidsData.length; x++)
 	{
 
