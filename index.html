@@ -148,19 +148,34 @@ function updateWeather()
         var weatherInfoURL = weatherResponse.data.weather[0].weatherURL;
         
         localWeather.innerHTML = ""; // clear last observation data
+
+	if (precipMM > 0.0)
+	{
+		say("Precipitation indicated. Currently " + weatherDesc + " and " + temp_F + " degrees.");
+		if (temp_F < 32.0)
+		{
+			say("Currently " + weatherDesc + " and " + temp_F + " degrees. Icing may occur.");
+		}
+	} else {
+		say("Currently " + weatherDesc + " and " + temp_F + " degrees.");
+	}
+
         localWeather.innerHTML += city + ", " + state + " (" + lat.toPrecision(6) + "," + lon.toPrecision(6) + ")<br>";
         localWeather.innerHTML += weatherDesc + " and " + temp_F + "\xB0" + "F ";
         if (temp_F < 45)
         {
                 getElementById("localWeather").innerHTML += "(Wind Chill " + windChill + "\xB0" + "F)<br>";
+		say("The current wind chill is " + windChill + " degrees.");
         }
         if (temp_F > 70)
         {
                 localWeather.innerHTML += "(Heat Index " + heatIndex + "\xB0" + "F)<br>";
+		say("The current heat index is " + heatIndex + " degrees.");
         }
         localWeather.innerHTML += "Wind " + windDir + " at " + windSpeed + "mph ";
         localWeather.innerHTML += (precipMM>0.0)?"Precip (mm) "+ precipMM + "<br>":"<br>";
         localWeather.innerHTML += "Observation time " + obsTime + "<br>";
+
 
 }
 
