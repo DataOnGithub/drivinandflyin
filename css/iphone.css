@@ -32,18 +32,6 @@
 			.airportTracks {
 				font-family: 'Inconsolata',sans-serif;
 				font-size: x-small;
-
-			.whiteongreen {
-				color: white;
-				background-color: green;
-				background-image: none;
-
-			}
-
-			.whiteonred {
-				color: white;
-				background-color: red;
-				background-image: none;
 			}
 
 			.errorText {
