@@ -1,5 +1,3 @@
-			
-
 			.toptitle-text {
 				background-color: blue;
 				color: white;
@@ -40,15 +38,6 @@
 				color: red;
 			}
 			
-			.departuresFidsTable {
-				font-size: small;
-				font-family: 'Arimo',sans-serif;
-				color:#333333;
-				width:100%;
-				border-width: 1px;
-				border-color: #729ea5;
-				border-collapse: collapse;
-			
 			.footerText {
 				font-family 'Inconsolata','sans-serif';
                                 font-size: small;
@@ -60,25 +49,13 @@
                                 font-size: medium;
                                 color: black;
 			}
-
-			.departuresFidsTable th {
-				background-color:#acc8cc;
+			
+			table {
+				font-family 'Arimo','sans-serif';
+                                font-size: medium;
+                                color: black;
 				border-width: 1px;
-				padding: 8px;
+				padding: 2px; 
 				border-style: solid;
-				border-color: #729ea5;
-				text-align:left;
-			}
-
-			.departuresFidsTable tr {
-				background-color:#ffffff;
-			}
-
-			.departuresFidsTable td {
-				border-width: 1px;
-				padding: 8px;
-				border-style: solid;
-				border-color: #729ea5;
-			}
-
-			.departuresfidsTable tr :hover {background-color:#ffff99;}
+				border-color: #a9c6c9;
+			 } 

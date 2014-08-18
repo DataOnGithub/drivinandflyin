@@ -7,9 +7,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link href='https://fonts.googleapis.com/css?family=Arimo:400,700,400italic|Oxygen' rel='stylesheet' type='text/css'>
 <link href='https://fonts.googleapis.com/css?family=Inconsolata:400,700' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="https://www.airmanopus.net/drivinandflyin/css/iphone.css" type="text/css">
 <link rel="apple-touch-icon-precomposed" href=images/icon.png" />
-<link rel="StyleSheet" href="https://www.airmanopus.net/drivinandflyin/iphone.css" type="text/css">
-
 <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.js'></script>
 <link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.css' rel='stylesheet' />
 <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-osm/v0.1.0/leaflet-osm.js'></script>
@@ -184,42 +183,38 @@ function updateDeparturesFids()
         departuresFidsGet.send();
 	document.getElementById("departuresFids").innerHTML = "<span class='fidsDisplay'>Departures</span><br><br>";
 	var departuresFidsGetJSON = JSON.parse(departuresFidsGet.responseText);
-	document.getElementById("departuresFids").innerHTML += "<table border='0' class='departuresFidsTable' summary='Departing flights from " + airportIATA + "'>" ;
 	for (x = 0; x < departuresFidsGetJSON.fidsData.length; x++)
 	{
-
-                // make sure we are getting the https version of the airline logo
+                // one departure per line
+		// make sure we are getting the https version of the airline logo
                 var airlineLogoURLPngInsecure = departuresFidsGetJSON.fidsData[x].airlineLogoUrlPng;
                 var airlineLogoURLPngSecure = airlineLogoURLPngInsecure.replace("http","https");
 
-                document.getElementById("departuresFids").innerHTML += "<tr><td><img src='" + airlineLogoURLPngSecure + "' width=50 height=15 alt='" + departuresFidsGetJSON.fidsData[x].airlineName +"'></td>";
-                document.getElementById("departuresFids").innerHTML += "<td> " + departuresFidsGetJSON.fidsData[x].airlineName + "</td>";
-                document.getElementById("departuresFids").innerHTML += "<td> " + departuresFidsGetJSON.fidsData[x].airlineCode + " " + departuresFidsGetJSON.fidsData[x].flightNumber + "</td>";
-                document.getElementById("departuresFids").innerHTML += "<td> leaving for " + departuresFidsGetJSON.fidsData[x].city + "</td>";
-                document.getElementById("departuresFids").innerHTML += "<td> (" + departuresFidsGetJSON.fidsData[x].weather + " " +  departuresFidsGetJSON.fidsData[x].temperatureF + "\xB0/" +  departuresFidsGetJSON.fidsData[x].temperatureC + "\xB0)</td>";
+		document.getElementById("departuresFids").innerHTML += "<img src='" + airlineLogoURLPngSecure + "' width=50 height=20 alt='" + departuresFidsGetJSON.fidsData[x].airlineName +"'>";
+                document.getElementById("departuresFids").innerHTML += " " + departuresFidsGetJSON.fidsData[x].airlineName;
+                document.getElementById("departuresFids").innerHTML += " " + departuresFidsGetJSON.fidsData[x].airlineCode + " " + departuresFidsGetJSON.fidsData[x].flightNumber;
+                document.getElementById("departuresFids").innerHTML += " leaving for " + departuresFidsGetJSON.fidsData[x].city;
+                document.getElementById("departuresFids").innerHTML += " (" + departuresFidsGetJSON.fidsData[x].weather + " " + departuresFidsGetJSON.fidsData[x].temperatureF + "\xB0/" +  departuresFidsGetJSON.fidsData[x].temperatureC + "\xB0)";
                 if (departuresFidsGetJSON.fidsData[x].gate != undefined)
                 {
-                        document.getElementById("departuresFids").innerHTML += "<td> from Gate " + departuresFidsGetJSON.fidsData[x].gate + " </td>";
+                        document.getElementById("departuresFids").innerHTML += " from Gate " + departuresFidsGetJSON.fidsData[x].gate;
                 }
                 if (departuresFidsGetJSON.fidsData[x].terminal != undefined)
                 {
-                        document.getElementById("departuresFids").innerHTML += "<td> Terminal " + departuresFidsGetJSON.fidsData[x].terminal + "</td>";
+                        document.getElementById("departuresFids").innerHTML += " Terminal " + departuresFidsGetJSON.fidsData[x].terminal;
                 }
-                document.getElementById("departuresFids").innerHTML += "<td> at " + departuresFidsGetJSON.fidsData[x].currentTime + "</td>";
+                document.getElementById("departuresFids").innerHTML += " at " + departuresFidsGetJSON.fidsData[x].currentTime;
 
                 // if the flight is on time, display green. any other status display red
                 var isOnTime = departuresFidsGetJSON.fidsData[x].remarksWithTime.search("On-Time");
                 if (isOnTime == -1)
                 {
-                        document.getElementById("departuresFids").innerHTML += "<td> <span style='background-color:red;color:white;'>" + eparturesFidsGetJSON.fidsData[x].remarksWithTime + "</span></td>";
+                        document.getElementById("departuresFids").innerHTML += " <span style='background-color:red;color:white;'>" + departuresFidsGetJSON.fidsData[x].remarksWithTime + "</span>";
                 } else {
-                         document.getElementById("departuresFids").innerHTML += "<td> <span style='background-color:green;color:white;'>" + departuresFidsGetJSON.fidsData[x].remarksWithTime + "</span></td>";
+                         document.getElementById("departuresFids").innerHTML += " <span style='background-color:green;color:white;'>" + departuresFidsGetJSON.fidsData[x].remarksWithTime + "</span>";
                 }
-                
-		document.getElementById("departuresFids").innerHTML += "</tr>";
-
+	 document.getElementById("departuresFids").innerHTML += "<br><br>";
 	}
-	document.getElementById("departuresFids").innerHTML += "</table>";
 console.log("leaving updateDeparturesFids");
 	
 }
@@ -243,11 +238,14 @@ function updateArrivalsFids()
                 var airlineLogoURLPngSecure = airlineLogoURLPngInsecure.replace("http","https");
 
 		document.getElementById("arrivalsFids").innerHTML += "<p class='fidsDisplay'>";
-		document.getElementById("arrivalsFids").innerHTML += "<img src='" + airlineLogoURLPngSecure + "' width=50 height=15 alt='" + arrivalsFidsGetJSON.fidsData[x].airlineName +"'> " +  arrivalsFidsGetJSON.fidsData[x].airlineName;
+		document.getElementById("arrivalsFids").innerHTML += "<img src='" + airlineLogoURLPngSecure + "' width=50 height=20 alt='" + arrivalsFidsGetJSON.fidsData[x].airlineName +"'> " +  arrivalsFidsGetJSON.fidsData[x].airlineName;
 		document.getElementById("arrivalsFids").innerHTML += " " + arrivalsFidsGetJSON.fidsData[x].airlineCode + " " + arrivalsFidsGetJSON.fidsData[x].flightNumber;
-		document.getElementById("arrivalsFids").innerHTML += " arriving from " + arrivalsFidsGetJSON.fidsData[x].city + " (" + arrivalsFidsGetJSON.fidsData[x].weather + " " +  arrivalsFidsGetJSON.fidsData[x].temperatureF + "\xB0/" +  arrivalsFidsGetJSON.fidsData[x].temperatureC + "\xB0)";
 
 		// only display these fields if they actually have values
+		if (arrivalsFidsGetJSON.fidsData[x].currentGateTime!= undefined)
+		{
+			document.getElementById("arrivalsFids").innerHTML += " at " + arrivalsFidsGetJSON.fidsData[x].currentGateTime;
+		}	
 		if (arrivalsFidsGetJSON.fidsData[x].gate != undefined) 
 		{
 			document.getElementById("arrivalsFids").innerHTML += " Gate " + arrivalsFidsGetJSON.fidsData[x].gate + " ";
@@ -420,8 +418,6 @@ function updateArrivalsTracks()
 
 
 
-
-
 function metersToMiles()
 {
 	var meters = arguments[0];
@@ -511,6 +507,7 @@ function updateDelays()
 	// if we see a less than chr we didnt get a json response so no delays
 	// probably a smaller airport that FAA doesnt keep status on
 	// we always display the delay text
+	console.log(airportStatusGet);
 	if ( airportStatusResponse.charAt(0) != "<" )
 	{
 		var airportStatus = JSON.parse(airportStatusGet.responseText);
@@ -819,7 +816,7 @@ function initialize() {
 					apiKey: "q3dh8pqnwmbdrvwctrgvm6nu",
 					center: [lat, lon],
 					zoom: 18,
-					zoomControl: true,
+					zoomControl: false,
 					scale: true,
 					dragging: true,
 					intertia: true,
