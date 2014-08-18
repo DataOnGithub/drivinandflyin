@@ -464,14 +464,12 @@ function say()
 		var pitch = 1.7;
 		var rate = 1.5;
 		var volume = 1.0;
-
 		
 		var speechObject = new SpeechSynthesisUtterance(instruction);
 		speechObject.volume = volume;
 		speechObject.rate = rate;
 		speechObject.pitch = pitch;
 		window.speechSynthesis.speak(speechObject);
-		console.log("available voices " + window.speechSynthesis.getVoices());
 	}
 }
 
@@ -485,6 +483,7 @@ function updateTraffic()
 	var airportLat = arguments[2];
 	var airportLon = arguments[3];
 	var airportIATA = arguments[4];
+	var airportName = arguments[5];
 	// check traffic to get estimate on when will we get to the airport 
 	// we always display driving  ETA from our location to each airport
 
@@ -502,12 +501,12 @@ function updateTraffic()
 	if (airportIATA != null)
 	{
 		// we will be called whenever position is updated so this display will always be updated with the best route
-		document.getElementById("traffic").innerHTML += "<br>" + airportIATA + " is " + distanceMiles.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + ".<br>";
+		document.getElementById("traffic").innerHTML += "<br>" + airportName + " (" + airportIATA + ") is " + distanceMiles.toFixed(2) + " miles away. <br> Your estimated arrival time is " + airportETA + ".<br>";
 
 		// say the first two driving steps to get us moving which will also be updated whenever position changes
-		say (airportIATA + " is " + distanceMiles.toFixed(2) + " miles away. Your estimated arrival time at " + airportIATA + " is " + airportETA);
-		say ("I have driving directions to " + airportIATA + " ready for you.");
-		say ("If you are going to " + airportIATA + "," + airportRoute.route.instructions.instruction[0].text + " " + airportRoute.route.instructions.instruction[0].roadName + ", and then, " + airportRoute.route.instructions.instruction[1].text + " " + airportRoute.route.instructions.instruction[1].roadName); 
+		say (airportName + " is " + distanceMiles.toFixed(2) + " miles away. Your estimated arrival time at " + airportName + " is " + airportETA);
+		say ("I have driving directions to " + airportName + " ready for you.");
+		say ("If you are going to " + airportName + "," + airportRoute.route.instructions.instruction[0].text + " " + airportRoute.route.instructions.instruction[0].roadName + ", and then, " + airportRoute.route.instructions.instruction[1].text + " " + airportRoute.route.instructions.instruction[1].roadName); 
 		say ("I will keep your route updated.");
 	}	
 
@@ -517,7 +516,7 @@ function updateTraffic()
              	// each p is one step in the driving instructions 
 		var iconURL = "https://www.airmanopus.net/drivinandflyin/images/RoutingIcons/" + airportRoute.route.instructions.instruction[p].iconPath;
                 document.getElementById("traffic").innerHTML += "<img src='" + iconURL + "' alt='" + airportRoute.route.instructions.instruction[p].text + "'>";
-		document.getElementById("traffic").innerHTML += "<b>" + airportRoute.route.instructions.instruction[p].text + " " + airportRoute.route.instructions.instruction[p].roadName + "<b><br>";
+		document.getElementById("traffic").innerHTML += "<b>" + airportRoute.route.instructions.instruction[p].text + " " + airportRoute.route.instructions.instruction[p].roadName + " " + airportRoute.route.instructions.instruction[p].roadNumber +"</b><br>";
 		if ((p+1) < airportRoute.route.instructions.instruction.length)
 		document.getElementById("traffic").innerHTML += "Travel " + metersToMiles(airportRoute.route.instructions.instruction[p+1].distanceMeters - airportRoute.route.instructions.instruction[p].distanceMeters) + " miles.<br>";
 		var travelTimeSeconds = airportRoute.route.instructions.instruction[p].travelTimeSeconds;
@@ -832,7 +831,7 @@ function updateAirports()
 			{       // we dont know which airport is your destination yet
 				// so we just give you traffic info to airports you might be headed towards
 				// once that airport is within the viewport
-				updateTraffic(lat,lon,airportLat,airportLon,iataIdentifier);	
+				updateTraffic(lat,lon,airportLat,airportLon,iataIdentifier,airportName);	
 				updateDelays(iataIdentifier);
 			}
 			
@@ -899,7 +898,7 @@ function initialize() {
 					zoom: 18,
 					zoomControl: false,
 					scale: true,
-					dragging: true,
+					dragging: false,
 					intertia: true,
 					enableHighAccuracy: true,
 					watch: true,
