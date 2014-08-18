@@ -111,6 +111,7 @@ function CSVToArray( strData, strDelimiter )
 function geoError()
 {
         document.write("<span class='errorText'>Geolocation failed. You may need to enable location services on your device.</span>");
+	say("I'm sorry. I am unable to determine where we are. You may need to enable location services on your device.");
 }
 
 function updateWeather() 
@@ -230,6 +231,7 @@ function updateArrivalsFids()
         arrivalsFidsGet.open('GET',arrivalsFidsGetURL,false);
         arrivalsFidsGet.send();
 	document.getElementById("arrivalsFids").innerHTML = "<span class='fidsDisplay'>Arrivals</span><br><br>";
+
 	var arrivalsFidsGetJSON = JSON.parse(arrivalsFidsGet.responseText);
 	for (x = 0; x < arrivalsFidsGetJSON.fidsData.length; x++)
 	{
@@ -308,7 +310,7 @@ function updateArrivals()
 		if (arrivingFlightsJSON.flightStatuses.length > 0)
 		{
 			// there is at least one arriving flight to display
-
+			say ("I have on screen information for flights arriving at " + arrivingFlightStatus.arrivalAirportName);
 			for (var i=0; i < arrivingFlightsJSON.flightStatuses.length;i++) 
 			{
 				// we are only interested in scheduled passenger (normal service) flights
@@ -486,6 +488,9 @@ function updateTraffic()
 	{
 		document.getElementById("traffic").innerHTML += "<br>" + airportIATA + " is approx " + distanceMiles.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + ".<br>";
 		say (airportIATA + " is approx " + distanceMiles.toFixed(2) + " miles away. Your estimated arrival time at " + airportIATA + " is " + airportETA);
+		say ("I have driving directions to " + airportIATA + " ready for you.");
+		say ("If you are going to " + airportIATA + "," + airportRoute.route.instructions.instruction[0].text + " " + airportRoute.route.instructions.instruction[0].roadName + ", and then, " + airportRoute.route.instructions.instruction[1].text + " " + airportRoute.route.instructions.instruction[1].roadName); 
+		say ("I will keep you updated on where to turn.");
 	}	
 	// display driving directions to an airport
 	for (var p=0; p < airportRoute.route.instructions.instruction.length; p++)
@@ -713,7 +718,7 @@ function updateAirports()
 	var airportsListCity = 4;
 	var airportsListName = 5;
 
-	say("I am looking for airports.");
+	say("I am scanning for airports.");
 
 	for (var j = 0; j <  nearbyAirportsJSON.response.data.main.numberOfResults; j++)
     	{
@@ -788,13 +793,14 @@ function updateAirports()
 				// so we just give you traffic info to airports you might be headed towards
 				// once that airport is within the viewport
 				updateTraffic(lat,lon,airportLat,airportLon,iataIdentifier);	
+				updateDelays(iataIdentifier);
 			}
 			
 			if (airportDistance < zoomedViewportDistance)
 			{
 				// as you get physically closer to your destination airport you get more concerned
 				// with flight information, so we start displaying arrivals and departures
-				updateDelays(iataIdentifier);
+				say("I have flight arrival and departure information available on screen.");
 				updateDeparturesFids(iataIdentifier);
 				updateArrivalsFids(iataIdentifier);
 				//updateArrivals(iataIdentifier);
@@ -842,10 +848,10 @@ function initialize() {
                 navigator.geolocation.watchPosition(function(position){
 			if (mapFirstDraw)
 			{
-				say ("Welcome to Drive In and Fly In");
-				say ("I can give you the best route to any major airport.");
-				say ("I can keep you posted on flight delays, flight arrivals, and flight departures.");
-		
+				say ("Welcome to Drive In and Fly In! My name is Ayda, and I will be your navigator today.");
+				say ("I will monitor traffic to keep you on the best driving route to any major airport.");
+				say ("I will also keep you posted on flight delays, flight arrivals, and flight departures.");
+				
 				// init and draw the initial map
 				lat = position.coords.latitude;
 				lon = position.coords.longitude;
