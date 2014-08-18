@@ -501,12 +501,16 @@ function updateTraffic()
 	var distanceMiles = distanceMeters * MILES_PER_METER;
 	if (airportIATA != null)
 	{
-		document.getElementById("traffic").innerHTML += "<br>" + airportIATA + " is approx " + distanceMiles.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + ".<br>";
-		say (airportIATA + " is approx " + distanceMiles.toFixed(2) + " miles away. Your estimated arrival time at " + airportIATA + " is " + airportETA);
+		// we will be called whenever position is updated so this display will always be updated with the best route
+		document.getElementById("traffic").innerHTML += "<br>" + airportIATA + " is " + distanceMiles.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + ".<br>";
+
+		// say the first two driving steps to get us moving which will also be updated whenever position changes
+		say (airportIATA + " is " + distanceMiles.toFixed(2) + " miles away. Your estimated arrival time at " + airportIATA + " is " + airportETA);
 		say ("I have driving directions to " + airportIATA + " ready for you.");
 		say ("If you are going to " + airportIATA + "," + airportRoute.route.instructions.instruction[0].text + " " + airportRoute.route.instructions.instruction[0].roadName + ", and then, " + airportRoute.route.instructions.instruction[1].text + " " + airportRoute.route.instructions.instruction[1].roadName); 
-		say ("I will keep you updated on where to turn.");
+		say ("I will keep your route updated.");
 	}	
+
 	// display driving directions to an airport
 	for (var p=0; p < airportRoute.route.instructions.instruction.length; p++)
         {
@@ -658,44 +662,48 @@ function updateDepartures()
 
 function updateDeparturesTracks()
 {				
-			// flight track information for a specific flight that is departing from an airport we are tracking
-			// and is within the radius of the area we are tracking and is on our list of departures 
-			// (The MD80 I am riding is headed WSW at 350MPH at an altitude of 35000 feet, at specific lat/lon)
-			// a track is a line vector drawn between the most recent two reported positions on a map
-			var departingPlaneStatusGet = new XMLHttpRequest();
-			var departingPlaneStatusURL="https://api.flightstats.com/flex/flightstatus/rest/v2/json/airport/tracks/" + airportIATA + "/arr?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&includeFlightPlan=false&maxPositions=2&maxPositionAgeMinutes=15&extendedOptions=useInlinedReferences";
-			var departingPlaneStatusProcess = "https://www.airmanopus.net/cgi-bin/departures.cgi?" + departingPlaneStatusURL;
-			departingPlaneStatusGet.open('GET', departingPlaneStatusProcess, false);
-			departingPlaneStatusGet.send();
-			var departingPlaneStatusJSON = JSON.parse(departingPlaneStatusGet.responseText);
-			for (var j=0; j < departingPlaneStatusJSON.flightTracks.length; j++)
-			{
-				var departingAirplaneStatus = {
-					departingFlightID 	: departingPlaneStatusJSON.flightTracks[j].flightID,
-					departingAirport 	: departingPlaneStatusJSON.flightTracks[j].departureAirport.iata,
-					arrivingairport 	: departingPlaneStatusJSON.flightTracks[j].arrivalAirport.iata,
-					depAirplaneBearing	: departingPlaneStatusJSON.flightTracks[j].bearing,
-					depAirplaneHeading	: departingPlaneStatusJSON.flightTracks[j].heading,
+	// flight track information for a specific flight that is departing from an airport we are tracking
+	// and is within the radius of the area we are tracking and is on our list of departures 
+	// (The MD80 I am riding is headed WSW at 350MPH at an altitude of 35000 feet, at specific lat/lon)
+	// a track is a line vector drawn between the most recent two reported positions on a map
+	var departingPlaneStatusGet = new XMLHttpRequest();
+	var departingPlaneStatusURL="https://api.flightstats.com/flex/flightstatus/rest/v2/json/airport/tracks/" + airportIATA + "/arr?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&includeFlightPlan=false&maxPositions=2&maxPositionAgeMinutes=15&extendedOptions=useInlinedReferences";
+	var departingPlaneStatusProcess = "https://www.airmanopus.net/cgi-bin/departures.cgi?" + departingPlaneStatusURL;
+	departingPlaneStatusGet.open('GET', departingPlaneStatusProcess, false);
+	departingPlaneStatusGet.send();
+	var departingPlaneStatusJSON = JSON.parse(departingPlaneStatusGet.responseText);
+	for (var j=0; j < departingPlaneStatusJSON.flightTracks.length; j++)
+	{
+		var departingAirplaneStatus = {
+			departingFlightID 	: departingPlaneStatusJSON.flightTracks[j].flightID,
+			departingAirport 	: departingPlaneStatusJSON.flightTracks[j].departureAirport.iata,
+			arrivingairport 	: departingPlaneStatusJSON.flightTracks[j].arrivalAirport.iata,
+			depAirplaneBearing	: departingPlaneStatusJSON.flightTracks[j].bearing,
+			depAirplaneHeading	: departingPlaneStatusJSON.flightTracks[j].heading,
 
-					departingAirplaneLon0	: departingPlaneStatusJSON.flightTracks[j].positions[0].lon,			
-					departingAirplaneLat0	: departingPlaneStatusJSON.flightTracks[j].positions[0].lat,
-					departingAirplaneSpeed0	: departingPlaneStatusJSON.flightTracks[j].positions[0].speedMPH,
-					departingAirplaneAlt0	: departingPlaneStatusJSON.flightTracks[j].positions[0].altitudeFt,
-					departingAirplaneSource0 : departingPlaneStatusJSON.flightTracks[j].positions[0].source,
-					departingAirplaneDate0	: departingPlaneStatusJSON.flightTracks[j].positions[0].date,
-					
-					departingAirplaneLon1   : departingPlaneStatusJSON.flightTracks[j].positions[1].lon,
-					departingAirplaneLat1   : departingPlaneStatusJSON.flightTracks[j].positions[1].lat,
-					departingAirplaneSpeed1 : departingPlaneStatusJSON.flightTracks[j].positions[1].speedMPH,
-					departingAirplaneAlt1   : departingPlaneStatusJSON.flightTracks[j].positions[1].altitudeFt,
-					departingAirplaneSource1 : departingPlaneStatusJSON.flightTracks[j].positions[1].source,
-					departingAirplaneDate1  : departingPlaneStatusJSON.flightTracks[j].positions[1].date
+			departingAirplaneLon0	: departingPlaneStatusJSON.flightTracks[j].positions[0].lon,			
+			departingAirplaneLat0	: departingPlaneStatusJSON.flightTracks[j].positions[0].lat,
+			departingAirplaneSpeed0	: departingPlaneStatusJSON.flightTracks[j].positions[0].speedMPH,
+			departingAirplaneAlt0	: departingPlaneStatusJSON.flightTracks[j].positions[0].altitudeFt,
+			departingAirplaneSource0 : departingPlaneStatusJSON.flightTracks[j].positions[0].source,
+			departingAirplaneDate0	: departingPlaneStatusJSON.flightTracks[j].positions[0].date,
+			
+			departingAirplaneLon1   : departingPlaneStatusJSON.flightTracks[j].positions[1].lon,
+			departingAirplaneLat1   : departingPlaneStatusJSON.flightTracks[j].positions[1].lat,
+			departingAirplaneSpeed1 : departingPlaneStatusJSON.flightTracks[j].positions[1].speedMPH,
+			departingAirplaneAlt1   : departingPlaneStatusJSON.flightTracks[j].positions[1].altitudeFt,
+			departingAirplaneSource1 : departingPlaneStatusJSON.flightTracks[j].positions[1].source,
+			departingAirplaneDate1  : departingPlaneStatusJSON.flightTracks[j].positions[1].date
 
-				}; // departingAirplaneStatus
-			} 
+		}; // departingAirplaneStatus
+	} 
 }
 
+function iataToAirportName()
+{
+	// returns the full name of an airport given the airports IATA code
 
+}
 
 function updateAirports() 
 {
@@ -704,17 +712,34 @@ function updateAirports()
 	var lon = arguments[1];
 
 	const PI = 3.14159265359;		// pi
-	const R = 3959;			 	// approximate radius of earth in miles
+	const R = 3959;			 	// radius of earth in miles
 	const METERS_TO_MILES = 1609.344;	// meters in one mile
 	const NUM_HOURS_FLIGHTS = 5;		// get arr and dep flights fer this many hours from now
 
-	flightStatusCodes = {
+	var flightStatusCodes = {
 		'A' : 'active',
 		'C' : 'canceled',
 		'D' : 'diverted',
 		'L' : 'landed',
 		'R' : 'redirected',
 		'S' : 'scheduled'
+	};
+
+	 var expandAbbreviation = {
+		'N'		: 'north',
+		'S'		: 'south',
+		'E'		: 'east',
+		'W'		: 'west',
+		'NW'		: 'northwest',
+		'NE'		: 'northeast',
+		'SE'		: 'southeast',
+		'SW'		: 'southwest', 
+                'St'       	: 'Street',
+                'Ave'        	: 'Avenue',
+                'Ln'	        : 'Lane',
+		'Hwy'		: 'Highway',
+		'Ct'		: 'Court',
+		'Tr'		: 'Trail'
 	};
 	
 	var viewportDistance = 80;		// watch airports fer delays within this many km (50 mi)
@@ -733,7 +758,7 @@ function updateAirports()
 	var airportsListCity = 4;
 	var airportsListName = 5;
 
-	say("I am scanning for airports.");
+	say("I am accessing airport and flight data.");
 
 	for (var j = 0; j <  nearbyAirportsJSON.response.data.main.numberOfResults; j++)
     	{
@@ -816,16 +841,12 @@ function updateAirports()
 				// as you get physically closer to your destination airport you get more concerned
 				// with flight information, so we start displaying arrivals and departures
 				say("I have flight arrival and departure information available on screen.");
-				updateDeparturesFids(iataIdentifier);
-				updateArrivalsFids(iataIdentifier);
+				//updateDeparturesFids(iataIdentifier);
+				//updateArrivalsFids(iataIdentifier);
 				//updateArrivals(iataIdentifier);
 				//updateDepartures(iataIdentifier);
 			}
-		} else {
-			console.log("IATA is blank");
 		} 
-			
-	
 	}
 	console.log("leaving updateAirports"); 
 }
@@ -863,7 +884,7 @@ function initialize() {
                 navigator.geolocation.watchPosition(function(position){
 			if (mapFirstDraw)
 			{
-				say ("Welcome to Drive In and Fly In! My name is Ayda, and I will be your navigator today.");
+				say ("Welcome to Drive In and Fly In! My name is Ayda, and I will be riding shotgun with you. Accessing data...");
 				say ("I will monitor traffic to keep you on the best driving route to any major airport.");
 				say ("I will also keep you posted on flight delays, flight arrivals, and flight departures.");
 				
