@@ -15,12 +15,7 @@
 
 			.fidsDisplay {
 				font-family: 'Arimo',sans-serif;
-<<<<<<< HEAD
 	                        font-size: small;
-=======
-	                        font-size: x-small;
->>>>>>> f45c3c9773658c3e00ad594e3ea047df5ad21107
-
 			}
 
 			.airportTitle {
@@ -31,16 +26,13 @@
 
 			.airportFlights {
 				font-family: 'Inconsolata',sans-serif;
-				font-size: x-small;
+				font-size: small;
 			}
 
-<<<<<<< HEAD
-=======
 			.airportTracks {
 				font-family: 'Inconsolata',sans-serif;
-				fonnt-size: x-small;
+				font-size: x-small;
 
->>>>>>> f45c3c9773658c3e00ad594e3ea047df5ad21107
 			.whiteongreen {
 				color: white;
 				background-color: green;
@@ -48,22 +40,18 @@
 
 			}
 
-<<<<<<< HEAD
-=======
 			.whiteonred {
 				color: white;
 				background-color: red;
 				background-image: none;
 			}
 
->>>>>>> f45c3c9773658c3e00ad594e3ea047df5ad21107
 			.errorText {
 				font-family 'Inconsolata','sans-serif';
 				font-size: medium;
 				color: red;
 			}
 			
-<<<<<<< HEAD
 			.departuresFidsTable {
 				font-size: small;
 				font-family: 'Arimo',sans-serif;
@@ -72,7 +60,7 @@
 				border-width: 1px;
 				border-color: #729ea5;
 				border-collapse: collapse;
-=======
+			
 			.footerText {
 				font-family 'Inconsolata','sans-serif';
                                 font-size: small;
@@ -83,7 +71,6 @@
 				font-family 'Inconsolata','sans-serif';
                                 font-size: medium;
                                 color: black;
->>>>>>> f45c3c9773658c3e00ad594e3ea047df5ad21107
 			}
 
 			.departuresFidsTable th {

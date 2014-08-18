@@ -188,7 +188,6 @@ function updateDeparturesFids()
 	for (x = 0; x < departuresFidsGetJSON.fidsData.length; x++)
 	{
 
-<<<<<<< HEAD
                 // make sure we are getting the https version of the airline logo
                 var airlineLogoURLPngInsecure = departuresFidsGetJSON.fidsData[x].airlineLogoUrlPng;
                 var airlineLogoURLPngSecure = airlineLogoURLPngInsecure.replace("http","https");
@@ -219,7 +218,6 @@ function updateDeparturesFids()
                 }
                 
 		document.getElementById("departuresFids").innerHTML += "</tr>";
-=======
 		// if the flight is on time, display green. any other status display red
 		var isOnTime = departuresFidsGetJSON.fidsData[x].remarksWithTime.search("On-Time");
 		if (isOnTime == -1)
@@ -231,7 +229,6 @@ function updateDeparturesFids()
 
 
 		document.getElementById("departuresFids").innerHTML += "</p>";
->>>>>>> f45c3c9773658c3e00ad594e3ea047df5ad21107
 
 	}
 	document.getElementById("departuresFids").innerHTML += "</table>";
