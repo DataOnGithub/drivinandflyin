@@ -439,14 +439,23 @@ function minToHours()
 	return hours;
 }
 
-function sayOneInstruction()
+function say()
 {
-	var instruction = arguments[0];
-	var speechObject = new SpeechSynthesisUtterance(instruction);
-	speechObject.volume = 1.0;
-	speechObject.rate = 1.5;
-	speechObject.pitch = 1.7;
-	speechObject.lang= "en-US";
+	if (window.speechSynthesis != undefined)
+	{
+		var instruction = arguments[0];
+		var pitch = 1.7;
+		var rate = 1.5;
+		var volume = 1.0;
+
+		
+		var speechObject = new SpeechSynthesisUtterance(instruction);
+		speechObject.volume = volume;
+		speechObject.rate = rate;
+		speechObject.pitch = pitch;
+		window.speechSynthesis.speak(speechObject);
+		console.log("available voices " + window.speechSynthesis.getVoices());
+	}
 }
 
 
@@ -476,6 +485,7 @@ function updateTraffic()
 	if (airportIATA != null)
 	{
 		document.getElementById("traffic").innerHTML += "<br>" + airportIATA + " is approx " + distanceMiles.toFixed(2) + " miles away. <br> Your estimated arrival time at " + airportIATA + " is " + airportETA + ".<br>";
+		say (airportIATA + " is approx " + distanceMiles.toFixed(2) + " miles away. Your estimated arrival time at " + airportIATA + " is " + airportETA);
 	}	
 	// display driving directions to an airport
 	for (var p=0; p < airportRoute.route.instructions.instruction.length; p++)
@@ -517,7 +527,6 @@ function updateDelays()
 	// if we see a less than chr we didnt get a json response so no delays
 	// probably a smaller airport that FAA doesnt keep status on
 	// we always display the delay text
-	console.log(airportStatusGet);
 	if ( airportStatusResponse.charAt(0) != "<" )
 	{
 		var airportStatus = JSON.parse(airportStatusGet.responseText);
@@ -535,6 +544,8 @@ function updateDelays()
 		
 		document.getElementById("airportDelays").innerHTML += "<br>" + airportName + " (" + airportIATA + ")<br>";
 		document.getElementById("airportDelays").innerHTML += airportDelayReason + "<br>";
+
+		say (airportName + ", initials " + airportIATA + "," + airportDelayReason);
 		// display closure info only if airport is closed 
 		if ( airportClosureBegin != "")
 		{
@@ -702,7 +713,8 @@ function updateAirports()
 	var airportsListCity = 4;
 	var airportsListName = 5;
 
-	sayOneInstruction("Hold on while I look for nearby airports.");
+	say("I am looking for airports.");
+
 	for (var j = 0; j <  nearbyAirportsJSON.response.data.main.numberOfResults; j++)
     	{
 		// each j is a single airport found by tomtom
@@ -816,7 +828,7 @@ function toggle_visibility(id)
 	{
 		e.style.display = 'none';
 	} else {
-e.style.display = 'block';
+		e.style.display = 'block';
 	}
 }
 
@@ -830,6 +842,10 @@ function initialize() {
                 navigator.geolocation.watchPosition(function(position){
 			if (mapFirstDraw)
 			{
+				say ("Welcome to Drive In and Fly In");
+				say ("I can give you the best route to any major airport.");
+				say ("I can keep you posted on flight delays, flight arrivals, and flight departures.");
+		
 				// init and draw the initial map
 				lat = position.coords.latitude;
 				lon = position.coords.longitude;
@@ -857,7 +873,7 @@ function initialize() {
 				// update map view to new location
 				lat = position.coords.latitude;
 				lon = position.coords.longitude;
-
+				say("Position updated");
 				console.log(lat, lon);
 				map.setView([lat, lon]);
 				marker.setLatLng([lat,lon]);
@@ -876,7 +892,7 @@ function initialize() {
 <style>
 html, body, #map {
 	width: 100;
-	height: 50%;
+	height: 70%;
 	padding: 1;
 	margin: 1;
 }
