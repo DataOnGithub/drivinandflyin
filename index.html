@@ -387,14 +387,14 @@ function updateArrivalsTracks()
 // now display the tracks for each flight we are tracking
 // if there were no arriving flights listed we should skip looking for tracks once this is all working
 
-
+	var airportIATA = arguments[0];
 	var arrivingPlanesGet = new XMLHttpRequest();
 	var arrivingPlanesURL = "https://api.flightstats.com/flex/flightstatus/rest/v2/json/airport/tracks/" + airportIATA + "/arr?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&includeFlightPlan=false&maxPositions=2&maxPositionAgeMinutes=15&extendedOptions=useInlinedReferences";
 	var arrivingPlanesProcess="https://www.airmanopus.net/cgi-bin/arrivals.cgi?" + arrivingPlanesURL;
 	arrivingPlanesGet.open('GET',arrivingPlanesProcess,false);
 	arrivingPlanesGet.send();
 	var arrivingPlaneStatusJSON = JSON.parse(arrivingPlanesGet.responseText);
-	
+	console.log(arrivingPlaneStatusJSON);
 	if (arrivingPlaneStatusJSON.flightTracks.length != 0)
 	{	
 		for (var i=0; i < arrivingPlaneStatusJSON.length; i++)
@@ -423,6 +423,7 @@ function updateArrivalsTracks()
                                 position1speed          : arrivingPlaneStatusJSON[i].positions[1].speed,
 				position1altitude	: arrivingPlaneStatusJSON[i].positions[1].altitude,
 			}; // arrivingAirplaneStatus
+
 
 			// display status info line fer this flight	here
 			// for now just display using text
@@ -473,7 +474,6 @@ function say()
 	}
 }
 
-
 function updateTraffic()
 {
 	// update traffic and routing/directions to one airport
@@ -506,8 +506,13 @@ function updateTraffic()
 		// say the first two driving steps to get us moving which will also be updated whenever position changes
 		say (airportName + " is " + distanceMiles.toFixed(2) + " miles away. Your estimated arrival time at " + airportName + " is " + airportETA);
 		say ("I have driving directions to " + airportName + " ready for you.");
-		say ("If you are going to " + airportName + "," + airportRoute.route.instructions.instruction[0].text + " " + airportRoute.route.instructions.instruction[0].roadName + ", and then, " + airportRoute.route.instructions.instruction[1].text + " " + airportRoute.route.instructions.instruction[1].roadName); 
-		say ("I will keep your route updated.");
+		say ("If you are going to " + airportName + "," 
+					+ airportRoute.route.instructions.instruction[0].text
+					+ " " + airportRoute.route.instructions.instruction[0].roadName
+					+ "  and then, " + airportRoute.route.instructions.instruction[1].text 
+					+ " " + airportRoute.route.instructions.instruction[1].roadName);
+
+		say ("I will keep your route updated as we travel.");
 	}	
 
 	// display driving directions to an airport
@@ -724,23 +729,7 @@ function updateAirports()
 		'S' : 'scheduled'
 	};
 
-	 var expandAbbreviation = {
-		'N'		: 'north',
-		'S'		: 'south',
-		'E'		: 'east',
-		'W'		: 'west',
-		'NW'		: 'northwest',
-		'NE'		: 'northeast',
-		'SE'		: 'southeast',
-		'SW'		: 'southwest', 
-                'St'       	: 'Street',
-                'Ave'        	: 'Avenue',
-                'Ln'	        : 'Lane',
-		'Hwy'		: 'Highway',
-		'Ct'		: 'Court',
-		'Tr'		: 'Trail'
-	};
-	
+
 	var viewportDistance = 80;		// watch airports fer delays within this many km (50 mi)
 	var zoomedViewportDistance = 48; 	// within this many km of an airport get detailed flight info (30 mi)
 	
@@ -843,6 +832,7 @@ function updateAirports()
 				//updateDeparturesFids(iataIdentifier);
 				//updateArrivalsFids(iataIdentifier);
 				//updateArrivals(iataIdentifier);
+				updateArrivalsTracks(iataIdentifier);
 				//updateDepartures(iataIdentifier);
 			}
 		} 
