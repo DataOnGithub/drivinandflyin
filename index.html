@@ -474,6 +474,32 @@ function say()
 	}
 }
 
+makeLetterSpeakable()
+{
+	// return the whole word for compass directions
+	// for anything else return ""
+	var letter = arguments[0].charAt(0);
+
+	switch(letter)
+	{
+		case "N": 
+		  var streetDirection = "North";
+		  break;
+		case "S":
+		  var streetDirection = "South";
+		  break;
+		case "E":
+		  var streetDirection = "East";
+		  break;
+		case "W":
+		  var streetDirection = "West";
+		  break;
+		default:
+		  var streetDirection = "";
+	}	
+			
+}
+
 function updateTraffic()
 {
 	// update traffic and routing/directions to one airport
@@ -503,14 +529,16 @@ function updateTraffic()
 		// we will be called whenever position is updated so this display will always be updated with the best route
 		document.getElementById("traffic").innerHTML += "<br>" + airportName + " (" + airportIATA + ") is " + distanceMiles.toFixed(2) + " miles away. <br> Your estimated arrival time is " + airportETA + ".<br>";
 
-		// say the first two driving steps to get us moving which will also be updated whenever position changes
+		// say the first two driving steps to get us moving
+		// when we get called again we will update the route 
 		say (airportName + " is " + distanceMiles.toFixed(2) + " miles away. Your estimated arrival time at " + airportName + " is " + airportETA);
 		say ("I have driving directions to " + airportName + " ready for you.");
+
 		say ("If you are going to " + airportName + "," 
-					+ airportRoute.route.instructions.instruction[0].text
-					+ " " + airportRoute.route.instructions.instruction[0].roadName
-					+ "  and then, " + airportRoute.route.instructions.instruction[1].text 
-					+ " " + airportRoute.route.instructions.instruction[1].roadName);
+				+ airportRoute.route.instructions.instruction[0].text
+				+ " " + airportRoute.route.instructions.instruction[0].roadName
+				+ "  and then, " + airportRoute.route.instructions.instruction[1].text 
+				+ " " + airportRoute.route.instructions.instruction[1].roadName);
 
 		say ("I will keep your route updated as we travel.");
 	}	
