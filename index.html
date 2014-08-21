@@ -114,6 +114,20 @@ function geoError()
 	say("I'm sorry. I am unable to determine where we are. You may need to enable location services on your device.");
 }
 
+function flightStatsError()
+{
+	var errorObj = arguments[0];
+	var message = arguments[1];
+
+	say ("I'm sorry. I am having trouble verifying flight data ");
+	if (message != undefined)
+	{
+		say (message);
+	}
+	// TODO log this to someplace more useful
+	console.log(errorObj);
+	console.log(message)
+}
 function updateWeather() 
 {
 
@@ -197,8 +211,15 @@ function updateDeparturesFids()
         var departuresFidsGet = new XMLHttpRequest();
         departuresFidsGet.open('GET',departuresFidsGetURL,false);
         departuresFidsGet.send();
-	document.getElementById("departuresFids").innerHTML = "<span class='fidsDisplay'>Departures</span><br><br>";
 	var departuresFidsGetJSON = JSON.parse(departuresFidsGet.responseText);
+ 	if (departuresFidsGetJSON.error != undefined)
+        {
+                flightStatsError(departuresFidsGetJSON," for departures.");
+                return;
+        }
+
+	document.getElementById("departuresFids").innerHTML = "<span class='fidsDisplay'>Departures</span><br><br>";
+
 	for (x = 0; x < departuresFidsGetJSON.fidsData.length; x++)
 	{
                 // one departure per line
@@ -235,19 +256,29 @@ console.log("leaving updateDeparturesFids");
 	
 }
 
+
+
+
 function updateArrivalsFids()
 {
         // display data from Flight Information Data System(FIDS) API
         // see https://developer.flightstats.com/api-docs/fids/v1/fidsResponse
         console.log("entering updateArrivalsFids");
         var airportIATA = arguments[0];
-        var arrivalsFidsGetURL = "https://www.airmanopus.net/cgi-bin/flightStats.cgi?https://api.flightstats.com/flex/fids/rest/v1/json/" + airportIATA + "/arrivals?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&requestedFields=airlineLogoUrlPng%2CairlineName%2CairlineCode%2CflightNumber%2Ccity%2CcurrentTime%2Cgate%2Cterminal%2CstatusCode%2CremarksCode%2CremarksWithTime%2Cweather%2CtemperatureC%2CtemperatureF%2Cbaggage&sortFields=currentTime&includeCodeshares=false&timeFormat=24&timeWindowEnd=240&lateMinutes=15&boardingMinutes=30&useRunwayTimes=true&excludeCargoOnlyFlights=true";
+        var arrivalsFidsGetURL = "https://www.airmanopus.net/cgi-bin/flightStats.cgi?https://api.flightstats.com/flex/fids/rest/v1/json/" + airportIATA + "/arrivals?appId=03ac1ffa&appKey=0505f46298d4dc8c52468a3338aa7453&requestedFields=airlineLogoUrlPng%2CairlineName%2CairlineCode%2CflightNumber%2Ccity%2CcurrentTime%2CscheduledTime%2CestimatedTime%2Cgate%2Cterminal%2Cdelayed%2CstatusCode%2CremarksCode%2CremarksWithTime%2Cweather%2CtemperatureC%2CtemperatureF%2Cbaggage&sortFields=currentTime&includeCodeshares=false&timeFormat=24&timeWindowEnd=240&lateMinutes=15&boardingMinutes=30&useRunwayTimes=true&excludeCargoOnlyFlights=true";
         var arrivalsFidsGet = new XMLHttpRequest();
         arrivalsFidsGet.open('GET',arrivalsFidsGetURL,false);
         arrivalsFidsGet.send();
 	document.getElementById("arrivalsFids").innerHTML = "<span class='fidsDisplay'>Arrivals</span><br><br>";
 
 	var arrivalsFidsGetJSON = JSON.parse(arrivalsFidsGet.responseText);
+
+	if (arrivalsFidsGetJSON.error != undefined)
+	{
+		flightStatsError(arrivalsFidsGetJSON," for arrivals.");
+		return;
+	}
+	
 	for (x = 0; x < arrivalsFidsGetJSON.fidsData.length; x++)
 	{
 		// make sure we are getting the https version of the airline logo
@@ -256,12 +287,12 @@ function updateArrivalsFids()
 
 		document.getElementById("arrivalsFids").innerHTML += "<p class='fidsDisplay'>";
 		document.getElementById("arrivalsFids").innerHTML += "<img src='" + airlineLogoURLPngSecure + "' width=50 height=20 alt='" + arrivalsFidsGetJSON.fidsData[x].airlineName +"'> " +  arrivalsFidsGetJSON.fidsData[x].airlineName;
-		document.getElementById("arrivalsFids").innerHTML += " " + arrivalsFidsGetJSON.fidsData[x].airlineCode + " " + arrivalsFidsGetJSON.fidsData[x].flightNumber;
+		document.getElementById("arrivalsFids").innerHTML += " " + arrivalsFidsGetJSON.fidsData[x].airlineCode + " " + arrivalsFidsGetJSON.fidsData[x].flightNumber + " scheduled at " + arrivalsFidsGetJSON.fidsData[x].currentTime;
 
 		// only display these fields if they actually have values
 		if (arrivalsFidsGetJSON.fidsData[x].currentGateTime!= undefined)
 		{
-			document.getElementById("arrivalsFids").innerHTML += " at " + arrivalsFidsGetJSON.fidsData[x].currentGateTime;
+			document.getElementById("arrivalsFids").innerHTML += " Est Arrival " + arrivalsFidsGetJSON.fidsData[x].estimatedTime;
 		}	
 		if (arrivalsFidsGetJSON.fidsData[x].gate != undefined) 
 		{
@@ -275,8 +306,10 @@ function updateArrivalsFids()
                 {
                         document.getElementById("arrivalsFids").innerHTML += " Baggage Carousel  " + arrivalsFidsGetJSON.fidsData[x].baggage + " ";
 		}
+		
 	
 		// if the flight is on time, display green. any other status display red
+		// lastUpdatedTime, delayed, remarks, remarksWithTime, scheduledTime, actualtime
 		var isOnTime = arrivalsFidsGetJSON.fidsData[x].remarksWithTime.search("On-Time");
 		if (isOnTime == -1)
 	        { 
@@ -318,6 +351,7 @@ function updateArrivals()
 	 catch(err)
 	 {
 		 document.getElementById("airportArrivals").innerHTML += "There are no flights scheduled to arrive during the next " + numHourstoInclude + " hours.<br>";
+		 say("I am currently unable to check on arriving flights.");
 		 arrivingFlightsGetVerify = false;
 	 }
 	 if (arrivingFlightsGetVerify == true)
@@ -473,7 +507,39 @@ function say()
 		window.speechSynthesis.speak(speechObject);
 	}
 }
-
+ 	
+function expandAbbrev()
+{
+	var abbreviations = 
+		{
+			'N'     : 'north',
+			'S'     : 'south',
+			'E'     : 'east',
+			'W'     : 'west',
+			'NW'    : 'northwest',
+			'NE'    : 'northeast',
+			'SE'    : 'southeast',
+			'SW'    : 'southwest', 
+			'NB'    : 'northbound',
+			'SB'    : 'southbound',
+			'WB'    : 'westbound',
+			'EB'    : 'eastbound',
+			'St'    : 'Street',
+			'Ave'   : 'Avenue',
+			'Ln'    : 'Lane',
+			'Hwy'   : 'Highway',
+			'Ct'    : 'Court',
+			'Tr'    : 'Trail'
+		};
+	var input = arguments[0];
+	var expandedAbbrev = abbreviations[input];
+	if (expandedAbbrev != undefined)
+	{
+		return expandedAbbrev;
+	} else {
+		return input;
+	}
+}
 
 function updateTraffic()
 {
@@ -485,27 +551,7 @@ function updateTraffic()
 	var airportLon = arguments[3];
 	var airportIATA = arguments[4];
 	var airportName = arguments[5];
- 	var expandAbbreviation = 
-        {
-                'N'     : 'north',
-                'S'     : 'south',
-                'E'     : 'east',
-                'W'     : 'west',
-                'NW'    : 'northwest',
-                'NE'    : 'northeast',
-                'SE'    : 'southeast',
-                'SW'    : 'southwest', 
-                'NB'    : 'northbound',
-                'SB'    : 'southbound',
-                'WB'    : 'westbound',
-                'EB'    : 'eastbound',
-                'St'    : 'Street',
-                'Ave'   : 'Avenue',
-                'Ln'    : 'Lane',
-                'Hwy'   : 'Highway',
-                'Ct'    : 'Court',
-                'Tr'    : 'Trail'
-        };
+
  
 	// check traffic to get estimate on when will we get to the airport 
 	// we always display driving  ETA from our location to each airport
@@ -536,15 +582,12 @@ function updateTraffic()
 		var firstInstruction = airportRoute.route.instructions.instruction[0].roadName.split(" ");
  	        var secondInstruction = airportRoute.route.instructions.instruction[1].roadName.split(" ");
 
-		console.log(firstInstruction);
-		console.log(secondInstruction);
-		
 		say ("If you are going to " 
 			+ airportName + ","
 			+ airportRoute.route.instructions.instruction[0].text 
-			+ " " + expandAbbreviation[firstInstruction[0]] + " " + firstInstruction[1] + " " + firstInstruction[2] 
+			+ " " + expandAbbrev(firstInstruction[0]) + " " + firstInstruction[1] + " " + firstInstruction[2] 
 		+ "  and then, " 
-		+ airportRoute.route.instructions.instruction[1].text + " " + secondInstruction[0] + " " + secondInstruction[1] + " " + secondInstruction[2]);
+		+ airportRoute.route.instructions.instruction[1].text + " " + expandAbbrev(secondInstruction[0]) + " " + secondInstruction[1] + " " + secondInstruction[2]);
 		say ("I will keep your route updated as we travel.");
 	}
 
@@ -742,6 +785,16 @@ function iataToAirportName()
 
 }
 
+function clearEverything()
+{
+	document.getElementById("airportDepartures").innerHTML = "";
+	document.getElementById("airportArrivals").innerHTML = "";
+	document.getElementById("traffic").innerHTML = "";
+	document.getElementById("airportDelays").innerHTML = "";
+	document.getElementById("localWeather").innerHTML = "";
+	
+}
+
 function updateAirports() 
 {
 	console.log("entering updateAirports");
@@ -837,7 +890,7 @@ function updateAirports()
 						}
 					}
 					 
-					if (matchScore > 5)
+					if (matchScore > 7)
 					{
 						iataIdentifier = airports[k][0];
 					} 
@@ -862,8 +915,8 @@ function updateAirports()
 				// as you get physically closer to your destination airport you get more concerned
 				// with flight information, so we start displaying arrivals and departures
 				say("I have flight arrival and departure information available on screen.");
-				//updateDeparturesFids(iataIdentifier);
-				//updateArrivalsFids(iataIdentifier);
+				updateDeparturesFids(iataIdentifier);
+				updateArrivalsFids(iataIdentifier);
 				//updateArrivals(iataIdentifier);
 				updateArrivalsTracks(iataIdentifier);
 				//updateDepartures(iataIdentifier);
@@ -874,15 +927,7 @@ function updateAirports()
 }
 
 
-function clearEverything()
-{
-	document.getElementById("airportDepartures").innerHTML = "";
-	document.getElementById("airportArrivals").innerHTML = "";
-	document.getElementById("traffic").innerHTML = "";
-	document.getElementById("airportDelays").innerHTML = "";
-	document.getElementById("localWeather").innerHTML = "";
-	
-}
+
 
 
 function toggle_visibility(id)
