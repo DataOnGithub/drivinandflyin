@@ -474,31 +474,6 @@ function say()
 	}
 }
 
-makeLetterSpeakable()
-{
-	// return the whole word for compass directions
-	// for anything else return ""
-	var letter = arguments[0].charAt(0);
-
-	switch(letter)
-	{
-		case "N": 
-		  var streetDirection = "North";
-		  break;
-		case "S":
-		  var streetDirection = "South";
-		  break;
-		case "E":
-		  var streetDirection = "East";
-		  break;
-		case "W":
-		  var streetDirection = "West";
-		  break;
-		default:
-		  var streetDirection = "";
-	}	
-			
-}
 
 function updateTraffic()
 {
@@ -510,6 +485,28 @@ function updateTraffic()
 	var airportLon = arguments[3];
 	var airportIATA = arguments[4];
 	var airportName = arguments[5];
+ 	var expandAbbreviation = 
+        {
+                'N'     : 'north',
+                'S'     : 'south',
+                'E'     : 'east',
+                'W'     : 'west',
+                'NW'    : 'northwest',
+                'NE'    : 'northeast',
+                'SE'    : 'southeast',
+                'SW'    : 'southwest', 
+                'NB'    : 'northbound',
+                'SB'    : 'southbound',
+                'WB'    : 'westbound',
+                'EB'    : 'eastbound',
+                'St'    : 'Street',
+                'Ave'   : 'Avenue',
+                'Ln'    : 'Lane',
+                'Hwy'   : 'Highway',
+                'Ct'    : 'Court',
+                'Tr'    : 'Trail'
+        };
+ 
 	// check traffic to get estimate on when will we get to the airport 
 	// we always display driving  ETA from our location to each airport
 
@@ -529,19 +526,27 @@ function updateTraffic()
 		// we will be called whenever position is updated so this display will always be updated with the best route
 		document.getElementById("traffic").innerHTML += "<br>" + airportName + " (" + airportIATA + ") is " + distanceMiles.toFixed(2) + " miles away. <br> Your estimated arrival time is " + airportETA + ".<br>";
 
-		// say the first two driving steps to get us moving
-		// when we get called again we will update the route 
+		// say the first two driving steps to get us movin and on the suggested route
+		// when we get called again we will update the route with new location as first step
 		say (airportName + " is " + distanceMiles.toFixed(2) + " miles away. Your estimated arrival time at " + airportName + " is " + airportETA);
 		say ("I have driving directions to " + airportName + " ready for you.");
 
-		say ("If you are going to " + airportName + "," 
-				+ airportRoute.route.instructions.instruction[0].text
-				+ " " + airportRoute.route.instructions.instruction[0].roadName
-				+ "  and then, " + airportRoute.route.instructions.instruction[1].text 
-				+ " " + airportRoute.route.instructions.instruction[1].roadName);
+		// for city streets that look like 'N Charter St' we want to say 'North' rather than 'N'
+		// we also need the remaining street/road name and what type of road it is
+		var firstInstruction = airportRoute.route.instructions.instruction[0].roadName.split(" ");
+ 	        var secondInstruction = airportRoute.route.instructions.instruction[1].roadName.split(" ");
 
+		console.log(firstInstruction);
+		console.log(secondInstruction);
+		
+		say ("If you are going to " 
+			+ airportName + ","
+			+ airportRoute.route.instructions.instruction[0].text 
+			+ " " + expandAbbreviation[firstInstruction[0]] + " " + firstInstruction[1] + " " + firstInstruction[2] 
+		+ "  and then, " 
+		+ airportRoute.route.instructions.instruction[1].text + " " + secondInstruction[0] + " " + secondInstruction[1] + " " + secondInstruction[2]);
 		say ("I will keep your route updated as we travel.");
-	}	
+	}
 
 	// display driving directions to an airport
 	for (var p=0; p < airportRoute.route.instructions.instruction.length; p++)
