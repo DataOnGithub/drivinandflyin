@@ -119,14 +119,13 @@ function flightStatsError()
 	var errorObj = arguments[0];
 	var message = arguments[1];
 
-	say ("I'm sorry. I am having trouble verifying flight data ");
 	if (message != undefined)
 	{
-		say (message);
+		say ("I'm sorry. I am having trouble verifying flight data " + message);
 	}
 	// TODO log this to someplace more useful
-	console.log(errorObj);
-	console.log(message)
+	//console.log(errorObj);
+	//console.log(message)
 }
 function updateWeather() 
 {
@@ -162,7 +161,7 @@ function updateWeather()
         var weatherInfoURL = weatherResponse.data.weather[0].weatherURL;
         
         localWeather.innerHTML = ""; // clear last observation data
-
+	say("Weather summary for " + city + " " + state + " is as follows.");
 	if (precipMM > 0.0)
 	{
 		say("Precipitation indicated. Currently " + weatherDesc + " and " + temp_F + " degrees.");
@@ -181,7 +180,7 @@ function updateWeather()
                 getElementById("localWeather").innerHTML += "(Wind Chill " + windChill + "\xB0" + "F)<br>";
 		say("The current wind chill is " + windChill + " degrees.");
         }
-        if (temp_F > 70)
+        if (temp_F > 75)
         {
                 localWeather.innerHTML += "(Heat Index " + heatIndex + "\xB0" + "F)<br>";
 		say("The current heat index is " + heatIndex + " degrees.");
@@ -428,7 +427,7 @@ function updateArrivalsTracks()
 	arrivingPlanesGet.open('GET',arrivingPlanesProcess,false);
 	arrivingPlanesGet.send();
 	var arrivingPlaneStatusJSON = JSON.parse(arrivingPlanesGet.responseText);
-	console.log(arrivingPlaneStatusJSON);
+	//console.log(arrivingPlaneStatusJSON);
 	if (arrivingPlaneStatusJSON.flightTracks.length != 0)
 	{	
 		for (var i=0; i < arrivingPlaneStatusJSON.length; i++)
@@ -559,7 +558,7 @@ function updateTraffic()
 	var MILES_PER_METER = .000621371;
 
 	var airportETAGet = new XMLHttpRequest();
-	var airportETAURL="https://api.tomtom.com/lbs/services/route/3/" + lat + "," + lon + ":" + airportLat + "," + airportLon + "/Quickest/json?avoidTraffic=true&includeTraffic=true&day=today&iqRoutes=2&includeInstructions=true&key=knpmsu5p59rxdud2rmghsxd7"
+	var airportETAURL="https://api.tomtom.com/lbs/services/route/3/" + lat + "," + lon + ":" + airportLat + "," + airportLon + "/Quickest/json?avoidTraffic=true&pathPoints=18&includeTraffic=true&day=today&iqRoutes=2&includeInstructions=true&key=knpmsu5p59rxdud2rmghsxd7"
 	var airportETAProcess="https://www.airmanopus.net/cgi-bin/tomtom.cgi?" + airportETAURL;
 	airportETAGet.open('GET', airportETAProcess, false);
 	airportETAGet.send();
@@ -649,7 +648,7 @@ function updateDelays()
 		document.getElementById("airportDelays").innerHTML += "<br>" + airportName + " (" + airportIATA + ")<br>";
 		document.getElementById("airportDelays").innerHTML += airportDelayReason + "<br>";
 
-		say (airportName + ", initials " + airportIATA + "," + airportDelayReason);
+		say (airportName + ", " + airportDelayReason);
 		// display closure info only if airport is closed 
 		if ( airportClosureBegin != "")
 		{
@@ -832,13 +831,14 @@ function updateAirports()
 	var airportsListCity = 4;
 	var airportsListName = 5;
 
-	say("I am accessing airport and flight data.");
+	say("I have updated airport data for you.");
 
 	for (var j = 0; j <  nearbyAirportsJSON.response.data.main.numberOfResults; j++)
     	{
 		// each j is a single airport found by tomtom
 		var airportDistance = nearbyAirportsJSON.response.data.places.place[j].distance.$;
-		var airportName = nearbyAirportsJSON.response.data.places.place[j].name.$;
+		var airportNameFull = nearbyAirportsJSON.response.data.places.place[j].name.$;
+		var airportName = airportNameFull.toUpperCase().replace("AIRPORT","");
 		var airportCity = nearbyAirportsJSON.response.data.places.place[j].city.$;
 		var airportState = nearbyAirportsJSON.response.data.places.place[j].province.$
 		var airportAddress = nearbyAirportsJSON.response.data.places.place[j].formattedAddress;
@@ -857,6 +857,8 @@ function updateAirports()
 		var numAirports = airports.length;
 
 		iataIdentifier = "";
+		var lastMatchScore = 0;	
+		var minMatchPerc = .90;
 		// we need to match airportName to exactly one of the IATA records in the array airports
 		for (var k = 0; k < numAirports; k++)
 		{
@@ -864,13 +866,14 @@ function updateAirports()
 
 			// airports have name variations especially at the end of the name so we start matching from the start ex:
 		 	// Dane County Regional Airport  DANE COUNTY REGIONAL-TRUAX FIELD
-			
+		        // iata is MSN
+
 			// city and state have to match exactly
 			if (airportCity.toUpperCase() == airports[k][4])
 			{
 				if (airportState.toUpperCase() == airports[k][2])
 				{
-					// need to make sure that at least part of the airport name matches up
+					// now we need to make sure that at least part of TomTom airportName matches our list
 					// we use the number of characters of the shorter of the two airport names
 					if (airportName.length == airports[k][5].length)
 					{
@@ -886,26 +889,34 @@ function updateAirports()
 					{
 						if (airportName.toUpperCase().charAt(m) == airports[k][5].charAt(m))
 						{
-							matchScore++;
+							matchScore++; 
 						}
 					}
-					 
-					if (matchScore > 7)
+
+					//console.log("airport name  = " + airportName + "matchScore = " + matchScore);
+					
+					// minMatchPerc is the min match percentange we will accept
+					var matchScoreGoal = (matchScore * minMatchPerc);
+					if (matchScore >= matchScoreGoal)
 					{
-						iataIdentifier = airports[k][0];
+						// if this is the best match we have seen so far we keep it
+						if (matchScore > lastMatchScore)
+						{	 
+							iataIdentifier = airports[k][0];
+							lastMatchScore = matchScore;
+							//console.log(iataIdentifier, matchScore, lastMatchScore);
+						}
 					} 
 				}
 			}
-		}		
-
-		// if iataIdentifier is empty it is a local airport that we're not worried about		
+		}
+		// now we know the iataIdentfier of the airport that TomTom found for us		
 		if (iataIdentifier != "")
 		{
-			console.log(airportName,iataIdentifier);
 			if (airportDistance < viewportDistance)
-			{       // we dont know which airport is your destination yet
-				// so we just give you traffic info to airports you might be headed towards
-				// once that airport is within the viewport
+			{
+			        // we dont know which airport is your destination yet
+				// if this airport is within viewportDistance we will track airport delays and traffic to get there
 				updateTraffic(lat,lon,airportLat,airportLon,iataIdentifier,airportName);	
 				updateDelays(iataIdentifier);
 			}
@@ -913,13 +924,14 @@ function updateAirports()
 			if (airportDistance < zoomedViewportDistance)
 			{
 				// as you get physically closer to your destination airport you get more concerned
-				// with flight information, so we start displaying arrivals and departures
+				// with flight information, so we also begin displaying arrivals and departures
 				say("I have flight arrival and departure information available on screen.");
 				updateDeparturesFids(iataIdentifier);
 				updateArrivalsFids(iataIdentifier);
 				//updateArrivals(iataIdentifier);
-				updateArrivalsTracks(iataIdentifier);
+				//updateArrivalsTracks(iataIdentifier);
 				//updateDepartures(iataIdentifier);
+				//updateDeparturesTracks(iataIdentifier);
 			}
 		} 
 	}
@@ -1011,7 +1023,7 @@ html, body, #map {
 <div id="top-title"><img src="drivinandflyin.png" alt="Drivin' and Flyin'"></div>
 <div id="map"></div>
 <div id="localWeather" class="weatherDisplay"></div>
-<div id="traffic" class="trafficDisplay"></div></a>
+<div id="traffic" class="trafficDisplay"></div>
 <div id="airportDelays" class="airportFlights"></div>
 <div id="airportArrivals" class="airportFlights"></div>
 <div id="airportArrivalsTracks" class="airportTracks"></div>
