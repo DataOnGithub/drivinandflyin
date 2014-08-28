@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+<title>Drivin' and Flyin'</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -8,7 +9,7 @@
 <link href='https://fonts.googleapis.com/css?family=Arimo:400,700,400italic|Oxygen' rel='stylesheet' type='text/css'>
 <link href='https://fonts.googleapis.com/css?family=Inconsolata:400,700' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="https://www.airmanopus.net/drivinandflyin/css/iphone.css" type="text/css">
-<link rel="apple-touch-icon-precomposed" href=images/icon.png" />
+<link rel="apple-touch-icon-precomposed" href="images/icon.png" />
 <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.js'></script>
 <link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.css' rel='stylesheet' />
 <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-osm/v0.1.0/leaflet-osm.js'></script>
@@ -186,7 +187,7 @@ function updateWeather()
 		say("The current heat index is " + heatIndex + " degrees.");
         }
         localWeather.innerHTML += "Wind " + windDir + " at " + windSpeed + "mph ";
-        localWeather.innerHTML += (precipMM>0.0)?"Precip (mm) "+ precipMM + "<br>":"<br>";
+        localWeather.innerHTML += (precipMM>0.3)?"Precip (mm) "+ precipMM + "<br>":"<br>";
         localWeather.innerHTML += "Observation time " + obsTime + "<br>";
 
 
@@ -255,9 +256,6 @@ console.log("leaving updateDeparturesFids");
 	
 }
 
-
-
-
 function updateArrivalsFids()
 {
         // display data from Flight Information Data System(FIDS) API
@@ -268,7 +266,7 @@ function updateArrivalsFids()
         var arrivalsFidsGet = new XMLHttpRequest();
         arrivalsFidsGet.open('GET',arrivalsFidsGetURL,false);
         arrivalsFidsGet.send();
-	document.getElementById("arrivalsFids").innerHTML = "<span class='fidsDisplay'>Arrivals</span><br><br>";
+
 
 	var arrivalsFidsGetJSON = JSON.parse(arrivalsFidsGet.responseText);
 
@@ -277,7 +275,7 @@ function updateArrivalsFids()
 		flightStatsError(arrivalsFidsGetJSON," for arrivals.");
 		return;
 	}
-	
+	document.getElementById("arrivalsFids").innerHTML = "<span class='fidsDisplay'>Arrivals</span><br><br>";
 	for (x = 0; x < arrivalsFidsGetJSON.fidsData.length; x++)
 	{
 		// make sure we are getting the https version of the airline logo
@@ -553,7 +551,7 @@ function updateTraffic()
 
  
 	// check traffic to get estimate on when will we get to the airport 
-	// we always display driving  ETA from our location to each airport
+	// we always display driving ETA from our location to each airport
 
 	var MILES_PER_METER = .000621371;
 
@@ -569,7 +567,9 @@ function updateTraffic()
 	if (airportIATA != null)
 	{
 		// we will be called whenever position is updated so this display will always be updated with the best route
-		document.getElementById("traffic").innerHTML += "<br>" + airportName + " (" + airportIATA + ") is " + distanceMiles.toFixed(2) + " miles away. <br> Your estimated arrival time is " + airportETA + ".<br>";
+		document.getElementById("traffic").innerHTML += "<div id='" + airportIATA + "trafficETA'>";
+
+		document.getElementById(airportIATA+"trafficETA").innerHTML += "<br>" + airportName + " (" + airportIATA + ") is " + distanceMiles.toFixed(2) + " miles away. <br> Your estimated arrival time is " + airportETA + ".<br>";
 
 		// say the first two driving steps to get us movin and on the suggested route
 		// when we get called again we will update the route with new location as first step
@@ -585,36 +585,39 @@ function updateTraffic()
 			+ airportName + ","
 			+ airportRoute.route.instructions.instruction[0].text 
 			+ " " + expandAbbrev(firstInstruction[0]) + " " + firstInstruction[1] + " " + firstInstruction[2] 
-		+ "  and then, " 
-		+ airportRoute.route.instructions.instruction[1].text + " " + expandAbbrev(secondInstruction[0]) + " " + secondInstruction[1] + " " + secondInstruction[2]);
+			+ "  and then, " 
+			+ airportRoute.route.instructions.instruction[1].text + " " + expandAbbrev(secondInstruction[0]) 
+			+ " " + secondInstruction[1] + " " + secondInstruction[2]);
 		say ("I will keep your route updated as we travel.");
+		document.getElementById(airportIATA+"trafficETA").innerHTML += "</div>";
 	}
+	document.getElementById("traffic").innerHTML += "<div id='" + airportIATA + "Directions'>";
+	
 
 	// display driving directions to an airport
 	for (var p=0; p < airportRoute.route.instructions.instruction.length; p++)
         {
              	// each p is one step in the driving instructions 
 		var iconURL = "https://www.airmanopus.net/drivinandflyin/images/RoutingIcons/" + airportRoute.route.instructions.instruction[p].iconPath;
-                document.getElementById("traffic").innerHTML += "<img src='" + iconURL + "' alt='" + airportRoute.route.instructions.instruction[p].text + "'>";
-		document.getElementById("traffic").innerHTML += "<b>" + airportRoute.route.instructions.instruction[p].text + " " + airportRoute.route.instructions.instruction[p].roadName + " " + airportRoute.route.instructions.instruction[p].roadNumber +"</b><br>";
+                document.getElementById(airportIATA+"Directions").innerHTML += "<img src='" + iconURL + "' alt='" + airportRoute.route.instructions.instruction[p].text + "'>";
+		document.getElementById(airportIATA+"Directions").innerHTML += "<b>" + airportRoute.route.instructions.instruction[p].text + " " + airportRoute.route.instructions.instruction[p].roadName + " " + airportRoute.route.instructions.instruction[p].roadNumber +"</b><br>";
 		if ((p+1) < airportRoute.route.instructions.instruction.length)
-		document.getElementById("traffic").innerHTML += "Travel " + metersToMiles(airportRoute.route.instructions.instruction[p+1].distanceMeters - airportRoute.route.instructions.instruction[p].distanceMeters) + " miles.<br>";
+		document.getElementById(airportIATA+"Directions").innerHTML += "Travel " + metersToMiles(airportRoute.route.instructions.instruction[p+1].distanceMeters - airportRoute.route.instructions.instruction[p].distanceMeters) + " miles.<br>";
 		var travelTimeSeconds = airportRoute.route.instructions.instruction[p].travelTimeSeconds;
 		var travelTimeMinutes = secToMin(travelTimeSeconds);
 		var travelTimeHours = minToHours(travelTimeMinutes);
 		if (travelTimeHours > 1)
 		{
-			document.getElementById("traffic").innerHTML += " Travel time " + travelTimeHours.toFixed(2) + " hours<br>";
+			document.getElementById(airportIATA+"Directions").innerHTML += " Travel time " + travelTimeHours.toFixed(2) + " hours<br>";
 		} else if (travelTimeMinutes > 1) {
-			 document.getElementById("traffic").innerHTML += " Travel time " + travelTimeMinutes.toFixed(2) + " minutes<br>";
+			 document.getElementById(airportIATA+"Directions").innerHTML += " Travel time " + travelTimeMinutes.toFixed(2) + " minutes<br>";
 		} else {
-			document.getElementById("traffic").innerHTML += " Travel time " + travelTimeSeconds.toFixed(2) + " seconds<br>";
+			document.getElementById(airportIATA+"Directions").innerHTML += " Travel time " + travelTimeSeconds.toFixed(2) + " seconds<br>";
 
 		}
 
 	}
 	// add the current route we have directions for to the map
-	
 	map.displayRoute([[lat,lon],[airportLat,airportLon]]);
 }
 
@@ -831,7 +834,7 @@ function updateAirports()
 	var airportsListCity = 4;
 	var airportsListName = 5;
 
-	say("I have updated airport data for you.");
+	say("I am updating data for nearby airports.");
 
 	for (var j = 0; j <  nearbyAirportsJSON.response.data.main.numberOfResults; j++)
     	{
@@ -911,21 +914,23 @@ function updateAirports()
 			}
 		}
 		// now we know the iataIdentfier of the airport that TomTom found for us		
+		
 		if (iataIdentifier != "")
 		{
 			if (airportDistance < viewportDistance)
 			{
-			        // we dont know which airport is your destination yet
-				// if this airport is within viewportDistance we will track airport delays and traffic to get there
-				updateTraffic(lat,lon,airportLat,airportLon,iataIdentifier,airportName);	
-				updateDelays(iataIdentifier);
+			        // we dont yet know which airport is the destination 
+				// so update traffic going towards any nearby airport
+				updateTraffic(lat,lon,airportLat,airportLon,iataIdentifier,airportName);
 			}
 			
 			if (airportDistance < zoomedViewportDistance)
 			{
 				// as you get physically closer to your destination airport you get more concerned
 				// with flight information, so we also begin displaying arrivals and departures
+
 				say("I have flight arrival and departure information available on screen.");
+				updateDelays(iataIdentifier);
 				updateDeparturesFids(iataIdentifier);
 				updateArrivalsFids(iataIdentifier);
 				//updateArrivals(iataIdentifier);
@@ -976,9 +981,9 @@ function initialize() {
 					apiKey: "q3dh8pqnwmbdrvwctrgvm6nu",
 					center: [lat, lon],
 					zoom: 18,
-					zoomControl: false,
+					zoomControl: true,
 					scale: true,
-					dragging: false,
+					dragging: true,
 					intertia: true,
 					enableHighAccuracy: true,
 					watch: true,
@@ -1001,7 +1006,7 @@ function initialize() {
 				clearEverything();
 				updateWeather(lat,lon);		
 				updateAirports(lat,lon);
-				console.log("back to initialize and waiting for location change");
+				console.log("back to initialize and waiting for next location change");
             		}
 
 		}); 
@@ -1023,8 +1028,8 @@ html, body, #map {
 <div id="top-title"><img src="drivinandflyin.png" alt="Drivin' and Flyin'"></div>
 <div id="map"></div>
 <div id="localWeather" class="weatherDisplay"></div>
-<div id="traffic" class="trafficDisplay"></div>
 <div id="airportDelays" class="airportFlights"></div>
+<div id="traffic" class="trafficDisplay"></div>
 <div id="airportArrivals" class="airportFlights"></div>
 <div id="airportArrivalsTracks" class="airportTracks"></div>
 <div id="arrivalsFids" class="fidsDisplay"></div>
