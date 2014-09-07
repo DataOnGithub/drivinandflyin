@@ -15,6 +15,38 @@
 <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-osm/v0.1.0/leaflet-osm.js'></script>
 <script type="text/javascript" src="js/tomtom.map.js"></script>
 
+
+<style>
+html, body, #map {
+	width: 100;
+	height: 70%;
+	padding: 1;
+	margin: 1;
+}
+</style>
+</head>
+<body onload="initialize()">
+<div id="top-title"><img src="drivinandflyin.png" alt="Drivin' and Flyin'"></div>
+<div id="map"></div>
+<div id="localWeather" class="weatherDisplay"></div>
+<div id="airportDelays" class="airportFlights"></div>
+<div id="traffic" class="trafficDisplay"></div>
+<div id="airportArrivals" class="airportFlights"></div>
+<div id="airportArrivalsTracks" class="airportTracks"></div>
+<div id="arrivalsFids" class="fidsDisplay"></div>
+<div id="departuresFids" class="fidsDisplay"></div>
+<div id="airportDepartures" class ="airportFlights"></div>
+<div id="airportDeparturesTracks" class="airportTracks"></div>
+<div id="footer" class="footerText">
+<pre>
+Weather powered by: <a href="https://www.worldweatheronline.com" target="_blank">World Weather Online</a>
+Flight data &copy; <a href="https://developer.flightstats.com/" target="_blank">Flightstats</a>
+Maps &copy;<a href="https://www.mapbox.com/" target="_blank">Mapbox</a> &copy;<a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap Contributors</a> 
+Traffic data &copy;<a href="https://dev.tomtom.com" target="_blank">TomTom</a>
+Remaining &copy; 2014 airmanopus
+<a href="https://airmanopus.net/weathercheck/COPYING">COPYING</a> (GPLv3) <a href="https://www.airmanopus.net/weathercheck/privacy.html">Privacy</a> <a href="https://www.github.com/airmanopus/weathercheck">github</a>
+</pre>
+</div>
 <script>  
 
 function CSVToArray( strData, strDelimiter )
@@ -1015,38 +1047,6 @@ function initialize() {
 
 
 </script>
-<style>
-html, body, #map {
-	width: 100;
-	height: 70%;
-	padding: 1;
-	margin: 1;
-}
-</style>
-</head>
-<body onload="initialize()">
-<div id="top-title"><img src="drivinandflyin.png" alt="Drivin' and Flyin'"></div>
-<div id="map"></div>
-<div id="localWeather" class="weatherDisplay"></div>
-<div id="airportDelays" class="airportFlights"></div>
-<div id="traffic" class="trafficDisplay"></div>
-<div id="airportArrivals" class="airportFlights"></div>
-<div id="airportArrivalsTracks" class="airportTracks"></div>
-<div id="arrivalsFids" class="fidsDisplay"></div>
-<div id="departuresFids" class="fidsDisplay"></div>
-<div id="airportDepartures" class ="airportFlights"></div>
-<div id="airportDeparturesTracks" class="airportTracks"></div>
-<div id="footer" class="footerText">
-<pre>
-Weather powered by: <a href="https://www.worldweatheronline.com" target="_blank">World Weather Online</a>
-Flight data &copy; <a href="https://developer.flightstats.com/" target="_blank">Flightstats</a>
-Maps &copy;<a href="https://www.mapbox.com/" target="_blank">Mapbox</a> &copy;<a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap Contributors</a> 
-Traffic data &copy;<a href="https://dev.tomtom.com" target="_blank">TomTom</a>
-Remaining &copy; 2014 airmanopus
-<a href="https://airmanopus.net/weathercheck/COPYING">COPYING</a> (GPLv3) <a href="https://www.airmanopus.net/weathercheck/privacy.html">Privacy</a> <a href="https://www.github.com/airmanopus/weathercheck">github</a>
-</pre>
-</div>
-
 
 
 </html>
