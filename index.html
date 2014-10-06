@@ -588,11 +588,12 @@ function updateTraffic()
 	var MILES_PER_METER = .000621371;
 
 	var airportETAGet = new XMLHttpRequest();
-	var airportETAURL="https://api.tomtom.com/lbs/services/route/3/" + lat + "," + lon + ":" + airportLat + "," + airportLon + "/Quickest/json?avoidTraffic=true&pathPoints=18&includeTraffic=true&day=today&iqRoutes=2&includeInstructions=true&key=knpmsu5p59rxdud2rmghsxd7"
+	var airportETAURL="https://api.tomtom.com/lbs/services/route/3/" + lat + "," + lon + ":" + airportLat + "," + airportLon + "/Quickest/json?avoidTraffic=true&includeTraffic=true&day=today&iqRoutes=2&includeInstructions=true&key=knpmsu5p59rxdud2rmghsxd7"
 	var airportETAProcess="https://www.airmanopus.net/cgi-bin/tomtom.cgi?" + airportETAURL;
 	airportETAGet.open('GET', airportETAProcess, false);
 	airportETAGet.send();
 	var airportRoute=JSON.parse(airportETAGet.responseText);
+	console.log(airportRoute);
 	var airportETA = airportRoute.route.summary.arrivalOverview.time;
 	var distanceMeters = airportRoute.route.summary.totalDistanceMeters; 
 	var distanceMiles = distanceMeters * MILES_PER_METER;
@@ -1019,7 +1020,7 @@ function initialize() {
 					intertia: true,
 					enableHighAccuracy: true,
 					watch: true,
-					maximumAge: 15000,
+					maximumAge: 35000,
 					displayTraffic: true
 				});
 				marker = new tomtom.Marker([lat,lon]);
