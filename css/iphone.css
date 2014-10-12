@@ -7,12 +7,12 @@
 	
 			.weatherDisplay {
 
-				font-family: 'Arimo',sans-serif;
+				font-family: 'Inconsolata',sans-serif;
 				font-size: medium;
 			}
 
 			.fidsDisplay {
-				font-family: 'Arimo',sans-serif;
+				font-family: 'Inconsolata',sans-serif;
 	                        font-size: small;
 			}
 
@@ -51,7 +51,7 @@
 			}
 			
 			table {
-				font-family 'Arimo','sans-serif';
+				font-family 'Inconsolata','sans-serif';
                                 font-size: medium;
                                 color: black;
 				border-width: 1px;

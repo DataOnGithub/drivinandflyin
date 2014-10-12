@@ -207,7 +207,7 @@ function updateWeather()
 	}
 
         localWeather.innerHTML += city + ", " + state + " (" + lat.toPrecision(6) + "," + lon.toPrecision(6) + ")<br>";
-        localWeather.innerHTML += weatherDesc + " and " + temp_F + "\xB0" + "F ";
+        localWeather.innerHTML += weatherDesc + " and " + temp_F + "\xB0" + "F <br>";
         if (temp_F < 45)
         {
                 document.getElementById("localWeather").innerHTML += "(Wind Chill " + windChill + "\xB0" + "F)<br>";
