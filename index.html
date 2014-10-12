@@ -210,7 +210,7 @@ function updateWeather()
         localWeather.innerHTML += weatherDesc + " and " + temp_F + "\xB0" + "F ";
         if (temp_F < 45)
         {
-                getElementById("localWeather").innerHTML += "(Wind Chill " + windChill + "\xB0" + "F)<br>";
+                document.getElementById("localWeather").innerHTML += "(Wind Chill " + windChill + "\xB0" + "F)<br>";
 		say("The current wind chill is " + windChill + " degrees.");
         }
         if (temp_F > 75)
